@@ -59,8 +59,43 @@ class GatewayController(ABC):
         pass
 
     @abstractmethod
+    def get_failed_transactions(self):
+        """
+        Get all failed transactions
+        """
+        pass
+
+    @abstractmethod
+    def get_log_messages(self):
+        """
+        Get all support messages transactions
+        """
+        pass
+
+    @abstractmethod
     def check_coin_transaction(self, tx: str) -> None:
         """
         Checks the given coin transaction whether it requires a new attempt list to be created.
+        """
+        pass
+
+    @abstractmethod
+    def get_block_heights(self):
+        """
+        Returns the already checked block heights from each currency
+        """
+        pass
+
+    @abstractmethod
+    def get_average_attempt_list_tries(self):
+        """
+        Returns the average tries of attemptlists
+        """
+        pass
+
+    @abstractmethod
+    def trigger_attemptlist_retry(self, id: str) -> str:
+        """
+        Sets the tries of an attempt list to 1
         """
         pass

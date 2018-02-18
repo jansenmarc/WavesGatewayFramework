@@ -6,10 +6,10 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from waves_gateway.model import Transaction, TransactionReceiver, TransactionAttemptList, TransactionAttempt, \
-    TransactionAttemptReceiver, AttemptListTrigger
+    TransactionAttemptReceiver, AttemptListTrigger, PublicConfiguration
 from waves_gateway.service import CoinTransactionConsumerImpl, \
     ChainQueryService, TransactionAttemptListService, FeeService
-from waves_gateway.storage import WalletStorage, MapStorage, TransactionAttemptListStorage
+from waves_gateway.storage import WalletStorage, MapStorage, TransactionAttemptListStorage, FailedTransactionStorage
 
 
 class CoinTransactionConsumerImplTestMultiReceiver(TestCase):
@@ -35,6 +35,8 @@ class CoinTransactionConsumerImplTestMultiReceiver(TestCase):
         self._gateway_pywaves_address = MagicMock()
         self._gateway_pywaves_address.address = self._gateway_waves_address
         self._attempt_list_storage = MagicMock()
+        self._failed_tx_storage = MagicMock()
+        self._public_configuration = MagicMock()
 
         self._coin_transaction_consumer_impl = CoinTransactionConsumerImpl(
             attempt_service=cast(TransactionAttemptListService, self._attempt_service),
@@ -46,7 +48,9 @@ class CoinTransactionConsumerImplTestMultiReceiver(TestCase):
             fee_service=cast(FeeService, self._fee_service),
             only_one_transaction_receiver=False,
             gateway_pywaves_address=cast(pywaves.Address, self._gateway_pywaves_address),
-            attempt_list_storage=cast(TransactionAttemptListStorage, self._attempt_list_storage))
+            attempt_list_storage=cast(TransactionAttemptListStorage, self._attempt_list_storage),
+            failed_transaction_storage=cast(FailedTransactionStorage, self._failed_tx_storage),
+            public_configuration=cast(PublicConfiguration, self._public_configuration))
 
         self._fee_service.get_coin_fee.return_value = self._coin_standard_fee
         self._fee_service.get_gateway_fee.return_value = self._gateway_fee
@@ -166,6 +170,8 @@ class CoinTransactionConsumerImplTestSingleReceiver(TestCase):
         self._gateway_pywaves_address = MagicMock()
         self._gateway_pywaves_address.address = self._gateway_waves_address
         self._attempt_list_storage = MagicMock()
+        self._failed_transaction_storage = MagicMock()
+        self._public_configuration = MagicMock()
 
         self._coin_transaction_consumer_impl = CoinTransactionConsumerImpl(
             attempt_service=cast(TransactionAttemptListService, self._attempt_service),
@@ -177,7 +183,9 @@ class CoinTransactionConsumerImplTestSingleReceiver(TestCase):
             fee_service=cast(FeeService, self._fee_service),
             only_one_transaction_receiver=True,
             gateway_pywaves_address=cast(pywaves.Address, self._gateway_pywaves_address),
-            attempt_list_storage=cast(TransactionAttemptListStorage, self._attempt_list_storage))
+            attempt_list_storage=cast(TransactionAttemptListStorage, self._attempt_list_storage),
+            failed_transaction_storage=cast(FailedTransactionStorage, self._failed_transaction_storage),
+            public_configuration=cast(PublicConfiguration, self._public_configuration))
 
         self._fee_service.get_coin_fee.return_value = self._coin_standard_fee
         self._fee_service.get_gateway_fee.return_value = self._gateway_fee

@@ -118,6 +118,9 @@ class TransactionAttemptList(object):
     def tries(self) -> int:
         return self._tries
 
+    def reset_tries(self):
+        self._tries = 0
+
     def mark_next_attempt_as_complete(self, attempt: TransactionAttempt, tx: str) -> None:
         for i in range(0, len(self._attempts)):
             if self._attempts[i] is attempt:
