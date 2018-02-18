@@ -34,6 +34,13 @@ class TransactionAttemptListStorage(ABC):
         pass
 
     @abstractmethod
+    def get_average_attempt_list_tries(self):
+        """
+        Calculates the average tries of attempt lists
+        """
+        pass
+
+    @abstractmethod
     def trigger_exists(self, trigger: AttemptListTrigger) -> bool:
         """
         Tests if an attempt_list with the given trigger exists.

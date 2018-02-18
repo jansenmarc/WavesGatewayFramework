@@ -16,3 +16,6 @@ from .transaction_attempt_list_storage import TransactionAttemptListStorage
 from .coin_polling_state_storage_proxy_impl import CoinPollingStateStorageProxyImpl
 from .waves_polling_state_storage_proxy_impl import WavesPollingStateStorageProxyImpl
 from .polling_state_storage_proxy import PollingStateStorageProxy
+from .failed_transaction_storage import FailedTransactionStorage
+from .failed_transaction_storage_impl import FailedTransactionStorageImpl
+from .log_storage_service import LogStorageService

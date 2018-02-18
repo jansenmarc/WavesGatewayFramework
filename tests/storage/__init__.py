@@ -9,3 +9,6 @@ from .test_transaction_attempt_list_storage import *
 from .test_wallet_storage import *
 from .test_waves_block_height_storage_proxy_impl import *
 from .test_waves_polling_state_storage_proxy_impl import *
+from .test_failed_transaction_storage import *
+from .test_log_storage_service import *
+from .test_support_log_handler import *
