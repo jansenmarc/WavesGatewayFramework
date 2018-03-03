@@ -1,0 +1,7 @@
+<ng-container *ngIf="href; else noLink">
+  <a [href]="href">{{tx}}</a>
+</ng-container>
+
+<ng-template #noLink>
+  {{tx}}
+</ng-template>

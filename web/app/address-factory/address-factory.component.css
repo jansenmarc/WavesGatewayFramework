@@ -1,0 +1,39 @@
+.mid-arrow {
+    text-align: center;
+    font-size: 100pt;
+}
+
+.full-height {
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .mid-arrow {
+        display: none;
+    }
+
+    .form.full-height {
+        height: auto;
+    }
+
+    .jumbotron {
+        background-color: white;
+        padding: 0;
+    }
+}
+
+button {
+    cursor: pointer;
+}
+
+.has-danger input {
+    border-color: red;
+}
+
+.has-danger .control-label {
+    color: red;
+}
+
+.has-danger .form-control-feedback {
+    color: red;
+}

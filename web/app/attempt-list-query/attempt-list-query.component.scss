@@ -1,0 +1,36 @@
+
+@media (min-width: 786px) {
+  .tx-form-container {
+    position: absolute;
+    top: 0.4rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    left: 0;
+  }
+}
+
+@media (max-width: 786px) {
+  .tx-form-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+
+.form-inline {
+  padding: 5px;
+
+  .form-control {
+    width: auto;
+  }
+}
+
+.nothing-found-container {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  width: 100%;
+  height: 100%;
+}

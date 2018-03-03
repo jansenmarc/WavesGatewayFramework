@@ -1,0 +1,21 @@
+:host {
+  margin: 10px;
+  display: block;
+}
+
+.list-group-item {
+  width: 100%;
+}
+
+.card-title {
+  overflow: hidden;
+}
+
+.card-block {
+  padding: 20px;
+}
+
+.word-break {
+  overflow: hidden;
+  text-overflow: clip;
+}

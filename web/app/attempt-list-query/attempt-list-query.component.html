@@ -1,0 +1,28 @@
+
+  <div class="row justify-content-center">
+    <form class="form-inline" [formGroup]="searchForm" (ngSubmit)="onSearchFormSubmit()">
+      <input type="text" id="inputTX" placeholder="ID/TX" class="form-control tx-input" [formControl]="searchControl">
+      <button type="submit" appPrimary class="btn btn-primary" [disabled]="searchForm.invalid">Search</button>
+    </form>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <ng-container *ngIf="(asyncResults | async) as syncResults">
+
+        <ng-template #noContent>
+          <div class="nothing-found-container">
+            <p class="text-center text-warning">Nothing found</p>
+          </div>
+        </ng-template>
+
+        <ng-container *ngIf="syncResults.length > 0; else noContent">
+          <app-attempt-list *ngFor="let result of syncResults" [attemptList]="result"></app-attempt-list>
+        </ng-container>
+
+
+      </ng-container>
+    </div>
+  </div>
+
+

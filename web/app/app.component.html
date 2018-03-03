@@ -1,0 +1,91 @@
+<nav class="navbar navbar-expand-lg navbar-light" [style.background-color]="configuration?.web_primary_color">
+    <a class="navbar-brand" routerLink="home">{{configuration?.custom_currency_name}} Gateway</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="address-factory">Your Address</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" [formGroup]="searchForm" (ngSubmit)="onSearchFormSubmit()">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"
+                   formControlName="search" placeholder="ID/TX">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" appPrimary invert
+                    [disabled]="searchForm.invalid">Search
+            </button>
+        </form>
+    </div>
+</nav>
+
+<div class="outlet-container">
+    <div class="container">
+        <router-outlet></router-outlet>
+    </div>
+</div>
+
+<footer class="sticky-footer" [style.background-color]="configuration?.web_primary_color">
+    <div class="container-fluid">
+        <div class="row d-flex">
+            <div class="col-lg-4 col-sm-12 d-none d-md-block">
+                <div class="row">
+                    <div class="col-lg-4 cut-text label">
+                        Name
+                    </div>
+                    <div class="col-lg-8 cut-text">
+                        {{configuration?.custom_currency_name}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 cut-text label">
+                        Waves Node
+                    </div>
+                    <div class="col-lg-8 cut-text">
+                        <a [href]="configuration?.waves_node">{{configuration?.waves_node}}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-sm-12 d-none d-md-block">
+                <div class="row">
+                    <div class="col-lg-4 cut-text label">
+                        Gateway Waves Address
+                    </div>
+                    <div class="col-lg-8 cut-text">
+                        {{configuration?.gateway_waves_address}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 cut-text label">
+                        Waves Asset ID
+                    </div>
+                    <div class="col-lg-8 cut-text">
+                        {{configuration?.waves_asset_id}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 cut-text label">
+                        Gateway {{configuration?.custom_currency_name}} Address
+                    </div>
+                    <div class="col-lg-8 cut-text">
+                        {{configuration?.gateway_coin_holder}}
+                    </div>
+                </div>
+            </div>
+            <div class="d-block d-md-none col-sm-12">
+                <div class="row">
+                    <div class="col-lg-4 cut-text label">
+                        Gateway Waves Address
+                    </div>
+                    <div class="col-lg-8 cut-text">
+                        {{configuration?.gateway_waves_address}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</footer>

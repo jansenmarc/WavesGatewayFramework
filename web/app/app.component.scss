@@ -1,0 +1,58 @@
+:host {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+}
+
+.navbar-brand {
+  color: white;
+  z-index: 8;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: white;
+}
+
+.navbar {
+  background-color: #2196f3;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outlet-container {
+  flex: 1;
+  overflow: scroll;
+  margin-top: 20px;
+
+  .container {
+    height: 100%;
+  }
+}
+
+.sticky-footer {
+  background-color: #2196f3;
+  color: white;
+  padding: 10px;
+  white-space: nowrap;
+  font-weight: lighter;
+  overflow: auto;
+  min-height: 10px;
+}
+
+.sticky-footer a {
+  color: white;
+}
+
+.sticky-footer {
+  .cut-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .label {
+    font-weight: bold;
+  }
+}

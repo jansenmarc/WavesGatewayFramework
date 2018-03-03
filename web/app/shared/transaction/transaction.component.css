@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.transaction-header {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.transaction-content {
+  margin-top: 0;
+  line-height: 1.3;
+}

@@ -1,0 +1,76 @@
+<div class="card">
+  <div class="card-block">
+    <div class="d-flex w-100 justify-content-between">
+      <h4 class="card-title"><small>ID</small> {{attemptList.attempt_list_id}}</h4>
+      <small class="d-none d-md-block">Transaction List</small>
+    </div>
+
+    <h6 *ngIf="isComplete()" class="card-subtitle mb-2 text-success">Successfully completed</h6>
+    <h6 *ngIf="!isComplete()" class="card-subtitle mb-2 text-warning">Pending</h6>
+
+    <small>
+      Triggered by Receiver{{attemptList.trigger.receiver}} of
+      <app-transaction-id [tx]="attemptList.trigger.tx" [currency]="attemptList.trigger.currency"></app-transaction-id>
+    </small>
+
+    <ng-container *ngIf="attemptList.trigger.senders">
+      <br/>
+
+      <small>
+        Sender/s are
+        <span *ngFor="let sender of attemptList.trigger.senders">
+          <app-transaction-address
+                  [address]="sender.address"
+                  [currency]="attemptList.trigger.currency">
+          </app-transaction-address>
+        </span>
+      </small>
+    </ng-container>
+
+
+
+  </div>
+
+  <ul class="list-group list-group-flush flex-column align-items-start">
+    <li class="list-group-item"
+        *ngFor="let attempt of attemptList.attempts; let i = index"
+    >
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1 word-break">
+          <small>From</small>
+          <span><app-transaction-address [address]="attempt.sender" [currency]="attempt.currency"></app-transaction-address></span>
+        </h5>
+        <small class="d-none d-md-block"><b>{{attempt.currency === 'waves'? 'Waves': publicConfiguration?.custom_currency_name}}</b> Transaction Attempt</small>
+      </div>
+
+      <h6 *ngIf="i < attemptList.transactions.length">
+        <small>TX</small>
+        <app-transaction-id [tx]="attemptList.transactions[i]" [currency]="attemptList.attempts[i].currency"></app-transaction-id>
+      </h6>
+
+      <h6 *ngIf="i >= attemptList.transactions.length" class="text-warning">
+        Pending
+      </h6>
+
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Amount</th>
+          <th>Goes To</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let receiver of attempt.receivers; let i = index">
+          <th scope="row">{{i}}</th>
+          <td>{{receiver.amount}}</td>
+          <td><app-transaction-address [address]="receiver.address" [currency]="attempt.currency"></app-transaction-address></td>
+        </tr>
+        </tbody>
+      </table>
+
+      <small>{{attempt.fee}} as Fee</small>
+    </li>
+  </ul>
+
+</div>

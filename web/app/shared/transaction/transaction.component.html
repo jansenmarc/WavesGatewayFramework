@@ -1,0 +1,14 @@
+<h4 class="transaction-header">{{transaction.tx}}</h4>
+<div class="transaction-content">
+  <h5 class="transaction-receiver-header">Receivers</h5>
+  <div class="transaction-receiver-content" *ngFor="let receiver of transaction.receivers">
+    <div class="row">
+      <div class="col-md-3">
+        Address: {{receiver.address}}
+      </div>
+      <div class="col-md-3">
+        Amount: {{receiver.amount}}
+      </div>
+    </div>
+  </div>
+</div>

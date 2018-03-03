@@ -1,0 +1,7 @@
+<ng-container *ngIf="href; else noLink">
+  <a [href]="href">{{replacedAddress}}</a>
+</ng-container>
+
+<ng-template #noLink>
+  {{replacedAddress}}
+</ng-template>
