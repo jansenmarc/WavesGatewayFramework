@@ -16,7 +16,7 @@ class CoverageCommand(Command):
         import sys, subprocess
 
         code = subprocess.call([
-            sys.executable, '-m', 'nose', 'waves_gateway', '--with-coverage', '--cover-package', 'waves_gateway',
+            sys.executable, '-m', 'nose', 'tests', '--with-coverage', '--cover-package', 'waves_gateway',
             '--cover-html'
         ])
 
@@ -83,17 +83,19 @@ class PydocCommand(Command):
 
 setup(
     name='waves_gateway',
-    version='0.1',
+    url='https://github.com/jansenmarc/WavesGatewayFramework',
+    version='1.0.0',
     test_suite='nose.collector',
     tests_require=['nose'],
     install_requires=[
         'PyWaves>=0.7.9', 'python-doc-inherit>=0.3.0', 'simplejson>=3.11.1', 'requests>=2.9.1', 'base58>=0.2.5',
         'pymongo>=3.4.0', 'Flask>=0.12.2', 'gevent>=1.2.2'
     ],
+    description='A framework to connect other cryptocurrencies to the Waves-Platform.',
     package_data={'waves_gateway': ['static/**/*', 'static/*']},
     license='MIT',
     long_description=open('README.md').read(),
-    packages=find_packages(),
+    packages=find_packages(exclude=['waves_gateway.tests']),
     cmdclass={
         'coverage': CoverageCommand,
         'mypy': MyPyCommand,
