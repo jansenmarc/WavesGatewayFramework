@@ -14,6 +14,13 @@ Those interfaces define the required functionality that a concrete Gateway imple
 You may also take a look at an example implementation that
 realizes a Waves-Gateway for Litecoin: https://github.com/jansenmarc/WavesGatewayLTCExample.
 
+How to install
+---------------
+
+.. code:: bash
+
+    pip install waves-gateway
+
 Required packages for development
 ---------------------------------
 
