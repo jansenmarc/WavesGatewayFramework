@@ -85,8 +85,11 @@ setup(
     name='waves_gateway',
     url='https://github.com/jansenmarc/WavesGatewayFramework',
     version='1.0.0',
+    author='Henning Gerrits',
     test_suite='nose.collector',
     tests_require=['nose'],
+    keywords='waves gateway wavesplatform',
+    python_requires='>=3.5',
     install_requires=[
         'PyWaves>=0.7.9', 'python-doc-inherit>=0.3.0', 'simplejson>=3.11.1', 'requests>=2.9.1', 'base58>=0.2.5',
         'pymongo>=3.4.0', 'Flask>=0.12.2', 'gevent>=1.2.2'
@@ -94,8 +97,8 @@ setup(
     description='A framework to connect other cryptocurrencies to the Waves-Platform.',
     package_data={'waves_gateway': ['static/**/*', 'static/*']},
     license='MIT',
-    long_description=open('README.md').read(),
-    packages=find_packages(exclude=['waves_gateway.tests']),
+    long_description=open('README.rst').read(),
+    packages=find_packages(exclude=['tests']),
     cmdclass={
         'coverage': CoverageCommand,
         'mypy': MyPyCommand,
