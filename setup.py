@@ -57,7 +57,7 @@ class LintCommand(Command):
         exit(code)
 
 
-class PydocCommand(Command):
+class DocsCommand(Command):
     user_options = []
 
     def initialize_options(self):
@@ -72,11 +72,15 @@ class PydocCommand(Command):
         if os.path.exists("docs"):
             shutil.rmtree("docs")
 
-        os.mkdir("docs")
+        if os.path.exists(".apidoc"):
+            shutil.rmtree(".apidoc")
 
-        cwd = os.path.join(os.getcwd(), "docs")
+        code = subprocess.call(['sphinx-apidoc', '-o', '.apidoc', 'waves_gateway', '-l', '-F', '-H', 'Waves-Gateway-Framework', '-A', 'Henning Gerrits', '-f'])
 
-        code = subprocess.call([sys.executable, '-m', 'pydoc', '-w', './../'], cwd=cwd)
+        if code != 0:
+            exit(code)
+
+        code = subprocess.call(['sphinx-build', '.apidoc', 'docs'])
 
         exit(code)
 
@@ -103,5 +107,5 @@ setup(
         'coverage': CoverageCommand,
         'mypy': MyPyCommand,
         'lint': LintCommand,
-        'pydoc': PydocCommand
+        'docs': DocsCommand
     })

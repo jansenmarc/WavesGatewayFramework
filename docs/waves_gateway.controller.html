@@ -1,0 +1,309 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.controller package &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="waves_gateway.factory package" href="waves_gateway.factory.html" />
+    <link rel="prev" title="waves_gateway.common package" href="waves_gateway.common.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="waves-gateway-controller-package">
+<h1>waves_gateway.controller package<a class="headerlink" href="#waves-gateway-controller-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-waves_gateway.controller.flask_rest_controller">
+<span id="waves-gateway-controller-flask-rest-controller-module"></span><h2>waves_gateway.controller.flask_rest_controller module<a class="headerlink" href="#module-waves_gateway.controller.flask_rest_controller" title="Permalink to this headline">¶</a></h2>
+<p>FlaskRestController</p>
+<dl class="class">
+<dt id="waves_gateway.controller.flask_rest_controller.FlaskRestController">
+<em class="property">class </em><code class="descclassname">waves_gateway.controller.flask_rest_controller.</code><code class="descname">FlaskRestController</code><span class="sig-paren">(</span><em>flask: typing.Any</em>, <em>gateway_controller: waves_gateway.controller.gateway_controller.GatewayController</em>, <em>logger: logging.Logger</em>, <em>attempt_list_serializer: waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer</em>, <em>public_configuration: waves_gateway.model.public_configuration.PublicConfiguration</em>, <em>public_configuration_serializer: waves_gateway.serializer.public_configuration_serializer.PublicConfigurationSerializer</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/flask_rest_controller.html#FlaskRestController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.flask_rest_controller.FlaskRestController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Optional Flask based rest interface for the Gateway.
+Forwards ReST requests to the general GatewayController.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.controller.gateway_controller">
+<span id="waves-gateway-controller-gateway-controller-module"></span><h2>waves_gateway.controller.gateway_controller module<a class="headerlink" href="#module-waves_gateway.controller.gateway_controller" title="Permalink to this headline">¶</a></h2>
+<p>GatewayController</p>
+<dl class="class">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController">
+<em class="property">class </em><code class="descclassname">waves_gateway.controller.gateway_controller.</code><code class="descname">GatewayController</code><a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>Defines the API for the Waves Client application.
+All possible interfaces should forward their requests to this abstract controller.</p>
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController.check_coin_transaction">
+<code class="descname">check_coin_transaction</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController.check_coin_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController.check_coin_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the given coin transaction whether it requires a new attempt list to be created.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController.check_waves_transaction">
+<code class="descname">check_waves_transaction</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController.check_waves_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController.check_waves_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the given waves transaction whether it requires a new attempt list to be created.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController.create_address">
+<code class="descname">create_address</code><span class="sig-paren">(</span><em>waves_address: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController.create_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController.create_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new address of the custom currency or an existing one
+if the waves_address is already associated to an address of the custom
+cryptocurrency.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController.get_attempt_list_by_id">
+<code class="descname">get_attempt_list_by_id</code><span class="sig-paren">(</span><em>attempt_list_id: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController.get_attempt_list_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController.get_attempt_list_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find an attempt_list by its id. The result may be None if no such id exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController.get_attempt_list_by_trigger">
+<code class="descname">get_attempt_list_by_trigger</code><span class="sig-paren">(</span><em>trigger: waves_gateway.model.transaction_attempt_list.AttemptListTrigger</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController.get_attempt_list_by_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController.get_attempt_list_by_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find an attempt_list by its trigger. The result may be None if no such trigger exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController.query_attempt_lists">
+<code class="descname">query_attempt_lists</code><span class="sig-paren">(</span><em>query: waves_gateway.model.attempt_list_query.AttemptListQuery</em><span class="sig-paren">)</span> &#x2192; typing.List[waves_gateway.model.transaction_attempt_list.TransactionAttemptList]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController.query_attempt_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController.query_attempt_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query attempt lists by specific criteria.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller.GatewayController.validate_waves_address">
+<code class="descname">validate_waves_address</code><span class="sig-paren">(</span><em>address: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller.html#GatewayController.validate_waves_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller.GatewayController.validate_waves_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the given address is an valid waves address.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.controller.gateway_controller_converter_proxy_impl">
+<span id="waves-gateway-controller-gateway-controller-converter-proxy-impl-module"></span><h2>waves_gateway.controller.gateway_controller_converter_proxy_impl module<a class="headerlink" href="#module-waves_gateway.controller.gateway_controller_converter_proxy_impl" title="Permalink to this headline">¶</a></h2>
+<p>GatewayControllerConverterProxyImpl</p>
+<dl class="class">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.controller.gateway_controller_converter_proxy_impl.</code><code class="descname">GatewayControllerConverterProxyImpl</code><span class="sig-paren">(</span><em>attempt_list_converter_service: waves_gateway.service.attempt_list_converter_service.AttemptListConverterService</em>, <em>gateway_controller: waves_gateway.controller.gateway_controller.GatewayController</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.controller.gateway_controller.GatewayController" title="waves_gateway.controller.gateway_controller.GatewayController"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.controller.gateway_controller.GatewayController</span></code></a></p>
+<p>Reverts the amount conversion which the Gateway internally uses before overhanding the results
+to an external API.</p>
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.check_coin_transaction">
+<code class="descname">check_coin_transaction</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl.check_coin_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.check_coin_transaction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.check_waves_transaction">
+<code class="descname">check_waves_transaction</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl.check_waves_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.check_waves_transaction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.create_address">
+<code class="descname">create_address</code><span class="sig-paren">(</span><em>waves_address: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl.create_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.create_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.get_attempt_list_by_id">
+<code class="descname">get_attempt_list_by_id</code><span class="sig-paren">(</span><em>attempt_list_id: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl.get_attempt_list_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.get_attempt_list_by_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.get_attempt_list_by_trigger">
+<code class="descname">get_attempt_list_by_trigger</code><span class="sig-paren">(</span><em>trigger: waves_gateway.model.transaction_attempt_list.AttemptListTrigger</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl.get_attempt_list_by_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.get_attempt_list_by_trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.query_attempt_lists">
+<code class="descname">query_attempt_lists</code><span class="sig-paren">(</span><em>query: waves_gateway.model.attempt_list_query.AttemptListQuery</em><span class="sig-paren">)</span> &#x2192; typing.List[waves_gateway.model.transaction_attempt_list.TransactionAttemptList]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl.query_attempt_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.query_attempt_lists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.validate_waves_address">
+<code class="descname">validate_waves_address</code><span class="sig-paren">(</span><em>address: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_converter_proxy_impl.html#GatewayControllerConverterProxyImpl.validate_waves_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.validate_waves_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.controller.gateway_controller_impl">
+<span id="waves-gateway-controller-gateway-controller-impl-module"></span><h2>waves_gateway.controller.gateway_controller_impl module<a class="headerlink" href="#module-waves_gateway.controller.gateway_controller_impl" title="Permalink to this headline">¶</a></h2>
+<p>GatewayControllerImpl</p>
+<dl class="class">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.controller.gateway_controller_impl.</code><code class="descname">GatewayControllerImpl</code><span class="sig-paren">(</span><em>coin_address_factory: waves_gateway.factory.coin_address_factory.CoinAddressFactory</em>, <em>logger: logging.Logger</em>, <em>map_storage: waves_gateway.storage.map_storage.MapStorage</em>, <em>wallet_storage: waves_gateway.storage.wallet_storage.WalletStorage</em>, <em>attempt_list_storage: waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage</em>, <em>waves_address_validation_service: waves_gateway.service.address_validation_service.AddressValidationService</em>, <em>waves_chain_query_service: waves_gateway.service.chain_query_service.ChainQueryService</em>, <em>coin_chain_query_service: waves_gateway.service.chain_query_service.ChainQueryService</em>, <em>coin_transaction_consumer: waves_gateway.service.transaction_consumer.TransactionConsumer</em>, <em>waves_transaction_consumer: waves_gateway.service.transaction_consumer.TransactionConsumer</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.controller.gateway_controller.GatewayController" title="waves_gateway.controller.gateway_controller.GatewayController"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.controller.gateway_controller.GatewayController</span></code></a></p>
+<p>inherit</p>
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.check_coin_transaction">
+<code class="descname">check_coin_transaction</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl.check_coin_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.check_coin_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the given coin transaction whether it requires a new attempt list to be created.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.check_waves_transaction">
+<code class="descname">check_waves_transaction</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl.check_waves_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.check_waves_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the given waves transaction whether it requires a new attempt list to be created.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.create_address">
+<code class="descname">create_address</code><span class="sig-paren">(</span><em>waves_address: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl.create_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.create_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new address of the custom currency or an existing one
+if the waves_address is already associated to an address of the custom
+cryptocurrency.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.get_attempt_list_by_id">
+<code class="descname">get_attempt_list_by_id</code><span class="sig-paren">(</span><em>attempt_list_id: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl.get_attempt_list_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.get_attempt_list_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find an attempt_list by its id. The result may be None if no such id exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.get_attempt_list_by_trigger">
+<code class="descname">get_attempt_list_by_trigger</code><span class="sig-paren">(</span><em>trigger: waves_gateway.model.transaction_attempt_list.AttemptListTrigger</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl.get_attempt_list_by_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.get_attempt_list_by_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find an attempt_list by its trigger. The result may be None if no such trigger exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.query_attempt_lists">
+<code class="descname">query_attempt_lists</code><span class="sig-paren">(</span><em>query: waves_gateway.model.attempt_list_query.AttemptListQuery</em><span class="sig-paren">)</span> &#x2192; typing.List[waves_gateway.model.transaction_attempt_list.TransactionAttemptList]<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl.query_attempt_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.query_attempt_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query attempt lists by specific criteria.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.validate_waves_address">
+<code class="descname">validate_waves_address</code><span class="sig-paren">(</span><em>address: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/controller/gateway_controller_impl.html#GatewayControllerImpl.validate_waves_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.validate_waves_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the given address is an valid waves address.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.controller">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-waves_gateway.controller" title="Permalink to this headline">¶</a></h2>
+<p>Offers an optional API to the Gateway</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="waves_gateway.html">waves_gateway package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="waves_gateway.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.common.html">waves_gateway.common package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">waves_gateway.controller package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.controller.flask_rest_controller">waves_gateway.controller.flask_rest_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.controller.gateway_controller">waves_gateway.controller.gateway_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.controller.gateway_controller_converter_proxy_impl">waves_gateway.controller.gateway_controller_converter_proxy_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.controller.gateway_controller_impl">waves_gateway.controller.gateway_controller_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.controller">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.factory.html">waves_gateway.factory package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.model.html">waves_gateway.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.serializer.html">waves_gateway.serializer package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.service.html">waves_gateway.service package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.storage.html">waves_gateway.storage package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#module-waves_gateway.gateway">waves_gateway.gateway module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#module-waves_gateway">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="waves_gateway.html">waves_gateway package</a><ul>
+      <li>Previous: <a href="waves_gateway.common.html" title="previous chapter">waves_gateway.common package</a></li>
+      <li>Next: <a href="waves_gateway.factory.html" title="next chapter">waves_gateway.factory package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/waves_gateway.controller.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

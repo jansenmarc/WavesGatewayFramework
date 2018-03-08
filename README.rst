@@ -26,7 +26,7 @@ Required packages for development
 
 .. code:: bash
 
-    python3.5 -m pip install coverage mypy pylint
+    python3.5 -m pip install coverage mypy pylint Sphinx
 
 Lint
 ----
@@ -73,7 +73,8 @@ Creates a folder docs with the generated HTML documentation.
 
 .. code:: bash
 
-    python3.5 setup.py pydoc
+    pip install . -U
+    python3.5 setup.py docs
 
 Doctest
 -------

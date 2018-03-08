@@ -1,0 +1,668 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.storage package &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="waves_gateway.service package" href="waves_gateway.service.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="waves-gateway-storage-package">
+<h1>waves_gateway.storage package<a class="headerlink" href="#waves-gateway-storage-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-waves_gateway.storage.block_height_storage_proxy">
+<span id="waves-gateway-storage-block-height-storage-proxy-module"></span><h2>waves_gateway.storage.block_height_storage_proxy module<a class="headerlink" href="#module-waves_gateway.storage.block_height_storage_proxy" title="Permalink to this headline">¶</a></h2>
+<p>BlockHeightStorageProxy</p>
+<dl class="class">
+<dt id="waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.block_height_storage_proxy.</code><code class="descname">BlockHeightStorageProxy</code><a class="reference internal" href="_modules/waves_gateway/storage/block_height_storage_proxy.html#BlockHeightStorageProxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>Storage for the Block height. This storage is an abstraction layer for the polling service
+and is not meant to be provided by the framework user.
+Internally, it forwards the requests to the KeyValueStorage.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy.get_last_checked_block_height">
+<code class="descname">get_last_checked_block_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[int, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/block_height_storage_proxy.html#BlockHeightStorageProxy.get_last_checked_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy.get_last_checked_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stored last checked block height or None if it was never set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy.set_last_checked_block_height">
+<code class="descname">set_last_checked_block_height</code><span class="sig-paren">(</span><em>block_height: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/block_height_storage_proxy.html#BlockHeightStorageProxy.set_last_checked_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy.set_last_checked_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the last checked block height.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.coin_block_height_storage_proxy_impl">
+<span id="waves-gateway-storage-coin-block-height-storage-proxy-impl-module"></span><h2>waves_gateway.storage.coin_block_height_storage_proxy_impl module<a class="headerlink" href="#module-waves_gateway.storage.coin_block_height_storage_proxy_impl" title="Permalink to this headline">¶</a></h2>
+<p>CoinBlockHeightStorageProxyImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.coin_block_height_storage_proxy_impl.CoinBlockHeightStorageProxyImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.coin_block_height_storage_proxy_impl.</code><code class="descname">CoinBlockHeightStorageProxyImpl</code><span class="sig-paren">(</span><em>key_value_storage: waves_gateway.storage.key_value_storage.KeyValueStorage</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/coin_block_height_storage_proxy_impl.html#CoinBlockHeightStorageProxyImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.coin_block_height_storage_proxy_impl.CoinBlockHeightStorageProxyImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy" title="waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy</span></code></a></p>
+<p>Forwards requests for the block height to the custom currency block height.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.coin_block_height_storage_proxy_impl.CoinBlockHeightStorageProxyImpl.get_last_checked_block_height">
+<code class="descname">get_last_checked_block_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[int, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/coin_block_height_storage_proxy_impl.html#CoinBlockHeightStorageProxyImpl.get_last_checked_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.coin_block_height_storage_proxy_impl.CoinBlockHeightStorageProxyImpl.get_last_checked_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stored last checked block height or None if it was never set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.coin_block_height_storage_proxy_impl.CoinBlockHeightStorageProxyImpl.set_last_checked_block_height">
+<code class="descname">set_last_checked_block_height</code><span class="sig-paren">(</span><em>block_height: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/coin_block_height_storage_proxy_impl.html#CoinBlockHeightStorageProxyImpl.set_last_checked_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.coin_block_height_storage_proxy_impl.CoinBlockHeightStorageProxyImpl.set_last_checked_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the last checked block height.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.coin_polling_state_storage_proxy_impl">
+<span id="waves-gateway-storage-coin-polling-state-storage-proxy-impl-module"></span><h2>waves_gateway.storage.coin_polling_state_storage_proxy_impl module<a class="headerlink" href="#module-waves_gateway.storage.coin_polling_state_storage_proxy_impl" title="Permalink to this headline">¶</a></h2>
+<p>CoinPollingStateStorageProxyImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.coin_polling_state_storage_proxy_impl.CoinPollingStateStorageProxyImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.coin_polling_state_storage_proxy_impl.</code><code class="descname">CoinPollingStateStorageProxyImpl</code><span class="sig-paren">(</span><em>key_value_storage: waves_gateway.storage.key_value_storage.KeyValueStorage</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/coin_polling_state_storage_proxy_impl.html#CoinPollingStateStorageProxyImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.coin_polling_state_storage_proxy_impl.CoinPollingStateStorageProxyImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy" title="waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy</span></code></a></p>
+<p>Forwards polling_state requests to the coin methods of KeyValueStorage.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.coin_polling_state_storage_proxy_impl.CoinPollingStateStorageProxyImpl.get_polling_state">
+<code class="descname">get_polling_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; waves_gateway.model.polling_state.PollingState<a class="reference internal" href="_modules/waves_gateway/storage/coin_polling_state_storage_proxy_impl.html#CoinPollingStateStorageProxyImpl.get_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.coin_polling_state_storage_proxy_impl.CoinPollingStateStorageProxyImpl.get_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.coin_polling_state_storage_proxy_impl.CoinPollingStateStorageProxyImpl.set_polling_state">
+<code class="descname">set_polling_state</code><span class="sig-paren">(</span><em>state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/coin_polling_state_storage_proxy_impl.html#CoinPollingStateStorageProxyImpl.set_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.coin_polling_state_storage_proxy_impl.CoinPollingStateStorageProxyImpl.set_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.key_value_storage">
+<span id="waves-gateway-storage-key-value-storage-module"></span><h2>waves_gateway.storage.key_value_storage module<a class="headerlink" href="#module-waves_gateway.storage.key_value_storage" title="Permalink to this headline">¶</a></h2>
+<p>KeyValueStorage</p>
+<dl class="class">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.key_value_storage.</code><code class="descname">KeyValueStorage</code><a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>Storage for key-value pairs.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.get_coin_polling_state">
+<code class="descname">get_coin_polling_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.polling_state.PollingState, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.get_coin_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.get_coin_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.get_last_checked_coin_block_height">
+<code class="descname">get_last_checked_coin_block_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[int, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.get_last_checked_coin_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.get_last_checked_coin_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stored last checked coin block height or None if it was never set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.get_last_checked_waves_block_height">
+<code class="descname">get_last_checked_waves_block_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[int, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.get_last_checked_waves_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.get_last_checked_waves_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stored last checked waves block height or None if it was never set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.get_waves_polling_state">
+<code class="descname">get_waves_polling_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.polling_state.PollingState, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.get_waves_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.get_waves_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.set_coin_polling_state">
+<code class="descname">set_coin_polling_state</code><span class="sig-paren">(</span><em>polling_state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.set_coin_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.set_coin_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.set_last_checked_coin_block_height">
+<code class="descname">set_last_checked_coin_block_height</code><span class="sig-paren">(</span><em>block_height: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.set_last_checked_coin_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.set_last_checked_coin_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the last checked coin block height of the custom currency.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.set_last_checked_waves_block_height">
+<code class="descname">set_last_checked_waves_block_height</code><span class="sig-paren">(</span><em>block_height: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.set_last_checked_waves_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.set_last_checked_waves_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the last checked waves block height.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.key_value_storage.KeyValueStorage.set_waves_polling_state">
+<code class="descname">set_waves_polling_state</code><span class="sig-paren">(</span><em>polling_state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/key_value_storage.html#KeyValueStorage.set_waves_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.key_value_storage.KeyValueStorage.set_waves_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.map_storage">
+<span id="waves-gateway-storage-map-storage-module"></span><h2>waves_gateway.storage.map_storage module<a class="headerlink" href="#module-waves_gateway.storage.map_storage" title="Permalink to this headline">¶</a></h2>
+<p>MapStorage</p>
+<dl class="class">
+<dt id="waves_gateway.storage.map_storage.MapStorage">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.map_storage.</code><code class="descname">MapStorage</code><a class="reference internal" href="_modules/waves_gateway/storage/map_storage.html#MapStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.map_storage.MapStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>Storage that is capable of saving querying instances of MappingEntry.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.map_storage.MapStorage.coin_address_exists">
+<code class="descname">coin_address_exists</code><span class="sig-paren">(</span><em>coin_address: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/map_storage.html#MapStorage.coin_address_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.map_storage.MapStorage.coin_address_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the given coin_address does belong to an mapping.
+This method may be overwritten if a more performant variant exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.map_storage.MapStorage.get_coin_address_by_waves_address">
+<code class="descname">get_coin_address_by_waves_address</code><span class="sig-paren">(</span><em>coin_address: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[str, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/map_storage.html#MapStorage.get_coin_address_by_waves_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.map_storage.MapStorage.get_coin_address_by_waves_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the custom currency address that is associated to the given Waves address.
+May return none, if no such mapping exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.map_storage.MapStorage.get_waves_address_by_coin_address">
+<code class="descname">get_waves_address_by_coin_address</code><span class="sig-paren">(</span><em>coin_address: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[str, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/map_storage.html#MapStorage.get_waves_address_by_coin_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.map_storage.MapStorage.get_waves_address_by_coin_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Waves address that is associated to the given custom currency address.
+May return none, if no such mapping exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.map_storage.MapStorage.safely_save_mapping">
+<code class="descname">safely_save_mapping</code><span class="sig-paren">(</span><em>mapping: waves_gateway.model.mapping_entry.MappingEntry</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/waves_gateway/storage/map_storage.html#MapStorage.safely_save_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.map_storage.MapStorage.safely_save_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given mapping exists, before it is saved.
+If the mapping does already exist, an DuplicateMappingError is thrown.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.map_storage.MapStorage.save_mapping">
+<code class="descname">save_mapping</code><span class="sig-paren">(</span><em>mapping: waves_gateway.model.mapping_entry.MappingEntry</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/waves_gateway/storage/map_storage.html#MapStorage.save_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.map_storage.MapStorage.save_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the given mapping.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.map_storage.MapStorage.waves_address_exists">
+<code class="descname">waves_address_exists</code><span class="sig-paren">(</span><em>waves_address: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/map_storage.html#MapStorage.waves_address_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.map_storage.MapStorage.waves_address_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the given Waves address exists.
+This method may be overwritten if a more performant variant exists.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.mongo_key_value_storage_impl">
+<span id="waves-gateway-storage-mongo-key-value-storage-impl-module"></span><h2>waves_gateway.storage.mongo_key_value_storage_impl module<a class="headerlink" href="#module-waves_gateway.storage.mongo_key_value_storage_impl" title="Permalink to this headline">¶</a></h2>
+<p>MongoKeyValueStorageImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.mongo_key_value_storage_impl.</code><code class="descname">MongoKeyValueStorageImpl</code><span class="sig-paren">(</span><em>collection: pymongo.collection.Collection</em>, <em>polling_state_serializer: waves_gateway.serializer.polling_state_serializer.PollingStateSerializer</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.key_value_storage.KeyValueStorage" title="waves_gateway.storage.key_value_storage.KeyValueStorage"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.key_value_storage.KeyValueStorage</span></code></a></p>
+<p>Implements a key value storage with a MongoDB collection.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_coin_polling_state">
+<code class="descname">get_coin_polling_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.polling_state.PollingState, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.get_coin_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_coin_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_last_checked_coin_block_height">
+<code class="descname">get_last_checked_coin_block_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[int, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.get_last_checked_coin_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_last_checked_coin_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stored last checked coin block height or None if it was never set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_last_checked_waves_block_height">
+<code class="descname">get_last_checked_waves_block_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[int, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.get_last_checked_waves_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_last_checked_waves_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stored last checked waves block height or None if it was never set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_waves_polling_state">
+<code class="descname">get_waves_polling_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.polling_state.PollingState, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.get_waves_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_waves_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_coin_polling_state">
+<code class="descname">set_coin_polling_state</code><span class="sig-paren">(</span><em>polling_state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.set_coin_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_coin_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_last_checked_coin_block_height">
+<code class="descname">set_last_checked_coin_block_height</code><span class="sig-paren">(</span><em>block_height: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.set_last_checked_coin_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_last_checked_coin_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the last checked coin block height of the custom currency.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_last_checked_waves_block_height">
+<code class="descname">set_last_checked_waves_block_height</code><span class="sig-paren">(</span><em>block_height: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.set_last_checked_waves_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_last_checked_waves_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the last checked waves block height.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_waves_polling_state">
+<code class="descname">set_waves_polling_state</code><span class="sig-paren">(</span><em>polling_state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_key_value_storage_impl.html#MongoKeyValueStorageImpl.set_waves_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_waves_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.mongo_map_storage_impl">
+<span id="waves-gateway-storage-mongo-map-storage-impl-module"></span><h2>waves_gateway.storage.mongo_map_storage_impl module<a class="headerlink" href="#module-waves_gateway.storage.mongo_map_storage_impl" title="Permalink to this headline">¶</a></h2>
+<p>MongoMapStorageImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.mongo_map_storage_impl.</code><code class="descname">MongoMapStorageImpl</code><span class="sig-paren">(</span><em>collection: pymongo.collection.Collection</em>, <em>serializer: waves_gateway.serializer.mapping_entry_serializer.MappingEntrySerializer</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_map_storage_impl.html#MongoMapStorageImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.map_storage.MapStorage" title="waves_gateway.storage.map_storage.MapStorage"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.map_storage.MapStorage</span></code></a></p>
+<p>Implementation of a MapStorage using a MongoDB.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl.get_coin_address_by_waves_address">
+<code class="descname">get_coin_address_by_waves_address</code><span class="sig-paren">(</span><em>waves_address: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[str, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_map_storage_impl.html#MongoMapStorageImpl.get_coin_address_by_waves_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl.get_coin_address_by_waves_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the custom currency address that is associated to the given Waves address.
+May return none, if no such mapping exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl.get_waves_address_by_coin_address">
+<code class="descname">get_waves_address_by_coin_address</code><span class="sig-paren">(</span><em>coin_address: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[str, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_map_storage_impl.html#MongoMapStorageImpl.get_waves_address_by_coin_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl.get_waves_address_by_coin_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Waves address that is associated to the given custom currency address.
+May return none, if no such mapping exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl.save_mapping">
+<code class="descname">save_mapping</code><span class="sig-paren">(</span><em>mapping: waves_gateway.model.mapping_entry.MappingEntry</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/waves_gateway/storage/mongo_map_storage_impl.html#MongoMapStorageImpl.save_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_map_storage_impl.MongoMapStorageImpl.save_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the given mapping.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.mongo_transaction_attempt_list_storage_impl">
+<span id="waves-gateway-storage-mongo-transaction-attempt-list-storage-impl-module"></span><h2>waves_gateway.storage.mongo_transaction_attempt_list_storage_impl module<a class="headerlink" href="#module-waves_gateway.storage.mongo_transaction_attempt_list_storage_impl" title="Permalink to this headline">¶</a></h2>
+<p>MongoTransactionAttemptListStorageImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.</code><code class="descname">MongoTransactionAttemptListStorageImpl</code><span class="sig-paren">(</span><em>collection: pymongo.collection.Collection</em>, <em>serializer: waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer</em>, <em>max_tries: int</em>, <em>limit: int = 10</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage" title="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage</span></code></a></p>
+<p>Implements a storage for TransactionAttemptList instances for a MongoDB database.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.attempt_list_id_exists">
+<code class="descname">attempt_list_id_exists</code><span class="sig-paren">(</span><em>attempt_list_id: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.attempt_list_id_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.attempt_list_id_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if an attempt_list with the given id exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.find_by_attempt_list_id">
+<code class="descname">find_by_attempt_list_id</code><span class="sig-paren">(</span><em>attempt_list_id: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.find_by_attempt_list_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.find_by_attempt_list_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a specific attempt_list by its trigger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.find_by_trigger">
+<code class="descname">find_by_trigger</code><span class="sig-paren">(</span><em>trigger: waves_gateway.model.transaction_attempt_list.AttemptListTrigger</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.find_by_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.find_by_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a specific attempt_list by its trigger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.find_oldest_pending_attempt_list">
+<code class="descname">find_oldest_pending_attempt_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.find_oldest_pending_attempt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.find_oldest_pending_attempt_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.gateway_transaction_exists">
+<code class="descname">gateway_transaction_exists</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.gateway_transaction_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.gateway_transaction_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if a given transaction identifier exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.query_attempt_lists">
+<code class="descname">query_attempt_lists</code><span class="sig-paren">(</span><em>query: waves_gateway.model.attempt_list_query.AttemptListQuery</em><span class="sig-paren">)</span> &#x2192; typing.List[waves_gateway.model.transaction_attempt_list.TransactionAttemptList]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.query_attempt_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.query_attempt_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches for attempt lists by the given criteria.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.save_attempt_list">
+<code class="descname">save_attempt_list</code><span class="sig-paren">(</span><em>attempt_list: waves_gateway.model.transaction_attempt_list.TransactionAttemptList</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.save_attempt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.save_attempt_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new attempt_list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.trigger_exists">
+<code class="descname">trigger_exists</code><span class="sig-paren">(</span><em>trigger: waves_gateway.model.transaction_attempt_list.AttemptListTrigger</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.trigger_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.trigger_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if an attempt_list with the given trigger exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.update_attempt_list">
+<code class="descname">update_attempt_list</code><span class="sig-paren">(</span><em>attempt_list: waves_gateway.model.transaction_attempt_list.TransactionAttemptList</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_transaction_attempt_list_storage_impl.html#MongoTransactionAttemptListStorageImpl.update_attempt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_transaction_attempt_list_storage_impl.MongoTransactionAttemptListStorageImpl.update_attempt_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates an existing attempt_list.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.mongo_wallet_storage_impl">
+<span id="waves-gateway-storage-mongo-wallet-storage-impl-module"></span><h2>waves_gateway.storage.mongo_wallet_storage_impl module<a class="headerlink" href="#module-waves_gateway.storage.mongo_wallet_storage_impl" title="Permalink to this headline">¶</a></h2>
+<p>MongoWalletStorageImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.mongo_wallet_storage_impl.MongoWalletStorageImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.mongo_wallet_storage_impl.</code><code class="descname">MongoWalletStorageImpl</code><span class="sig-paren">(</span><em>collection: pymongo.collection.Collection</em>, <em>serializer: waves_gateway.serializer.key_pair_serializer.KeyPairSerializer</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_wallet_storage_impl.html#MongoWalletStorageImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_wallet_storage_impl.MongoWalletStorageImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.wallet_storage.WalletStorage" title="waves_gateway.storage.wallet_storage.WalletStorage"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.wallet_storage.WalletStorage</span></code></a></p>
+<p>Wallet storage implementation using a MongoDB.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_wallet_storage_impl.MongoWalletStorageImpl.get_secret_by_public_address">
+<code class="descname">get_secret_by_public_address</code><span class="sig-paren">(</span><em>public_address: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.key_pair.KeyPair, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/mongo_wallet_storage_impl.html#MongoWalletStorageImpl.get_secret_by_public_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_wallet_storage_impl.MongoWalletStorageImpl.get_secret_by_public_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the secret that is associated to the given public address or None if no such secret exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.mongo_wallet_storage_impl.MongoWalletStorageImpl.save_address_secret">
+<code class="descname">save_address_secret</code><span class="sig-paren">(</span><em>secret: waves_gateway.model.key_pair.KeyPair</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/mongo_wallet_storage_impl.html#MongoWalletStorageImpl.save_address_secret"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.mongo_wallet_storage_impl.MongoWalletStorageImpl.save_address_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the given address secret.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.polling_state_storage_proxy">
+<span id="waves-gateway-storage-polling-state-storage-proxy-module"></span><h2>waves_gateway.storage.polling_state_storage_proxy module<a class="headerlink" href="#module-waves_gateway.storage.polling_state_storage_proxy" title="Permalink to this headline">¶</a></h2>
+<p>PollingStateStorageProxy</p>
+<dl class="class">
+<dt id="waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.polling_state_storage_proxy.</code><code class="descname">PollingStateStorageProxy</code><a class="reference internal" href="_modules/waves_gateway/storage/polling_state_storage_proxy.html#PollingStateStorageProxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>Offers access to the current polling_state.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy.get_polling_state">
+<code class="descname">get_polling_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; waves_gateway.model.polling_state.PollingState<a class="reference internal" href="_modules/waves_gateway/storage/polling_state_storage_proxy.html#PollingStateStorageProxy.get_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy.get_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy.set_polling_state">
+<code class="descname">set_polling_state</code><span class="sig-paren">(</span><em>state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/polling_state_storage_proxy.html#PollingStateStorageProxy.set_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy.set_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.transaction_attempt_list_storage">
+<span id="waves-gateway-storage-transaction-attempt-list-storage-module"></span><h2>waves_gateway.storage.transaction_attempt_list_storage module<a class="headerlink" href="#module-waves_gateway.storage.transaction_attempt_list_storage" title="Permalink to this headline">¶</a></h2>
+<p>TransactionAttemptListStorage</p>
+<dl class="class">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.transaction_attempt_list_storage.</code><code class="descname">TransactionAttemptListStorage</code><a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>Defines what an storage for TransactionAttemptList instances must be capable of.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.attempt_list_id_exists">
+<code class="descname">attempt_list_id_exists</code><span class="sig-paren">(</span><em>attempt_list_id: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.attempt_list_id_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.attempt_list_id_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if an attempt_list with the given id exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_by_attempt_list_id">
+<code class="descname">find_by_attempt_list_id</code><span class="sig-paren">(</span><em>attempt_list_id: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.find_by_attempt_list_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_by_attempt_list_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a specific attempt_list by its trigger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_by_trigger">
+<code class="descname">find_by_trigger</code><span class="sig-paren">(</span><em>trigger: waves_gateway.model.transaction_attempt_list.AttemptListTrigger</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.find_by_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_by_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a specific attempt_list by its trigger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_oldest_pending_attempt_list">
+<code class="descname">find_oldest_pending_attempt_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.transaction_attempt_list.TransactionAttemptList, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.find_oldest_pending_attempt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_oldest_pending_attempt_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries for the oldest attempt list that is not complete.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.gateway_transaction_exists">
+<code class="descname">gateway_transaction_exists</code><span class="sig-paren">(</span><em>tx: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.gateway_transaction_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.gateway_transaction_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if a given transaction identifier exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.query_attempt_lists">
+<code class="descname">query_attempt_lists</code><span class="sig-paren">(</span><em>query: waves_gateway.model.attempt_list_query.AttemptListQuery</em><span class="sig-paren">)</span> &#x2192; typing.List[waves_gateway.model.transaction_attempt_list.TransactionAttemptList]<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.query_attempt_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.query_attempt_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches for attempt lists by the given criteria.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.safely_save_attempt_list">
+<code class="descname">safely_save_attempt_list</code><span class="sig-paren">(</span><em>attempt_list: waves_gateway.model.transaction_attempt_list.TransactionAttemptList</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.safely_save_attempt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.safely_save_attempt_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new attempt_list. Throws an exception if the id or the trigger already exist.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.save_attempt_list">
+<code class="descname">save_attempt_list</code><span class="sig-paren">(</span><em>attempt_list: waves_gateway.model.transaction_attempt_list.TransactionAttemptList</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.save_attempt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.save_attempt_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new attempt_list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.trigger_exists">
+<code class="descname">trigger_exists</code><span class="sig-paren">(</span><em>trigger: waves_gateway.model.transaction_attempt_list.AttemptListTrigger</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.trigger_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.trigger_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if an attempt_list with the given trigger exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.update_attempt_list">
+<code class="descname">update_attempt_list</code><span class="sig-paren">(</span><em>attempt_list: waves_gateway.model.transaction_attempt_list.TransactionAttemptList</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/transaction_attempt_list_storage.html#TransactionAttemptListStorage.update_attempt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.update_attempt_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates an existing attempt_list.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.wallet_storage">
+<span id="waves-gateway-storage-wallet-storage-module"></span><h2>waves_gateway.storage.wallet_storage module<a class="headerlink" href="#module-waves_gateway.storage.wallet_storage" title="Permalink to this headline">¶</a></h2>
+<p>WalletStorage</p>
+<dl class="class">
+<dt id="waves_gateway.storage.wallet_storage.WalletStorage">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.wallet_storage.</code><code class="descname">WalletStorage</code><a class="reference internal" href="_modules/waves_gateway/storage/wallet_storage.html#WalletStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.wallet_storage.WalletStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>Storage for private keys.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.wallet_storage.WalletStorage.get_secret_by_public_address">
+<code class="descname">get_secret_by_public_address</code><span class="sig-paren">(</span><em>public_address: str</em><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.key_pair.KeyPair, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/wallet_storage.html#WalletStorage.get_secret_by_public_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.wallet_storage.WalletStorage.get_secret_by_public_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the secret that is associated to the given public address or None if no such secret exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.wallet_storage.WalletStorage.public_address_exists">
+<code class="descname">public_address_exists</code><span class="sig-paren">(</span><em>public_address: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/waves_gateway/storage/wallet_storage.html#WalletStorage.public_address_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.wallet_storage.WalletStorage.public_address_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether there is an entry with an CoinAddressSecret that has the given public public_address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.wallet_storage.WalletStorage.safely_save_address_secret">
+<code class="descname">safely_save_address_secret</code><span class="sig-paren">(</span><em>secret: waves_gateway.model.key_pair.KeyPair</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/wallet_storage.html#WalletStorage.safely_save_address_secret"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.wallet_storage.WalletStorage.safely_save_address_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before inserting the given secret, the method tests if the public address of the secret is already
+listed in the database. If so, an DuplicateSecretError will be thrown.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.wallet_storage.WalletStorage.save_address_secret">
+<code class="descname">save_address_secret</code><span class="sig-paren">(</span><em>secret: waves_gateway.model.key_pair.KeyPair</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/wallet_storage.html#WalletStorage.save_address_secret"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.wallet_storage.WalletStorage.save_address_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the given address secret.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.waves_block_height_storage_proxy_impl">
+<span id="waves-gateway-storage-waves-block-height-storage-proxy-impl-module"></span><h2>waves_gateway.storage.waves_block_height_storage_proxy_impl module<a class="headerlink" href="#module-waves_gateway.storage.waves_block_height_storage_proxy_impl" title="Permalink to this headline">¶</a></h2>
+<p>WavesBlockHeightStorageProxyImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.waves_block_height_storage_proxy_impl.WavesBlockHeightStorageProxyImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.waves_block_height_storage_proxy_impl.</code><code class="descname">WavesBlockHeightStorageProxyImpl</code><span class="sig-paren">(</span><em>key_value_storage: waves_gateway.storage.key_value_storage.KeyValueStorage</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/waves_block_height_storage_proxy_impl.html#WavesBlockHeightStorageProxyImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.waves_block_height_storage_proxy_impl.WavesBlockHeightStorageProxyImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy" title="waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.block_height_storage_proxy.BlockHeightStorageProxy</span></code></a></p>
+<p>Forwards requests for the block height to the KeyValueStorage.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.waves_block_height_storage_proxy_impl.WavesBlockHeightStorageProxyImpl.get_last_checked_block_height">
+<code class="descname">get_last_checked_block_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[int, NoneType]<a class="reference internal" href="_modules/waves_gateway/storage/waves_block_height_storage_proxy_impl.html#WavesBlockHeightStorageProxyImpl.get_last_checked_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.waves_block_height_storage_proxy_impl.WavesBlockHeightStorageProxyImpl.get_last_checked_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stored last checked block height or None if it was never set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.waves_block_height_storage_proxy_impl.WavesBlockHeightStorageProxyImpl.set_last_checked_block_height">
+<code class="descname">set_last_checked_block_height</code><span class="sig-paren">(</span><em>block_height: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/waves_block_height_storage_proxy_impl.html#WavesBlockHeightStorageProxyImpl.set_last_checked_block_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.waves_block_height_storage_proxy_impl.WavesBlockHeightStorageProxyImpl.set_last_checked_block_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites the last checked block height.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage.waves_polling_state_storage_proxy_impl">
+<span id="waves-gateway-storage-waves-polling-state-storage-proxy-impl-module"></span><h2>waves_gateway.storage.waves_polling_state_storage_proxy_impl module<a class="headerlink" href="#module-waves_gateway.storage.waves_polling_state_storage_proxy_impl" title="Permalink to this headline">¶</a></h2>
+<p>WavesPollingStateStorageProxyImpl</p>
+<dl class="class">
+<dt id="waves_gateway.storage.waves_polling_state_storage_proxy_impl.WavesPollingStateStorageProxyImpl">
+<em class="property">class </em><code class="descclassname">waves_gateway.storage.waves_polling_state_storage_proxy_impl.</code><code class="descname">WavesPollingStateStorageProxyImpl</code><span class="sig-paren">(</span><em>key_value_storage: waves_gateway.storage.key_value_storage.KeyValueStorage</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/waves_polling_state_storage_proxy_impl.html#WavesPollingStateStorageProxyImpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.waves_polling_state_storage_proxy_impl.WavesPollingStateStorageProxyImpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy" title="waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy"><code class="xref py py-class docutils literal"><span class="pre">waves_gateway.storage.polling_state_storage_proxy.PollingStateStorageProxy</span></code></a></p>
+<p>Forwards polling_state requests to the waves methods of KeyValueStorage.</p>
+<dl class="method">
+<dt id="waves_gateway.storage.waves_polling_state_storage_proxy_impl.WavesPollingStateStorageProxyImpl.get_polling_state">
+<code class="descname">get_polling_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; waves_gateway.model.polling_state.PollingState<a class="reference internal" href="_modules/waves_gateway/storage/waves_polling_state_storage_proxy_impl.html#WavesPollingStateStorageProxyImpl.get_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.waves_polling_state_storage_proxy_impl.WavesPollingStateStorageProxyImpl.get_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.storage.waves_polling_state_storage_proxy_impl.WavesPollingStateStorageProxyImpl.set_polling_state">
+<code class="descname">set_polling_state</code><span class="sig-paren">(</span><em>state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/storage/waves_polling_state_storage_proxy_impl.html#WavesPollingStateStorageProxyImpl.set_polling_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.storage.waves_polling_state_storage_proxy_impl.WavesPollingStateStorageProxyImpl.set_polling_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.storage">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-waves_gateway.storage" title="Permalink to this headline">¶</a></h2>
+<p>Defines storage interfaces and default implementations.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="waves_gateway.html">waves_gateway package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="waves_gateway.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.common.html">waves_gateway.common package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.controller.html">waves_gateway.controller package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.factory.html">waves_gateway.factory package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.model.html">waves_gateway.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.serializer.html">waves_gateway.serializer package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="waves_gateway.service.html">waves_gateway.service package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">waves_gateway.storage package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.block_height_storage_proxy">waves_gateway.storage.block_height_storage_proxy module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.coin_block_height_storage_proxy_impl">waves_gateway.storage.coin_block_height_storage_proxy_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.coin_polling_state_storage_proxy_impl">waves_gateway.storage.coin_polling_state_storage_proxy_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.key_value_storage">waves_gateway.storage.key_value_storage module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.map_storage">waves_gateway.storage.map_storage module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.mongo_key_value_storage_impl">waves_gateway.storage.mongo_key_value_storage_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.mongo_map_storage_impl">waves_gateway.storage.mongo_map_storage_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.mongo_transaction_attempt_list_storage_impl">waves_gateway.storage.mongo_transaction_attempt_list_storage_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.mongo_wallet_storage_impl">waves_gateway.storage.mongo_wallet_storage_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.polling_state_storage_proxy">waves_gateway.storage.polling_state_storage_proxy module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.transaction_attempt_list_storage">waves_gateway.storage.transaction_attempt_list_storage module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.wallet_storage">waves_gateway.storage.wallet_storage module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.waves_block_height_storage_proxy_impl">waves_gateway.storage.waves_block_height_storage_proxy_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage.waves_polling_state_storage_proxy_impl">waves_gateway.storage.waves_polling_state_storage_proxy_impl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.storage">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#module-waves_gateway.gateway">waves_gateway.gateway module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#module-waves_gateway">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="waves_gateway.html">waves_gateway package</a><ul>
+      <li>Previous: <a href="waves_gateway.service.html" title="previous chapter">waves_gateway.service package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/waves_gateway.storage.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -141,9 +141,9 @@ ENV/
 
 /.mypy_cache/
 
-docs
 node_modules
 waves_gateway/static
 .pip_cache
 cover
 dist
+.apidoc

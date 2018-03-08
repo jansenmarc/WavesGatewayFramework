@@ -221,7 +221,7 @@ class Gateway(object):
     """
     Provides the configuration for the Gateway.
     When setting up the Gateway for a specific currency, use this class
-    to collect the information and overhand the resulting instance to the run method.
+    to collect the information and call the run method of the instance.
 
     The constructor has specific parameters that are marked as required.
     Those parameters must be provided for a minimum configuration.

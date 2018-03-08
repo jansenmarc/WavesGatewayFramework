@@ -1,5 +1,6 @@
 """
-# Waves Gateway Library
+Waves Gateway Library
+========================
 
 Contains tools to create a new Waves Cryptocurrency Gateway.
 It is recommended to call gevent.monkey.patch_all() at the very beginning of the application
