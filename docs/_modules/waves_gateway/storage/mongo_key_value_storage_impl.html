@@ -1,0 +1,195 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.storage.mongo_key_value_storage_impl &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.storage.mongo_key_value_storage_impl</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MongoKeyValueStorageImpl</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.common</span> <span class="k">import</span> <span class="n">Injectable</span><span class="p">,</span> <span class="n">KEY_VALUE_STORAGE_COLLECTION</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.model</span> <span class="k">import</span> <span class="n">PollingState</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.serializer</span> <span class="k">import</span> <span class="n">PollingStateSerializer</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.storage.key_value_storage</span> <span class="k">import</span> <span class="n">KeyValueStorage</span>
+<span class="kn">from</span> <span class="nn">pymongo.collection</span> <span class="k">import</span> <span class="n">Collection</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">doc_inherit</span> <span class="k">import</span> <span class="n">method_doc_inherit</span>  <span class="c1"># type: ignore</span>
+
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl">[docs]</a><span class="nd">@Injectable</span><span class="p">(</span><span class="n">deps</span><span class="o">=</span><span class="p">[</span><span class="n">KEY_VALUE_STORAGE_COLLECTION</span><span class="p">,</span> <span class="n">PollingStateSerializer</span><span class="p">],</span> <span class="n">provides</span><span class="o">=</span><span class="n">KeyValueStorage</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MongoKeyValueStorageImpl</span><span class="p">(</span><span class="n">KeyValueStorage</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements a key value storage with a MongoDB collection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_COIN_BLOCK_HEIGHT_KEY</span> <span class="o">=</span> <span class="s1">&#39;coin_block_height&#39;</span>
+    <span class="n">_WAVES_BLOCK_HEIGHT_KEY</span> <span class="o">=</span> <span class="s1">&#39;waves_block_height&#39;</span>
+    <span class="n">_VALUE_PROPERTY_KEY</span> <span class="o">=</span> <span class="s1">&#39;value&#39;</span>
+    <span class="n">_KEY_PROPERTY_KEY</span> <span class="o">=</span> <span class="s1">&#39;key&#39;</span>
+    <span class="n">_COIN_POLLING_STATE_KEY</span> <span class="o">=</span> <span class="s1">&#39;coin_polling_state&#39;</span>
+    <span class="n">_WAVES_POLLING_STATE_KEY</span> <span class="o">=</span> <span class="s1">&#39;waves_polling_state&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserts the key/value pair. Overwrites existing entries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">query</span><span class="p">[</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_KEY_PROPERTY_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="n">replacement</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">replacement</span><span class="p">[</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_KEY_PROPERTY_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">replacement</span><span class="p">[</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_VALUE_PROPERTY_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">replace_one</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="n">replacement</span><span class="p">,</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the value or None if no value was found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">query</span><span class="p">[</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_KEY_PROPERTY_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="n">query_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">query_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">query_result</span><span class="p">[</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_VALUE_PROPERTY_KEY</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.set_last_checked_waves_block_height"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_last_checked_waves_block_height">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">set_last_checked_waves_block_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_WAVES_BLOCK_HEIGHT_KEY</span><span class="p">,</span> <span class="n">block_height</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.get_last_checked_waves_block_height"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_last_checked_waves_block_height">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">get_last_checked_waves_block_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_WAVES_BLOCK_HEIGHT_KEY</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">polling_state_serializer</span><span class="p">:</span> <span class="n">PollingStateSerializer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_polling_state_serializer</span> <span class="o">=</span> <span class="n">polling_state_serializer</span>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.set_last_checked_coin_block_height"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_last_checked_coin_block_height">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">set_last_checked_coin_block_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_COIN_BLOCK_HEIGHT_KEY</span><span class="p">,</span> <span class="n">block_height</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.get_last_checked_coin_block_height"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_last_checked_coin_block_height">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">get_last_checked_coin_block_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_COIN_BLOCK_HEIGHT_KEY</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.set_waves_polling_state"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_waves_polling_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_waves_polling_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polling_state</span><span class="p">:</span> <span class="n">PollingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_WAVES_POLLING_STATE_KEY</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_polling_state_serializer</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">polling_state</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.get_coin_polling_state"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_coin_polling_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_coin_polling_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PollingState</span><span class="p">]:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_COIN_POLLING_STATE_KEY</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polling_state_serializer</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.get_waves_polling_state"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.get_waves_polling_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_waves_polling_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PollingState</span><span class="p">]:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_WAVES_POLLING_STATE_KEY</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polling_state_serializer</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MongoKeyValueStorageImpl.set_coin_polling_state"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.mongo_key_value_storage_impl.MongoKeyValueStorageImpl.set_coin_polling_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_coin_polling_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polling_state</span><span class="p">:</span> <span class="n">PollingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span><span class="n">MongoKeyValueStorageImpl</span><span class="o">.</span><span class="n">_COIN_POLLING_STATE_KEY</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_polling_state_serializer</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">polling_state</span><span class="p">))</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

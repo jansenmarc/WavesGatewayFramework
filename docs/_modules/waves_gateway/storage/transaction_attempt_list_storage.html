@@ -1,0 +1,201 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.storage.transaction_attempt_list_storage &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.storage.transaction_attempt_list_storage</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TransactionAttemptListStorage</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">gevent.lock</span>
+
+<span class="kn">from</span> <span class="nn">waves_gateway.common</span> <span class="k">import</span> <span class="n">DuplicateAttemptListTriggerError</span><span class="p">,</span> <span class="n">DuplicateAttemptListIDError</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.model</span> <span class="k">import</span> <span class="n">TransactionAttemptList</span><span class="p">,</span> <span class="n">AttemptListTrigger</span><span class="p">,</span> <span class="n">AttemptListQuery</span>
+
+
+<div class="viewcode-block" id="TransactionAttemptListStorage"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage">[docs]</a><span class="k">class</span> <span class="nc">TransactionAttemptListStorage</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines what an storage for TransactionAttemptList instances must be capable of.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock</span> <span class="o">=</span> <span class="n">gevent</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.find_by_trigger"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_by_trigger">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">find_by_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="n">AttemptListTrigger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds a specific attempt_list by its trigger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.find_by_attempt_list_id"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_by_attempt_list_id">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">find_by_attempt_list_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds a specific attempt_list by its trigger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.trigger_exists"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.trigger_exists">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">trigger_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="n">AttemptListTrigger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests if an attempt_list with the given trigger exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.attempt_list_id_exists"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.attempt_list_id_exists">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">attempt_list_id_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests if an attempt_list with the given id exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.gateway_transaction_exists"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.gateway_transaction_exists">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">gateway_transaction_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests if a given transaction identifier exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.save_attempt_list"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.save_attempt_list">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">save_attempt_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list</span><span class="p">:</span> <span class="n">TransactionAttemptList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new attempt_list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.safely_save_attempt_list"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.safely_save_attempt_list">[docs]</a>    <span class="k">def</span> <span class="nf">safely_save_attempt_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list</span><span class="p">:</span> <span class="n">TransactionAttemptList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new attempt_list. Throws an exception if the id or the trigger already exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_exists</span><span class="p">(</span><span class="n">attempt_list</span><span class="o">.</span><span class="n">trigger</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">DuplicateAttemptListTriggerError</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempt_list_id_exists</span><span class="p">(</span><span class="n">attempt_list</span><span class="o">.</span><span class="n">attempt_list_id</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">DuplicateAttemptListIDError</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_attempt_list</span><span class="p">(</span><span class="n">attempt_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.update_attempt_list"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.update_attempt_list">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">update_attempt_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list</span><span class="p">:</span> <span class="n">TransactionAttemptList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates an existing attempt_list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.query_attempt_lists"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.query_attempt_lists">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">query_attempt_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">AttemptListQuery</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Searches for attempt lists by the given criteria.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptListStorage.find_oldest_pending_attempt_list"><a class="viewcode-back" href="../../../waves_gateway.storage.html#waves_gateway.storage.transaction_attempt_list_storage.TransactionAttemptListStorage.find_oldest_pending_attempt_list">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">find_oldest_pending_attempt_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queries for the oldest attempt list that is not complete.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

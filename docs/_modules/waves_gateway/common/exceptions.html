@@ -1,0 +1,239 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.common.exceptions &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.common.exceptions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Exceptions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+
+
+<div class="viewcode-block" id="ParseError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.ParseError">[docs]</a><span class="k">class</span> <span class="nc">ParseError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Indicates that a parsing error occurred, for example when parsing JSON or dict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InvalidConfigError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.InvalidConfigError">[docs]</a><span class="k">class</span> <span class="nc">InvalidConfigError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the provided Gateway configuration is not valid</span>
+<span class="sd">    and the Gateway can therefore not be constructed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DuplicateMappingError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.DuplicateMappingError">[docs]</a><span class="k">class</span> <span class="nc">DuplicateMappingError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the application tries to create a mapping that already exists.</span>
+<span class="sd">    This should not happen which means that this is an internal error of the framework.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DuplicateSecretError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.DuplicateSecretError">[docs]</a><span class="k">class</span> <span class="nc">DuplicateSecretError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the application tries to save a secret for the same address multiple times.</span>
+<span class="sd">    This should not happen which means that this is an internal error of the framework.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Attempted to store secret of address &#39;&quot;</span> <span class="o">+</span> <span class="n">address</span> <span class="o">+</span> <span class="s2">&quot;&#39;, but it already exists.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DuplicateTransactionError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.DuplicateTransactionError">[docs]</a><span class="k">class</span> <span class="nc">DuplicateTransactionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the application tries to create a transaction that already exists.</span>
+<span class="sd">    This should not happen which means that this is an internal error of the framework.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Attempted to store transaction &#39;&quot;</span> <span class="o">+</span> <span class="n">tx</span> <span class="o">+</span> <span class="s2">&quot;&#39;, but it already exists.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MissingSecretError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.MissingSecretError">[docs]</a><span class="k">class</span> <span class="nc">MissingSecretError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the application needs a specific secret, but it is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Did not found secret for address &#39;&quot;</span> <span class="o">+</span> <span class="n">address</span> <span class="o">+</span> <span class="s2">&quot;&#39;. Cannot perform transaction.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AddressHasTooLessAmountError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.AddressHasTooLessAmountError">[docs]</a><span class="k">class</span> <span class="nc">AddressHasTooLessAmountError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the application attempts to make a transaction, but the sender address has too less amount.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_amount</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">],</span> <span class="n">real_amount</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">],</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Expected the address &#39;&quot;</span> <span class="o">+</span> <span class="n">address</span> <span class="o">+</span> <span class="s2">&quot;&#39; to contain at least an amount of &quot;</span> <span class="o">+</span>
+                         <span class="nb">str</span><span class="p">(</span><span class="n">expected_amount</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, but it only has an amount of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">real_amount</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MappingNotFoundForCoinAddress"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.MappingNotFoundForCoinAddress">[docs]</a><span class="k">class</span> <span class="nc">MappingNotFoundForCoinAddress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a specific mapping was expected to exist, but not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coin_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="s2">&quot;The address &#39;&quot;</span> <span class="o">+</span> <span class="n">coin_address</span> <span class="o">+</span> <span class="s2">&quot;&#39; has no associated Waves address, but was expected to have one.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MultipleGatewayReceiversError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.MultipleGatewayReceiversError">[docs]</a><span class="k">class</span> <span class="nc">MultipleGatewayReceiversError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the Gateway encounters a transaction with multiple receiver addresses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="s2">&quot;Encountered a transaction (&quot;</span> <span class="o">+</span> <span class="n">tx</span> <span class="o">+</span> <span class="s2">&quot;) with multiple receiver addresses. The Gateway cannot handle this.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DuplicateAttemptListTriggerError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.DuplicateAttemptListTriggerError">[docs]</a><span class="k">class</span> <span class="nc">DuplicateAttemptListTriggerError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when trying to create another attempt_list with the same trigger.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DuplicateAttemptListIDError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.DuplicateAttemptListIDError">[docs]</a><span class="k">class</span> <span class="nc">DuplicateAttemptListIDError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when trying to create another attempt_list with the same identifier.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="PyWavesError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.PyWavesError">[docs]</a><span class="k">class</span> <span class="nc">PyWavesError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when PyWaves encountered any error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="WavesAddressInvalidError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.WavesAddressInvalidError">[docs]</a><span class="k">class</span> <span class="nc">WavesAddressInvalidError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when an invalid waves address was overhanded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InvalidTransactionIdentifier"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.InvalidTransactionIdentifier">[docs]</a><span class="k">class</span> <span class="nc">InvalidTransactionIdentifier</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the transaction identifier is not part of the blockchain.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InjectorError"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.InjectorError">[docs]</a><span class="k">class</span> <span class="nc">InjectorError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a token could not be resolved for some reason.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="WavesNodeException"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.exceptions.WavesNodeException">[docs]</a><span class="k">class</span> <span class="nc">WavesNodeException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the waves node was unable to process the request for some reason.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">status_code</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">text</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

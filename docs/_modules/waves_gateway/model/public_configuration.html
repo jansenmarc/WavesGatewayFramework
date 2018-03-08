@@ -1,0 +1,185 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.model.public_configuration &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.model.public_configuration</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PublicConfiguration</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+
+
+<div class="viewcode-block" id="PublicConfiguration"><a class="viewcode-back" href="../../../waves_gateway.model.html#waves_gateway.model.public_configuration.PublicConfiguration">[docs]</a><span class="k">class</span> <span class="nc">PublicConfiguration</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Part of the configuration that is allowed to be available to the public,</span>
+<span class="sd">    for example via ReST.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">CUSTOM_CURRENCY_NAME_DICT_KEY</span> <span class="o">=</span> <span class="s1">&#39;custom_currency_name&#39;</span>
+    <span class="n">GATEWAY_WAVES_ADDRESS_DICT_KEY</span> <span class="o">=</span> <span class="s1">&#39;gateway_waves_address&#39;</span>
+    <span class="n">GATEWAY_COIN_HOLDER_DICT_KEY</span> <span class="o">=</span> <span class="s1">&#39;gateway_coin_holder&#39;</span>
+    <span class="n">WAVES_NODE_DICT_KEY</span> <span class="o">=</span> <span class="s1">&#39;waves_node&#39;</span>
+    <span class="n">WAVES_ASSET_ID</span> <span class="o">=</span> <span class="s1">&#39;waves_asset_id&#39;</span>
+    <span class="n">COIN_TRANSACTION_WEB_LINK</span> <span class="o">=</span> <span class="s1">&#39;coin_transaction_web_link&#39;</span>
+    <span class="n">WAVES_TRANSACTION_WEB_LINK</span> <span class="o">=</span> <span class="s1">&#39;waves_transaction_web_link&#39;</span>
+    <span class="n">COIN_ADDRESS_WEB_LINK</span> <span class="o">=</span> <span class="s1">&#39;coin_address_web_link&#39;</span>
+    <span class="n">WAVES_ADDRESS_WEB_LINK</span> <span class="o">=</span> <span class="s1">&#39;waves_address_web_link&#39;</span>
+    <span class="n">WEB_PRIMARY_COLOR</span> <span class="o">=</span> <span class="s1">&#39;web_primary_color&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">custom_currency_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">gateway_waves_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">gateway_coin_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">waves_node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">waves_asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">waves_transaction_web_link</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">waves_address_web_link</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">coin_transaction_web_link</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">coin_address_web_link</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">web_primary_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_currency_name</span> <span class="o">=</span> <span class="n">custom_currency_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_waves_address</span> <span class="o">=</span> <span class="n">gateway_waves_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_coin_holder</span> <span class="o">=</span> <span class="n">gateway_coin_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waves_node</span> <span class="o">=</span> <span class="n">waves_node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waves_asset_id</span> <span class="o">=</span> <span class="n">waves_asset_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coin_transaction_web_link</span> <span class="o">=</span> <span class="n">coin_transaction_web_link</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waves_transaction_web_link</span> <span class="o">=</span> <span class="n">waves_transaction_web_link</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waves_address_web_link</span> <span class="o">=</span> <span class="n">waves_address_web_link</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coin_address_web_link</span> <span class="o">=</span> <span class="n">coin_address_web_link</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_web_primary_color</span> <span class="o">=</span> <span class="n">web_primary_color</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">custom_currency_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_currency_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gateway_waves_address</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_waves_address</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gateway_coin_holder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_coin_holder</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">waves_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_node</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">waves_asset_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_asset_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">waves_transaction_web_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_transaction_web_link</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coin_address_web_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coin_address_web_link</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coin_transaction_web_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coin_transaction_web_link</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">waves_address_web_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_address_web_link</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">web_primary_color</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_web_primary_color</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

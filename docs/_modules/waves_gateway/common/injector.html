@@ -1,0 +1,349 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.common.injector &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.common.injector</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Injector</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="k">import</span> <span class="n">InjectorError</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">map_array</span>
+
+
+<div class="viewcode-block" id="InjectionToken"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.InjectionToken">[docs]</a><span class="k">class</span> <span class="nc">InjectionToken</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a token that can be used to inject something.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">_type</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span></div>
+
+
+<span class="n">Token</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">InjectionToken</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="DependencyConfiguration"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.DependencyConfiguration">[docs]</a><span class="k">class</span> <span class="nc">DependencyConfiguration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration for a specific token that is necessary to instantiate the represented class or it may already contain an instance/variable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">opt_deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">weak</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">deps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># type: List[Token]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deps</span> <span class="o">=</span> <span class="n">deps</span>
+
+        <span class="k">if</span> <span class="n">opt_deps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># type: List[Token]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span> <span class="o">=</span> <span class="n">opt_deps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="n">factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weak</span> <span class="o">=</span> <span class="n">weak</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">deps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deps</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="nd">@instance</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="n">instance</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">opt_deps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">weak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weak</span></div>
+
+
+<span class="n">GLOBAL_DEPENDENCY_MAP</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># type: Dict[Token, DependencyConfiguration]</span>
+
+
+<div class="viewcode-block" id="Injector"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injector">[docs]</a><span class="k">class</span> <span class="nc">Injector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An injector can be used to retrieve a specific instance or variable by a token.</span>
+<span class="sd">    It operates on a dependency_map that contains all configuration necessary for the injector to work.</span>
+<span class="sd">    The root injector uses the global_dependency_map. Any other injector has its own dependency_map and forwards missing tokens to its parent</span>
+<span class="sd">    injector.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependency_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span> <span class="o">=</span> <span class="n">dependency_map</span>
+
+<div class="viewcode-block" id="Injector.provide"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injector.provide">[docs]</a>    <span class="k">def</span> <span class="nf">provide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">weak</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">weak</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InjectorError</span><span class="p">(</span><span class="s1">&#39;Token &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is already defined and cannot be overwritten.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">=</span> <span class="n">DependencyConfiguration</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span> <span class="n">weak</span><span class="o">=</span><span class="n">weak</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Injector.overwrite"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injector.overwrite">[docs]</a>    <span class="k">def</span> <span class="nf">overwrite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">=</span> <span class="n">DependencyConfiguration</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Injector.overwrite_if_exists"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injector.overwrite_if_exists">[docs]</a>    <span class="k">def</span> <span class="nf">overwrite_if_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Injector.is_registered"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injector.is_registered">[docs]</a>    <span class="k">def</span> <span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns whether the given token is registered in this injector or one of its parents (if any).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span></div>
+
+<div class="viewcode-block" id="Injector.get"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injector.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InjectorError</span><span class="p">(</span><span class="s2">&quot;Cannot provide &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">instance</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">instance</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">map_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">deps</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InjectorError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InjectorError</span><span class="p">(</span><span class="s1">&#39;Cannot get all dependencies of &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">get_opt_dep</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Tries to resolve an dependency and returns None if it has failed.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">InjectorError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">opt_args</span> <span class="o">=</span> <span class="n">map_array</span><span class="p">(</span><span class="n">get_opt_dep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">opt_deps</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">opt_arg</span> <span class="ow">in</span> <span class="n">opt_args</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opt_arg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">token</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">instance</span>
+            <span class="k">except</span> <span class="n">InjectorError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InjectorError</span><span class="p">(</span><span class="s1">&#39;Cannot instantiate &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InjectorError</span><span class="p">(</span><span class="s1">&#39;Cannot determine how to construct &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Injector.invoke"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injector.invoke">[docs]</a>    <span class="k">def</span> <span class="nf">invoke</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">],</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">opt_deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">opt_deps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">opt_deps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">get_opt_dep</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Tries to resolve the dependency and returns None of this has failed.&quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">InjectorError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">opt_args</span> <span class="o">=</span> <span class="n">map_array</span><span class="p">(</span><span class="n">get_opt_dep</span><span class="p">,</span> <span class="n">opt_deps</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">map_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">opt_arg</span> <span class="ow">in</span> <span class="n">opt_args</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opt_arg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div></div>
+
+
+<span class="n">INJECTOR</span> <span class="o">=</span> <span class="n">Injector</span><span class="p">(</span><span class="n">GLOBAL_DEPENDENCY_MAP</span><span class="p">)</span>
+
+<span class="n">INJECTOR</span><span class="o">.</span><span class="n">provide</span><span class="p">(</span><span class="n">Injector</span><span class="p">,</span> <span class="n">INJECTOR</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Injectable"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Injectable">[docs]</a><span class="k">class</span> <span class="nc">Injectable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Declares the annotated class to be injectable. It allows to specify a list of dependencies that are injected in the given order.</span>
+<span class="sd">    The dependencies must be token. In the background this annotation adds an additional token to the global_dependency_map</span>
+<span class="sd">    making the class usable in any injector instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">provides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">dependency_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Token</span><span class="p">,</span> <span class="n">DependencyConfiguration</span><span class="p">]</span> <span class="o">=</span> <span class="n">GLOBAL_DEPENDENCY_MAP</span><span class="p">,</span>
+                 <span class="n">opt_deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">weak</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">deps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_depends</span> <span class="o">=</span> <span class="n">deps</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_depends</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">opt_deps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># type: List[Token]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span> <span class="o">=</span> <span class="n">opt_deps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_token</span> <span class="o">=</span> <span class="n">provides</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span> <span class="o">=</span> <span class="n">dependency_map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weak</span> <span class="o">=</span> <span class="n">weak</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clazz</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">clazz</span>
+
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">weak</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InjectorError</span><span class="p">(</span><span class="s1">&#39;Token &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is already defined and cannot be overwritten.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">=</span> <span class="n">DependencyConfiguration</span><span class="p">(</span>
+            <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">injector</span><span class="p">:</span> <span class="n">injector</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_depends</span><span class="p">,</span> <span class="n">clazz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span><span class="p">),</span> <span class="n">weak</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weak</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clazz</span></div>
+
+
+<div class="viewcode-block" id="Factory"><a class="viewcode-back" href="../../../waves_gateway.common.html#waves_gateway.common.injector.Factory">[docs]</a><span class="k">class</span> <span class="nc">Factory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Declares an annotated function to be a factory for something that is injectable.</span>
+<span class="sd">    The factory function itself can have dependencies and provides a token.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">provides</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span>
+                 <span class="n">deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">opt_deps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">dependency_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Token</span><span class="p">,</span> <span class="n">DependencyConfiguration</span><span class="p">]</span> <span class="o">=</span> <span class="n">GLOBAL_DEPENDENCY_MAP</span><span class="p">,</span>
+                 <span class="n">weak</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">deps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># type: List[Token]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deps</span> <span class="o">=</span> <span class="n">deps</span>
+
+        <span class="k">if</span> <span class="n">opt_deps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># type: List[Token]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span> <span class="o">=</span> <span class="n">opt_deps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_provides</span> <span class="o">=</span> <span class="n">provides</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span> <span class="o">=</span> <span class="n">dependency_map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weak</span> <span class="o">=</span> <span class="n">weak</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_provides</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_provides</span><span class="p">]</span><span class="o">.</span><span class="n">weak</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InjectorError</span><span class="p">(</span><span class="s1">&#39;Token &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_provides</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is already defined and cannot be overwritten.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dependency_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_provides</span><span class="p">]</span> <span class="o">=</span> <span class="n">DependencyConfiguration</span><span class="p">(</span>
+            <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">injector</span><span class="p">:</span> <span class="n">injector</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deps</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opt_deps</span><span class="p">),</span> <span class="n">weak</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weak</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">func</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

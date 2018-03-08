@@ -1,0 +1,217 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.controller.gateway_controller_impl &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.controller.gateway_controller_impl</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">GatewayControllerImpl</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">doc_inherit</span> <span class="k">import</span> <span class="n">method_doc_inherit</span><span class="p">,</span> <span class="n">class_doc_inherit</span>  <span class="c1"># type: ignore</span>
+
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">waves_gateway.common</span> <span class="k">import</span> <span class="n">WavesAddressInvalidError</span><span class="p">,</span> <span class="n">InvalidTransactionIdentifier</span><span class="p">,</span> <span class="n">Injectable</span><span class="p">,</span> \
+    <span class="n">COIN_CHAIN_QUERY_SERVICE_CONVERTER_PROXY</span><span class="p">,</span> <span class="n">WAVES_CHAIN_QUERY_SERVICE_CONVERTER_PROXY</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.factory.coin_address_factory</span> <span class="k">import</span> <span class="n">CoinAddressFactory</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.model</span> <span class="k">import</span> <span class="n">MappingEntry</span><span class="p">,</span> <span class="n">KeyPair</span><span class="p">,</span> <span class="n">AttemptListTrigger</span><span class="p">,</span> \
+    <span class="n">TransactionAttemptList</span><span class="p">,</span> <span class="n">AttemptListQuery</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.service</span> <span class="k">import</span> <span class="n">ChainQueryService</span><span class="p">,</span> <span class="n">TransactionConsumer</span><span class="p">,</span> \
+    <span class="n">AddressValidationService</span><span class="p">,</span> <span class="n">WavesAddressValidationService</span><span class="p">,</span> <span class="n">WavesTransactionConsumerImpl</span><span class="p">,</span> \
+    <span class="n">CoinTransactionConsumerImpl</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.storage</span> <span class="k">import</span> <span class="n">TransactionAttemptListStorage</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.storage.map_storage</span> <span class="k">import</span> <span class="n">MapStorage</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.storage.wallet_storage</span> <span class="k">import</span> <span class="n">WalletStorage</span>
+<span class="kn">from</span> <span class="nn">.gateway_controller</span> <span class="k">import</span> <span class="n">GatewayController</span>
+
+
+<div class="viewcode-block" id="GatewayControllerImpl"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl">[docs]</a><span class="nd">@Injectable</span><span class="p">(</span>
+    <span class="n">provides</span><span class="o">=</span><span class="n">GatewayController</span><span class="p">,</span>
+    <span class="n">deps</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">CoinAddressFactory</span><span class="p">,</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">MapStorage</span><span class="p">,</span> <span class="n">WalletStorage</span><span class="p">,</span> <span class="n">TransactionAttemptListStorage</span><span class="p">,</span>
+        <span class="n">WavesAddressValidationService</span><span class="p">,</span> <span class="n">WAVES_CHAIN_QUERY_SERVICE_CONVERTER_PROXY</span><span class="p">,</span>
+        <span class="n">COIN_CHAIN_QUERY_SERVICE_CONVERTER_PROXY</span><span class="p">,</span> <span class="n">CoinTransactionConsumerImpl</span><span class="p">,</span> <span class="n">WavesTransactionConsumerImpl</span>
+    <span class="p">])</span>
+<span class="nd">@class_doc_inherit</span>
+<span class="k">class</span> <span class="nc">GatewayControllerImpl</span><span class="p">(</span><span class="n">GatewayController</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;inherit&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coin_address_factory</span><span class="p">:</span> <span class="n">CoinAddressFactory</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">map_storage</span><span class="p">:</span> <span class="n">MapStorage</span><span class="p">,</span>
+                 <span class="n">wallet_storage</span><span class="p">:</span> <span class="n">WalletStorage</span><span class="p">,</span> <span class="n">attempt_list_storage</span><span class="p">:</span> <span class="n">TransactionAttemptListStorage</span><span class="p">,</span>
+                 <span class="n">waves_address_validation_service</span><span class="p">:</span> <span class="n">AddressValidationService</span><span class="p">,</span>
+                 <span class="n">waves_chain_query_service</span><span class="p">:</span> <span class="n">ChainQueryService</span><span class="p">,</span> <span class="n">coin_chain_query_service</span><span class="p">:</span> <span class="n">ChainQueryService</span><span class="p">,</span>
+                 <span class="n">coin_transaction_consumer</span><span class="p">:</span> <span class="n">TransactionConsumer</span><span class="p">,</span>
+                 <span class="n">waves_transaction_consumer</span><span class="p">:</span> <span class="n">TransactionConsumer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coin_address_factory</span> <span class="o">=</span> <span class="n">coin_address_factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span> <span class="o">=</span> <span class="n">map_storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wallet_storage</span> <span class="o">=</span> <span class="n">wallet_storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s1">&#39;GatewayControllerImpl&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span> <span class="o">=</span> <span class="n">attempt_list_storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waves_address_validation_service</span> <span class="o">=</span> <span class="n">waves_address_validation_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waves_chain_query_service</span> <span class="o">=</span> <span class="n">waves_chain_query_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coin_chain_query_service</span> <span class="o">=</span> <span class="n">coin_chain_query_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coin_transaction_consumer</span> <span class="o">=</span> <span class="n">coin_transaction_consumer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waves_transaction_consumer</span> <span class="o">=</span> <span class="n">waves_transaction_consumer</span>
+
+<div class="viewcode-block" id="GatewayControllerImpl.check_waves_transaction"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.check_waves_transaction">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">check_waves_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">transaction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_chain_query_service</span><span class="o">.</span><span class="n">get_transaction_by_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">transaction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTransactionIdentifier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_transaction_consumer</span><span class="o">.</span><span class="n">filter_transaction</span><span class="p">(</span><span class="n">transaction</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_waves_transaction_consumer</span><span class="o">.</span><span class="n">handle_transaction</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerImpl.check_coin_transaction"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.check_coin_transaction">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">check_coin_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">transaction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coin_chain_query_service</span><span class="o">.</span><span class="n">get_transaction_by_tx</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">transaction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTransactionIdentifier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coin_transaction_consumer</span><span class="o">.</span><span class="n">filter_transaction</span><span class="p">(</span><span class="n">transaction</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_coin_transaction_consumer</span><span class="o">.</span><span class="n">handle_transaction</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerImpl.validate_waves_address"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.validate_waves_address">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">validate_waves_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;inherit&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_address_validation_service</span><span class="o">.</span><span class="n">validate_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerImpl.create_address"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.create_address">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">create_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waves_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;inherit&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Client requested coin address for waves address &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">waves_address</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waves_address_validation_service</span><span class="o">.</span><span class="n">validate_address</span><span class="p">(</span><span class="n">waves_address</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">WavesAddressInvalidError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span><span class="o">.</span><span class="n">waves_address_exists</span><span class="p">(</span><span class="n">waves_address</span><span class="p">):</span>
+            <span class="n">coin_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span><span class="o">.</span><span class="n">get_coin_address_by_waves_address</span><span class="p">(</span><span class="n">waves_address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found associated coin_address &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">coin_address</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">coin_address</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">create_address_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coin_address_factory</span><span class="o">.</span><span class="n">create_address</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">create_address_result</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">mapping</span> <span class="o">=</span> <span class="n">MappingEntry</span><span class="p">(</span><span class="n">waves_address</span><span class="p">,</span> <span class="n">create_address_result</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span><span class="o">.</span><span class="n">safely_save_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created new mapping &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">mapping</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">create_address_result</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">create_address_result</span><span class="p">,</span> <span class="n">KeyPair</span><span class="p">):</span>
+                <span class="n">mapping</span> <span class="o">=</span> <span class="n">MappingEntry</span><span class="p">(</span><span class="n">waves_address</span><span class="p">,</span> <span class="n">create_address_result</span><span class="o">.</span><span class="n">public</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_wallet_storage</span><span class="o">.</span><span class="n">safely_save_address_secret</span><span class="p">(</span><span class="n">create_address_result</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span><span class="o">.</span><span class="n">safely_save_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created new mapping &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">mapping</span><span class="p">))</span>
+
+                <span class="k">return</span> <span class="n">create_address_result</span><span class="o">.</span><span class="n">public</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Result of create_address is neither a CoinAddress nor a CoinAddressSecret&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerImpl.get_attempt_list_by_id"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.get_attempt_list_by_id">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">get_attempt_list_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span><span class="o">.</span><span class="n">find_by_attempt_list_id</span><span class="p">(</span><span class="n">attempt_list_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerImpl.query_attempt_lists"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.query_attempt_lists">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">query_attempt_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">AttemptListQuery</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span><span class="o">.</span><span class="n">query_attempt_lists</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerImpl.get_attempt_list_by_trigger"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_impl.GatewayControllerImpl.get_attempt_list_by_trigger">[docs]</a>    <span class="nd">@method_doc_inherit</span>
+    <span class="k">def</span> <span class="nf">get_attempt_list_by_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="n">AttemptListTrigger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span><span class="o">.</span><span class="n">find_by_trigger</span><span class="p">(</span><span class="n">trigger</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

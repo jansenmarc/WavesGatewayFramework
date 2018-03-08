@@ -1,0 +1,160 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.service.integer_converter_service &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.service.integer_converter_service</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">IntegerConverterService</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+
+<span class="kn">from</span> <span class="nn">waves_gateway.model</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionReceiver</span>
+
+
+<div class="viewcode-block" id="IntegerConverterService"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.integer_converter_service.IntegerConverterService">[docs]</a><span class="k">class</span> <span class="nc">IntegerConverterService</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the requires functionality for an IntegerConverterService.</span>
+<span class="sd">    It must allow the conversion from a float value to an int value and backwards.</span>
+<span class="sd">    By default, it does not perform any conversion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># noinspection PyMethodMayBeStatic</span>
+<div class="viewcode-block" id="IntegerConverterService.revert_amount_conversion"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.integer_converter_service.IntegerConverterService.revert_amount_conversion">[docs]</a>    <span class="k">def</span> <span class="nf">revert_amount_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the argument by default (if not overwritten).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">amount</span></div>
+
+    <span class="c1"># noinspection PyMethodMayBeStatic</span>
+<div class="viewcode-block" id="IntegerConverterService.convert_amount_to_int"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.integer_converter_service.IntegerConverterService.convert_amount_to_int">[docs]</a>    <span class="k">def</span> <span class="nf">convert_amount_to_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the argument by default (if not overwritten).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegerConverterService.safely_convert_to_int"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.integer_converter_service.IntegerConverterService.safely_convert_to_int">[docs]</a>    <span class="k">def</span> <span class="nf">safely_convert_to_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests the result of convert_amount_to_int if it has the type int.</span>
+<span class="sd">        If not, it raises an TypeError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">converted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_amount_to_int</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converted</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">converted</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;value must be an integer; value was &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">converted</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="IntegerConverterService.convert_transaction_to_int"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.integer_converter_service.IntegerConverterService.convert_transaction_to_int">[docs]</a>    <span class="k">def</span> <span class="nf">convert_transaction_to_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transaction</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">receivers</span><span class="p">)):</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">receivers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">receivers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">TransactionReceiver</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">safely_convert_to_int</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">amount</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="IntegerConverterService.revert_transaction_conversion"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.integer_converter_service.IntegerConverterService.revert_transaction_conversion">[docs]</a>    <span class="k">def</span> <span class="nf">revert_transaction_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transaction</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">receivers</span><span class="p">)):</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">receivers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">receivers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">TransactionReceiver</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">revert_amount_conversion</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">receiver</span><span class="o">.</span><span class="n">amount</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">res</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

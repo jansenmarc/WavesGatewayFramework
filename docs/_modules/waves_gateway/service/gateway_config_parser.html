@@ -1,0 +1,201 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.service.gateway_config_parser &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.service.gateway_config_parser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;GatewayConfigParser&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="k">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.common</span> <span class="k">import</span> <span class="n">Injectable</span><span class="p">,</span> <span class="n">KeyPair</span><span class="p">,</span> <span class="n">InvalidConfigError</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.model</span> <span class="k">import</span> <span class="n">GatewayConfigFile</span>
+
+
+<div class="viewcode-block" id="GatewayConfigParser"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.gateway_config_parser.GatewayConfigParser">[docs]</a><span class="nd">@Injectable</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">GatewayConfigParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    May be used to parse a gateway configuration file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_parse_node_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">:</span> <span class="n">GatewayConfigFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">waves_node</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="s1">&#39;waves&#39;</span><span class="p">)</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">coin_node</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="s1">&#39;coin&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Parses a number field to an int or Decimal.&quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>  <span class="c1"># type: str</span>
+        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_fee_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">:</span> <span class="n">GatewayConfigFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">coin_fee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_number</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="s1">&#39;fee&#39;</span><span class="p">,</span> <span class="s1">&#39;coin&#39;</span><span class="p">)</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">gateway_fee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_number</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="s1">&#39;fee&#39;</span><span class="p">,</span> <span class="s1">&#39;gateway&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_gateway_address_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">:</span> <span class="n">GatewayConfigFile</span><span class="p">):</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">gateway_owner_address</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gateway_address&#39;</span><span class="p">,</span> <span class="s1">&#39;owner&#39;</span><span class="p">)</span>
+
+        <span class="n">gateway_waves_address_public_key</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gateway_address&#39;</span><span class="p">,</span> <span class="s1">&#39;waves_public_key&#39;</span><span class="p">)</span>
+        <span class="n">gateway_waves_address_private_key</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gateway_address&#39;</span><span class="p">,</span> <span class="s1">&#39;waves_private_key&#39;</span><span class="p">)</span>
+        <span class="n">gateway_coin_address_public_key</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gateway_address&#39;</span><span class="p">,</span> <span class="s1">&#39;coin_public_key&#39;</span><span class="p">)</span>
+        <span class="n">gateway_coin_address_private_key</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;gateway_address&#39;</span><span class="p">,</span> <span class="s1">&#39;coin_private_key&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># type: Optional[str]</span>
+
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">gateway_waves_address_secret</span> <span class="o">=</span> <span class="n">KeyPair</span><span class="p">(</span>
+            <span class="n">public</span><span class="o">=</span><span class="n">gateway_waves_address_public_key</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">gateway_waves_address_private_key</span><span class="p">)</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">gateway_coin_address_secret</span> <span class="o">=</span> <span class="n">KeyPair</span><span class="p">(</span>
+            <span class="n">public</span><span class="o">=</span><span class="n">gateway_coin_address_public_key</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">gateway_coin_address_private_key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_mongodb_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">:</span> <span class="n">GatewayConfigFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">mongo_host</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mongodb&#39;</span><span class="p">,</span> <span class="s1">&#39;host&#39;</span><span class="p">)</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">mongo_port</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;mongodb&#39;</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">)</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">mongo_database</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mongodb&#39;</span><span class="p">,</span> <span class="s1">&#39;database&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_other_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">:</span> <span class="n">GatewayConfigFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">waves_chain</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;waves_chain&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;mainnet&quot;</span><span class="p">)</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;environment&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;prod&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_server_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">:</span> <span class="n">GatewayConfigFile</span><span class="p">):</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">gateway_host</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server&#39;</span><span class="p">,</span> <span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">)</span>
+        <span class="n">parsed_config</span><span class="o">.</span><span class="n">gateway_port</span> <span class="o">=</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;server&#39;</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GatewayConfigParser.parse_config_file_content"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.gateway_config_parser.GatewayConfigParser.parse_config_file_content">[docs]</a>    <span class="k">def</span> <span class="nf">parse_config_file_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GatewayConfigFile</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Parses the given config file.&quot;&quot;&quot;</span>
+        <span class="n">config_parser</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="n">config_parser</span><span class="o">.</span><span class="n">read_string</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+        <span class="n">parsed_config</span> <span class="o">=</span> <span class="n">GatewayConfigFile</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_not_old_format</span><span class="p">(</span><span class="n">config_parser</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_node_section</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="s1">&#39;fee&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parse_fee_section</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_gateway_address_section</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="s1">&#39;mongodb&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mongodb_section</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parse_other_section</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_server_section</span><span class="p">(</span><span class="n">config_parser</span><span class="p">,</span> <span class="n">parsed_config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parsed_config</span></div>
+
+    <span class="k">def</span> <span class="nf">_assert_not_old_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_parser</span><span class="p">:</span> <span class="n">ConfigParser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Asserts that the old format in the ltc gateway is no longer used.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">assert_option_does_not_exist</span><span class="p">(</span><span class="n">section</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Raises an exception if the selected option exists.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="ow">and</span> <span class="n">config_parser</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InvalidConfigError</span><span class="p">(</span><span class="s1">&#39;Detected use of option &#39;</span> <span class="o">+</span> <span class="n">option</span> <span class="o">+</span> <span class="s1">&#39; in the section &#39;</span> <span class="o">+</span> <span class="n">section</span> <span class="o">+</span>
+                                         <span class="s1">&#39;. Using ltc in a configuration file is deprecated. Please use coin instead!&#39;</span><span class="p">)</span>
+
+        <span class="n">assert_option_does_not_exist</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="s1">&#39;ltc&#39;</span><span class="p">)</span>
+        <span class="n">assert_option_does_not_exist</span><span class="p">(</span><span class="s1">&#39;fee&#39;</span><span class="p">,</span> <span class="s1">&#39;ltc&#39;</span><span class="p">)</span>
+        <span class="n">assert_option_does_not_exist</span><span class="p">(</span><span class="s1">&#39;gateway_address&#39;</span><span class="p">,</span> <span class="s1">&#39;ltc_public_key&#39;</span><span class="p">)</span>
+        <span class="n">assert_option_does_not_exist</span><span class="p">(</span><span class="s1">&#39;gateway_address&#39;</span><span class="p">,</span> <span class="s1">&#39;ltc_private_key&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GatewayConfigParser.parse_config_file"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.gateway_config_parser.GatewayConfigParser.parse_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;First reads the config file and then calls parse_config_file_content with the content.&quot;&quot;&quot;</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_config_file_content</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

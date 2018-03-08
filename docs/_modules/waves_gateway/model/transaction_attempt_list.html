@@ -1,0 +1,240 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.model.transaction_attempt_list &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.model.transaction_attempt_list</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TransactionAttemptList</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">.transaction_attempt</span> <span class="k">import</span> <span class="n">TransactionAttempt</span>
+<span class="kn">from</span> <span class="nn">.transaction</span> <span class="k">import</span> <span class="n">TransactionSender</span>
+
+
+<div class="viewcode-block" id="AttemptListTrigger"><a class="viewcode-back" href="../../../waves_gateway.model.html#waves_gateway.model.transaction_attempt_list.AttemptListTrigger">[docs]</a><span class="k">class</span> <span class="nc">AttemptListTrigger</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents the receiver index of the transaction that has triggered the creation of an</span>
+<span class="sd">    particular TransactionAttemptList instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DICT_TX</span> <span class="o">=</span> <span class="s2">&quot;tx&quot;</span>
+    <span class="n">DICT_RECEIVER</span> <span class="o">=</span> <span class="s2">&quot;receiver&quot;</span>
+    <span class="n">DICT_CURRENCY</span> <span class="o">=</span> <span class="s2">&quot;currency&quot;</span>
+    <span class="n">DICT_SENDERS_KEY</span> <span class="o">=</span> <span class="s1">&#39;senders&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">receiver</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">currency</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">senders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TransactionSender</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx</span> <span class="o">=</span> <span class="n">tx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_receiver</span> <span class="o">=</span> <span class="n">receiver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_currency</span> <span class="o">=</span> <span class="n">currency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_senders</span> <span class="o">=</span> <span class="n">senders</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiver</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">currency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currency</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">senders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_senders</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">tx</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">receiver</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">currency</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">currency</span></div>
+
+
+<div class="viewcode-block" id="TransactionAttemptList"><a class="viewcode-back" href="../../../waves_gateway.model.html#waves_gateway.model.transaction_attempt_list.TransactionAttemptList">[docs]</a><span class="k">class</span> <span class="nc">TransactionAttemptList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores a list of attempts and their corresponding transactions if any.</span>
+<span class="sd">    An TransactionAttemptList instance defines the progress of processing an incoming transaction.</span>
+<span class="sd">    The incoming transaction itself is stored as the trigger of the TransactionAttemptList.</span>
+<span class="sd">    Attempts represent the transactions that are meant to follow the trigger, but they may not already be processed.</span>
+<span class="sd">    This is expressed by the transactions array in so far that if the transactions array has the same length</span>
+<span class="sd">    as the attempts array, this means that all attempts have been processed.</span>
+<span class="sd">    So, each entry in the transactions array is the transaction id of the corresponding TransactionAttempt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DICT_ID</span> <span class="o">=</span> <span class="s2">&quot;attempt_list_id&quot;</span>
+    <span class="n">DICT_TRANSACTIONS</span> <span class="o">=</span> <span class="s2">&quot;transactions&quot;</span>
+    <span class="n">DICT_ATTEMPTS</span> <span class="o">=</span> <span class="s2">&quot;attempts&quot;</span>
+    <span class="n">DICT_TRIGGER</span> <span class="o">=</span> <span class="s2">&quot;trigger&quot;</span>
+    <span class="n">DICT_LAST_MODIFIED</span> <span class="o">=</span> <span class="s2">&quot;last_modified&quot;</span>
+    <span class="n">DICT_CREATED_AT</span> <span class="o">=</span> <span class="s2">&quot;created_at&quot;</span>
+    <span class="n">DICT_TRIES</span> <span class="o">=</span> <span class="s2">&quot;tries&quot;</span>
+    <span class="n">DEFAULT_TRIES</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">trigger</span><span class="p">:</span> <span class="n">AttemptListTrigger</span><span class="p">,</span>
+                 <span class="n">attempts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TransactionAttempt</span><span class="p">],</span>
+                 <span class="n">transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">created_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">last_modified</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">tries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_TRIES</span><span class="p">,</span>
+                 <span class="n">attempt_list_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span> <span class="o">=</span> <span class="n">trigger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span> <span class="o">=</span> <span class="n">attempts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tries</span> <span class="o">=</span> <span class="n">tries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_created_at</span> <span class="o">=</span> <span class="n">created_at</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_modified</span> <span class="o">=</span> <span class="n">last_modified</span>
+
+        <span class="k">if</span> <span class="n">transactions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transactions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># type: List[str]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transactions</span> <span class="o">=</span> <span class="n">transactions</span>
+
+        <span class="k">if</span> <span class="n">attempt_list_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_id</span> <span class="o">=</span> <span class="n">attempt_list_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">attempt_list_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transactions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">attempts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TransactionAttempt</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">last_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_modified</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">created_at</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_created_at</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tries</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tries</span>
+
+<div class="viewcode-block" id="TransactionAttemptList.mark_next_attempt_as_complete"><a class="viewcode-back" href="../../../waves_gateway.model.html#waves_gateway.model.transaction_attempt_list.TransactionAttemptList.mark_next_attempt_as_complete">[docs]</a>    <span class="k">def</span> <span class="nf">mark_next_attempt_as_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt</span><span class="p">:</span> <span class="n">TransactionAttempt</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="n">attempt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transactions</span><span class="p">)</span> <span class="o">!=</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Trying to mark an attempt as complete that is not the next attempt&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_modified</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptList.increment_tries"><a class="viewcode-back" href="../../../waves_gateway.model.html#waves_gateway.model.transaction_attempt_list.TransactionAttemptList.increment_tries">[docs]</a>    <span class="k">def</span> <span class="nf">increment_tries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tries</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_modified</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptList.next_incomplete_attempt"><a class="viewcode-back" href="../../../waves_gateway.model.html#waves_gateway.model.transaction_attempt_list.TransactionAttemptList.next_incomplete_attempt">[docs]</a>    <span class="k">def</span> <span class="nf">next_incomplete_attempt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionAttempt</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transactions</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="TransactionAttemptList.is_complete"><a class="viewcode-back" href="../../../waves_gateway.model.html#waves_gateway.model.transaction_attempt_list.TransactionAttemptList.is_complete">[docs]</a>    <span class="k">def</span> <span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transactions</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">created_at</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_modified</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">last_modified</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">transactions</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">attempts</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">trigger</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Waves-Gateway-Framework</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../waves_gateway.html">waves_gateway package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
