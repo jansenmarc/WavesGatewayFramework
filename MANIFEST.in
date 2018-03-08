@@ -1,0 +1,2 @@
+recursive-exclude tests *
+global-exclude test_*.py
