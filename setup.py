@@ -82,6 +82,8 @@ class DocsCommand(Command):
 
         code = subprocess.call(['sphinx-build', '.apidoc', 'docs'])
 
+        open('docs/.nojekyll', 'a').close()
+
         exit(code)
 
 
