@@ -30,7 +30,7 @@ class TransactionAttemptListService(object):
         self._logger.info("Trying to complete attempt_list '%s'", attempt_list.attempt_list_id)
 
         if attempt_list.is_complete():
-            self._logger.info("attempt_list is already complete")
+            self._logger.info("attempt_list '%s' is already complete", attempt_list.attempt_list_id)
             return
 
         for i in range(0, len(attempt_list.transactions)):

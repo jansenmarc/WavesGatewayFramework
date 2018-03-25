@@ -116,12 +116,46 @@ class MongoTransactionAttemptListStorageImpl(TransactionAttemptListStorage):
         query[TransactionAttemptList.DICT_TRANSACTIONS] = transaction
         return query
 
+    def _create_attempt_query(self, attempt) -> dict:
+        if attempt == "":
+            return {"$where": "this.attempts.length > 1"}
+        else:
+            return {"$where": "this.attempts.length ==" + attempt}
+
+    def _create_tries_query(self, tries) -> dict:
+        if tries == "":
+            return {"$where": "this.tries > 1"}
+        else:
+            return {"$where": "this.tries ==" + tries}
+
     def _create_senders_query(self, sender: str) -> dict:
         query = dict()
         subquery = dict()
         subquery[TransactionSender.DICT_ADDRESS_KEY] = sender
         query[TransactionAttemptList.DICT_TRIGGER + '.' + AttemptListTrigger.DICT_SENDERS_KEY] = subquery
         return query
+
+    def get_average_attempt_list_tries(self):
+        raw_results = self._collection.find().limit(self._limit)
+        results = []
+
+        total_number = 0
+        total_tries = 0
+        start_date = raw_results[0]['created_at']
+
+        for raw_result in raw_results:
+            results.append(self._serializer.attempt_list_from_dict(raw_result))
+            total_number += 1
+            total_tries += raw_result['tries']
+
+        end_date = results[len(results) - 1].created_at
+
+        return {
+            'start_date': start_date,
+            'end_date': end_date,
+            'total_number': total_number,
+            'total_tries': total_tries
+        }
 
     @method_doc_inherit
     def query_attempt_lists(self, query: AttemptListQuery) -> List[TransactionAttemptList]:
@@ -150,6 +184,12 @@ class MongoTransactionAttemptListStorageImpl(TransactionAttemptListStorage):
             sub_or_conditions.append(self._create_senders_query(query.anything))
 
             or_conditions.append(sub_query)
+
+        if (query.attempt is not None) and (query.attempt == "" or isinstance(query.attempt, int)):
+            find_query = self._create_attempt_query(query.attempt)
+
+        if (query.tries is not None) and (query.tries == "" or type(query.attempt is int)):
+            find_query = self._create_tries_query(query.tries)
 
         raw_results = self._collection.find(find_query).limit(self._limit)
 

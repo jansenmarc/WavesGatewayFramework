@@ -223,3 +223,17 @@ class MongoTransactionAttemptListStorageImplSpec(unittest.TestCase):
         self.assertEqual(res, [mock_attempt_list_from_dict_result])
         self._collection.find.assert_called_once_with(expected_query)
         mock_find_result.limit.assert_called_once_with(self._limit)
+
+    def test_tries_query(self):
+        expected_all_tries_query = {"$where": "this.tries > 1"}
+        expected_two_tries_query = {"$where": "this.tries ==2"}
+
+        self.assertEqual(expected_all_tries_query, self._storage._create_tries_query(""))
+        self.assertEqual(expected_two_tries_query, self._storage._create_tries_query("2"))
+
+    def test_attempts_query(self):
+        expected_all_attempts_query = {"$where": "this.attempts.length > 1"}
+        expected_two_attempts_query = {"$where": "this.attempts.length ==2"}
+
+        self.assertEqual(expected_all_attempts_query, self._storage._create_attempt_query(""))
+        self.assertEqual(expected_two_attempts_query, self._storage._create_attempt_query("2"))
