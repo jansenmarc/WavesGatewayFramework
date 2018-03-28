@@ -3,6 +3,7 @@ from typing import cast, Optional
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from waves_gateway.common import API_KEY
 from waves_gateway.serializer import TransactionAttemptListSerializer, PublicConfigurationSerializer
 
 from waves_gateway.controller import FlaskRestController, GatewayController
@@ -18,8 +19,10 @@ class FlaskRestControllerSpec(TestCase):
         self._custom_currency_name = 'Test Coin'
         self._public_configuration = MagicMock()
         self._public_configuration_serializer = MagicMock()
+        self._api_key = MagicMock()
 
         self.flask_setup = FlaskRestController(
+            api_key=cast(API_KEY, self._api_key),
             flask=self._flask,
             gateway_controller=cast(GatewayController, self._gateway_controller),
             logger=cast(Logger, self._logger),

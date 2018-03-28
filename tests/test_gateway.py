@@ -173,6 +173,7 @@ class GatewayTest(TestCase):
         mock_injector.overwrite.side_effect = self._test_injector.overwrite
         mock_injector.overwrite_if_exists.side_effect = self._test_injector.overwrite_if_exists
 
+        api_key = MagicMock()
         coin_address_factory = MagicMock()
         coin_chain_query_service = MagicMock()
         gateway_waves_address_secret = KeyPair(public="16285786287935", secret="721365976829835")
@@ -195,6 +196,7 @@ class GatewayTest(TestCase):
         self._test_injector.overwrite(GatewayLoggingConfigurationService, logging_configuration_service)
 
         gateway = Gateway(
+            api_key=api_key,
             coin_address_factory=coin_address_factory,
             coin_chain_query_service=coin_chain_query_service,
             gateway_waves_address_secret=gateway_waves_address_secret,

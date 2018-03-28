@@ -15,20 +15,21 @@ class FailedTransactionStorageImplTest(unittest.TestCase):
         self._failed_tx_storage = FailedTransactionStorageImpl(collection=cast(Collection, self._collection))
 
     def test_save_failed_transaction(self):
-        failed_tx = FailedTransaction("1", "waves", "amount too small", "msg", "", {"tx": "12345"},
-                                      "back transfer attemptlist id")
+        failed_tx = FailedTransaction("waves", "amount too small", "msg",  "any date", {"tx": "12345"},
+                                      "back transfer attemptlist id", "1234567")
         self._failed_tx_storage.save_failed_transaction(failed_tx)
         self._collection.find.return_value = None
         self._collection.insert_one.assert_called_once_with({
-            'failed_transaction_id': '1',
+            'failed_transaction_id': '1234567',
             'currency': 'waves',
             'reason': 'amount too small',
             'message': 'msg',
-            'date': '',
+            'date': 'any date',
             'transaction': {
                 'tx': '12345'
             },
-            'back_transfer_attemptlist': 'back transfer attemptlist id'
+            'back_transfer_attemptlist': 'back transfer attemptlist id',
+
         })
 
     def test_get_failed_transactions(self):
@@ -36,8 +37,8 @@ class FailedTransactionStorageImplTest(unittest.TestCase):
         self._collection.find.assert_called_once_with({"transaction.tx": "123456"})
 
     def test_failed_transaction_as_dict(self):
-        failed_tx = FailedTransaction("1", "waves", "amount too small", "msg", "", {"tx": "12345"},
-                                      "back transfer attemptlist id")
+        failed_tx = FailedTransaction("waves", "amount too small", "msg", "", {"tx": "12345"},
+                                      "back transfer attemptlist id", "1")
         tx_as_dict = self._failed_tx_storage._failed_transaction_as_dict(failed_tx)
         self.assertEqual(
             tx_as_dict, {

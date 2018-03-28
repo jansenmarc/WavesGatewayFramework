@@ -1,6 +1,6 @@
 import unittest
 from typing import cast
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from waves_gateway.service.support_log_handler import SupportLogHandler
 from waves_gateway.storage import LogStorageService
@@ -12,22 +12,10 @@ class LogHandlerTest(unittest.TestCase):
         self._logging = MagicMock()
         self._logHandler = SupportLogHandler(log_storage_service=cast(LogStorageService, self._log_storage_service))
 
-    def test_emit(self):
-        record = MagicMock()
-        record.levelname.return_value = "INFO"
-
-        support_log_handler = MagicMock()
-
-        result = self._logHandler.emit(record)
-        support_log_handler._process_info.assert_called()
-        # self.assertEqual("", result)
-
-
     def test_process_debug(self):
         message = "This is the record message"
         result = self._logHandler._process_debug(message, "Finished block at height")
         self.assertEqual(message, result)
-
 
     def test_process_info(self):
         message = "This is the record message"

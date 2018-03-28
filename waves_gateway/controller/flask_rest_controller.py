@@ -5,7 +5,7 @@ FlaskRestController
 from logging import Logger
 from typing import Any, List, Callable, Optional
 
-from waves_gateway.common import map_array, WavesAddressInvalidError, InvalidTransactionIdentifier, Injectable
+from waves_gateway.common import map_array, WavesAddressInvalidError, InvalidTransactionIdentifier, Injectable, API_KEY
 
 import flask as flask_module  # type: ignore
 
@@ -19,7 +19,7 @@ from .gateway_controller_converter_proxy_impl import GatewayControllerConverterP
 
 @Injectable(deps=[
     flask_module.Flask, GatewayControllerConverterProxyImpl, Logger, TransactionAttemptListSerializer,
-    PublicConfiguration, PublicConfigurationSerializer
+    PublicConfiguration, PublicConfigurationSerializer, API_KEY
 ])
 class FlaskRestController(object):
     """
@@ -47,14 +47,14 @@ class FlaskRestController(object):
 
     def __init__(self, flask: Any, gateway_controller: GatewayController, logger: Logger,
                  attempt_list_serializer: TransactionAttemptListSerializer, public_configuration: PublicConfiguration,
-                 public_configuration_serializer: PublicConfigurationSerializer) -> None:
+                 public_configuration_serializer: PublicConfigurationSerializer, api_key: API_KEY) -> None:
         self._flask = flask
         self._gateway_controller = gateway_controller
         self._logger = logger.getChild(self.__class__.__name__)
         self._serializer = attempt_list_serializer
         self._public_configuration = public_configuration
         self._public_configuration_serializer = public_configuration_serializer
-        self._key = "CHANGE_THIS_KEY"
+        self._key = api_key
 
         self._add_url_rule('/api/v1', 'heartbeat', lambda: "", methods=['GET'])
 
@@ -125,20 +125,28 @@ class FlaskRestController(object):
         return coin_address
 
     def _get_failed_transactions(self):
-        failed_transactions = self._gateway_controller.get_failed_transactions()
-        return flask_module.jsonify(failed_transactions)
+        key = flask_module.request.headers['api-key']
+        if key is not None and key == self._key:
+            failed_transactions = self._gateway_controller.get_failed_transactions()
+            return flask_module.jsonify(failed_transactions)
+        else:
+            flask_module.abort(403)
 
     def _get_log_messages(self):
         key = flask_module.request.headers['api-key']
-        if key == self._key:
+        if key is not None and key == self._key:
             log_messages = self._gateway_controller.get_log_messages()
             return flask_module.jsonify(log_messages)
         else:
             flask_module.abort(403)
 
     def _get_average_attempt_list_tries(self):
-        data = self._gateway_controller.get_average_attempt_list_tries()
-        return flask_module.jsonify(data)
+        key = flask_module.request.headers['api-key']
+        if key is not None and key == self._key:
+            data = self._gateway_controller.get_average_attempt_list_tries()
+            return flask_module.jsonify(data)
+        else:
+            flask_module.abort(403)
 
     def _get_attempt_list_by_id(self, attempt_list_id: str) -> Optional[str]:
         attempt_list = self._gateway_controller.get_attempt_list_by_id(attempt_list_id)
@@ -182,8 +190,7 @@ class FlaskRestController(object):
 
     def _check_coin_transaction(self, tx: str):
         key = flask_module.request.headers['api-key']
-
-        if key == self._key:
+        if key is not None and key == self._key:
             try:
                 self._gateway_controller.check_coin_transaction(tx)
             except InvalidTransactionIdentifier:
@@ -196,14 +203,16 @@ class FlaskRestController(object):
             flask_module.abort(403)
 
     def _get_block_heights(self):
-        heights = self._gateway_controller.get_block_heights()
-        print(heights)
-        return flask_module.jsonify(heights)
+        key = flask_module.request.headers['api-key']
+        if key is not None and key == self._key:
+            heights = self._gateway_controller.get_block_heights()
+            return flask_module.jsonify(heights)
+        else:
+            flask_module.abort(403)
 
     def _check_waves_transaction(self, tx: str):
         key = flask_module.request.headers['api-key']
-
-        if key == self._key:
+        if key is not None and key == self._key:
             try:
                 self._gateway_controller.check_waves_transaction(tx)
             except InvalidTransactionIdentifier:
@@ -214,9 +223,13 @@ class FlaskRestController(object):
             flask_module.abort(403)
 
     def _trigger_attemptlist_retry(self):
-        attempt_list_id = flask_module.request.args.get('attempt_list_id')  # type: Optional[str]
-        res = self._gateway_controller.trigger_attemptlist_retry(attempt_list_id)
-        if res:
-            return res
+        key = flask_module.request.headers['api-key']
+        if key is not None and key == self._key:
+            attempt_list_id = flask_module.request.args.get('attempt_list_id')  # type: Optional[str]
+            res = self._gateway_controller.trigger_attemptlist_retry(attempt_list_id)
+            if res is True:
+                return res
+            else:
+                flask_module.abort(400)
         else:
-            flask_module.abort(400)
+            flask_module.abort(403)

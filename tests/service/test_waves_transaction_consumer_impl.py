@@ -261,25 +261,16 @@ class WavesTransactionConsumerImplTestSingleReceiver(TestCase):
         tx = "78265"
         sender_address = "12345"
         waves_fee = 1234
-        gateway_fee = 9999
         self._fee_service.get_waves_fee.return_value = waves_fee
-        self._fee_service.get_gateway_fee.return_value = gateway_fee
 
         self._gateway_waves_receiver = TransactionReceiver("9823748", 100000000)
-        amount_after_fees = self._gateway_waves_receiver.amount - 2 * waves_fee - gateway_fee
+        amount_after_fees = self._gateway_waves_receiver.amount - waves_fee
         self._coin_address_validation_service.validate_address.return_value = False
         self._attempt_list_storage.find_by_trigger.return_value = None
 
         trigger = AttemptListTrigger(tx=tx, currency="waves", receiver=0)
 
         attempts = list()
-
-        attempts.append(
-            TransactionAttempt(
-                sender=self._gateway_pywaves_address.address,
-                fee=waves_fee,
-                currency="waves",
-                receivers=[TransactionAttemptReceiver(address=self._gateway_owner_address, amount=gateway_fee)]))
 
         attempts.append(
             TransactionAttempt(

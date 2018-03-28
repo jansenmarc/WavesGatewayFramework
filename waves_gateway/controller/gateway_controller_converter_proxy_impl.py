@@ -62,5 +62,5 @@ class GatewayControllerConverterProxyImpl(GatewayController):
     def create_address(self, waves_address: str) -> str:
         return self._gateway_controller.create_address(waves_address)
 
-    def trigger_attemptlist_retry(self, id: str) -> str:
+    def trigger_attemptlist_retry(self, id: str) -> bool:
         return self._gateway_controller.trigger_attemptlist_retry(id)

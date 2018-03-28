@@ -94,7 +94,7 @@ class GatewayController(ABC):
         pass
 
     @abstractmethod
-    def trigger_attemptlist_retry(self, id: str) -> str:
+    def trigger_attemptlist_retry(self, id: str) -> bool:
         """
         Sets the tries of an attempt list to 1
         """

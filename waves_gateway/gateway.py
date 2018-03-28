@@ -290,6 +290,7 @@ class Gateway(object):
         self._injector.overwrite(MANAGED_LOGGER_LIST, res)
 
     def __init__(self,
+                 api_key: str,
                  coin_address_factory: factory.CoinAddressFactory,
                  coin_chain_query_service: service.ChainQueryService,
                  gateway_waves_address_secret: model.KeyPair,
@@ -439,6 +440,7 @@ class Gateway(object):
         """
 
         self._injector = common.INJECTOR
+        self._injector.overwrite(common.API_KEY, api_key)
         self._injector.overwrite(CoinAddressFactory, coin_address_factory)
         self._injector.overwrite(COIN_CHAIN_QUERY_SERVICE, coin_chain_query_service)
         self._injector.overwrite_if_exists(POLLING_DELAY_SECONDS, polling_delay_s)

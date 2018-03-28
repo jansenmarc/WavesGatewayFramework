@@ -57,7 +57,7 @@ class FailedTransactionStorageImpl(FailedTransactionStorage):
 
         res[FailedTransaction.DICT_ID] = gateway_event.id
         res[FailedTransaction.DICT_CURRENCY] = gateway_event.currency
-        res[FailedTransaction.DICT_CAUSE] = gateway_event.name
+        res[FailedTransaction.DICT_CAUSE] = gateway_event.cause
         res[FailedTransaction.DICT_MESSAGE] = gateway_event.message
         res[FailedTransaction.DICT_DATE] = gateway_event.date
         res[FailedTransaction.DICT_TRANSACTION] = gateway_event.transaction

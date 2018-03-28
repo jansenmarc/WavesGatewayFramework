@@ -144,11 +144,11 @@ class GatewayControllerImpl(GatewayController):
         return self._attempt_list_storage.find_by_trigger(trigger)
 
     @method_doc_inherit
-    def trigger_attemptlist_retry(self, id: str) -> str:
+    def trigger_attemptlist_retry(self, id: str) -> bool:
         attemptlist = self._attempt_list_storage.find_by_attempt_list_id(id)
         if (attemptlist):
             attemptlist.reset_tries()
             self._attempt_list_storage.update_attempt_list(attemptlist)
-            return ''
+            return True
         else:
-            return None
+            return False

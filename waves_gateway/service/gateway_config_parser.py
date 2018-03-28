@@ -48,6 +48,9 @@ class GatewayConfigParser(object):
         parsed_config.mongo_port = config_parser.getint('mongodb', 'port')
         parsed_config.mongo_database = config_parser.get('mongodb', 'database')
 
+    def _parse_api_key(self, config_parser: ConfigParser, parsed_config: GatewayConfigFile) -> None:
+        parsed_config.gateway_api_key = config_parser.get('api', 'key')
+
     def _parse_other_section(self, config_parser: ConfigParser, parsed_config: GatewayConfigFile) -> None:
         parsed_config.waves_chain = config_parser.get('other', 'waves_chain', fallback="mainnet")
         parsed_config.environment = config_parser.get('other', 'environment', fallback="prod")
@@ -78,6 +81,8 @@ class GatewayConfigParser(object):
             self._parse_other_section(config_parser, parsed_config)
 
         self._parse_server_section(config_parser, parsed_config)
+
+        self._parse_api_key(config_parser, parsed_config)
 
         return parsed_config
 

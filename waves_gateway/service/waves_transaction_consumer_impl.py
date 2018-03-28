@@ -110,20 +110,20 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
         # ---------- Pre-Check ----------
 
         sender_array = []
-        if senders:
+        if senders is not None and len(senders) > 0:
             for sender in senders:
                 sender_array.append(sender.address)
 
         # transaction must have at least a specific amount to be processed
         if amount_after_fees < 0:
-            message = "Received transaction " + tx + " with an amount of " + str(receiver.amount) + ", but it is less than the at least " \
-                      "required amount. Will be skipped."
+            message = "Received transaction " + tx + " with an amount of " + str(
+                receiver.amount) + ", but it is less than the at least " \
+                                   "required amount. Will be skipped."
             self._logger.warning(message)
 
             transaction = {"tx": tx, "receiver": receiver.address, "amount": receiver.amount, "senders": sender_array}
             self._failed_transaction_storage.save_failed_transaction(
-                FailedTransaction("", "Waves", "amount too small", str(message), datetime.datetime.now(), transaction,
-                                  None))
+                FailedTransaction("Waves", "amount too small", str(message), datetime.datetime.now(), transaction))
             return
 
         if not self._coin_address_validation_service.validate_address(coin_receiver):
@@ -131,22 +131,31 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
             self._logger.warning(message)
 
             transaction = {"tx": tx, "receiver": receiver.address, "amount": receiver.amount, "senders": sender_array}
-            failed_transaction = FailedTransaction("", "Waves", "invalid coin receiver address", str(message),
-                                                   datetime.datetime.now(), transaction, "")
+            failed_transaction = FailedTransaction("Waves", "invalid coin receiver address", str(message),
+                                                   datetime.datetime.now(), transaction)
             if (senders is not None):
-                self._transfer_back(transaction, receiver, senders[0], index, failed_transaction)
-
+                if len(senders) == 1:
+                    self._transfer_back(transaction, receiver, senders[0], index, failed_transaction)
+                else:
+                    failed_transaction.set_cause(
+                        failed_transaction.cause + ". No back transfer in case of multiple senders")
+                    self._failed_transaction_storage.save_failed_transaction(failed_transaction)
             return
 
         if self._gateway_coin_holder_secret.public == coin_receiver:
             message = "Received transaction " + tx + " with the address of the Gateway coin holder." \
-                      "Will be skipped as an transaction to itself has no effect."
+                                                     "Will be skipped as an transaction to itself has no effect."
             self._logger.warning(message)
 
             transaction = {"tx": tx, "receiver": receiver.address, "amount": receiver.amount, "senders": sender_array}
-            failed_transaction = FailedTransaction(None, "Waves", "transaction to gateway itself", str(message),
-                                                   datetime.datetime.now(), transaction, None)
-            self._transfer_back(transaction, receiver, senders[0], index, failed_transaction)
+            failed_transaction = FailedTransaction("Waves", "transaction to gateway itself", str(message),
+                                                   datetime.datetime.now(), transaction)
+            if len(senders) == 1:
+                self._transfer_back(transaction, receiver, senders[0], index, failed_transaction)
+            else:
+                failed_transaction.set_cause(
+                    failed_transaction.cause + ". No back transfer in case of multiple senders")
+                self._failed_transaction_storage.save_failed_transaction(failed_transaction)
 
             return
 
@@ -192,60 +201,30 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
 
     def _transfer_back(self, transaction, receiver: TransactionReceiver, sender: TransactionSender, index,
                        failed_tx: FailedTransaction):
-        # fee to be used for the custom currency
+        # fee to be used for the waves transaction
         waves_fee = cast(int, self._fee_service.get_waves_fee())
-
-        # fee to be transferred to the Gateway owner
-        gateway_fee = cast(int, self._fee_service.get_gateway_fee())
 
         received_amount = cast(int, receiver.amount)
 
-        # because of transfering back in waves, the waves fee must be calculated, not coin fee
-        if self._only_one_transaction_receiver:
-            amount_after_fees = received_amount - 2 * waves_fee - gateway_fee
-        else:
-            amount_after_fees = received_amount - waves_fee - gateway_fee
+        amount_after_fees = received_amount - waves_fee
 
         attempt_list = self._attempt_list_storage.find_by_trigger(
             AttemptListTrigger(tx=transaction["tx"], currency="waves", receiver=index))
 
         if attempt_list is None:
             trigger = AttemptListTrigger(tx=transaction["tx"], currency="waves", receiver=index)
-
             attempts = list()
-
-            if self._only_one_transaction_receiver:
-                attempts.append(
-                    TransactionAttempt(
-                        sender=self._gateway_pywaves_address.address,
-                        fee=waves_fee,
-                        currency="waves",
-                        receivers=[TransactionAttemptReceiver(address=self._gateway_owner_address,
-                                                              amount=gateway_fee)]))
-
-                attempts.append(
+            attempts.append(
                     TransactionAttempt(
                         sender=self._gateway_pywaves_address.address,
                         fee=waves_fee,
                         currency="waves",
                         receivers=[TransactionAttemptReceiver(address=sender.address, amount=amount_after_fees)]))
-            else:
-                attempts.append(
-                    TransactionAttempt(
-                        sender=self._gateway_pywaves_address.address,
-                        fee=waves_fee,
-                        currency="waves",
-                        receivers=[
-                            TransactionAttemptReceiver(address=sender.address, amount=amount_after_fees),
-                            TransactionAttemptReceiver(address=self._gateway_owner_address, amount=gateway_fee)
-                        ]))
 
             attempt_list = TransactionAttemptList(
                 trigger, attempts, last_modified=datetime.datetime.utcnow(), created_at=datetime.datetime.utcnow())
-
             self._attempt_list_storage.safely_save_attempt_list(attempt_list)
             self._logger.info('Created new attempt list %s', str(attempt_list.attempt_list_id))
-
             failed_tx.set_back_transfer_attemptlist(attempt_list.attempt_list_id)
             self._failed_transaction_storage.save_failed_transaction(failed_tx)
 

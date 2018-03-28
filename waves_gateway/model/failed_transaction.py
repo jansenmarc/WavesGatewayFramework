@@ -17,34 +17,34 @@ class FailedTransaction(object):
     DICT_TRANSACTION = "transaction"
     DICT_BACK_TRANSFER_ATTEMPTLIST = "back_transfer_attemptlist"
 
-    def __init__(self, id: Optional[str], currency: str, cause: str, message: str, date, transaction: dict,
-                 back_transfer_attemptlist: Optional[str]) -> None:
-        self.cause = cause
+    def __init__(self, currency: str, cause: str, message: str, date, transaction: dict,
+                 back_transfer_attemptlist: Optional[str] = None, id: Optional[str] = None) -> None:
+        self._cause = cause
         self._currency = currency
         self._message = message
         self._date = date
         self._transaction = transaction
         self._back_transfer_attemptlist = back_transfer_attemptlist
 
-        if id is None or "":
+        if id is None:
             self._id = str(uuid4())
         else:
             self._id = id
 
     @property
-    def id(self):
+    def id(self) -> Optional[str]:
         return self._id
 
     @property
-    def currency(self):
+    def currency(self) -> str:
         return self._currency
 
     @property
-    def name(self):
-        return self.cause
+    def cause(self) -> str:
+        return self._cause
 
     @property
-    def message(self):
+    def message(self) -> str:
         return self._message
 
     @property
@@ -52,12 +52,15 @@ class FailedTransaction(object):
         return self._date
 
     @property
-    def transaction(self):
+    def transaction(self) -> dict:
         return self._transaction
 
     @property
-    def back_transfer_attemptlist(self):
+    def back_transfer_attemptlist(self)-> Optional[str]:
         return self._back_transfer_attemptlist
 
     def set_back_transfer_attemptlist(self, id):
         self._back_transfer_attemptlist = id
+
+    def set_cause(self, cause):
+        self._cause = cause
