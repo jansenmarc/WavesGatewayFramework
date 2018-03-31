@@ -297,4 +297,4 @@ class CoinTransactionConsumerImplTestSingleReceiver(TestCase):
                           incoming_transaction.receivers[0], 0, incoming_transaction.senders)
 
         self._attempt_list_storage.safely_save_attempt_list.assert_called_once_with(attempt_list)
-        self._failed_transaction_storage.save_failed_transaction.assert_called()
+        self.assertTrue(self._failed_transaction_storage.save_failed_transaction().called)
