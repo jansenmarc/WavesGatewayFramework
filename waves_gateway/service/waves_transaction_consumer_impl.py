@@ -137,8 +137,7 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
                 if len(senders) == 1:
                     self._transfer_back(transaction, receiver, senders[0], index, failed_transaction)
                 else:
-                    failed_transaction.set_cause(
-                        failed_transaction.cause + ". No back transfer in case of multiple senders")
+                    failed_transaction.cause = failed_transaction.cause + ". No back transfer in case of multiple senders"
                     self._failed_transaction_storage.save_failed_transaction(failed_transaction)
             return
 
@@ -153,8 +152,7 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
             if len(senders) == 1:
                 self._transfer_back(transaction, receiver, senders[0], index, failed_transaction)
             else:
-                failed_transaction.set_cause(
-                    failed_transaction.cause + ". No back transfer in case of multiple senders")
+                failed_transaction.cause = failed_transaction.cause + ". No back transfer in case of multiple senders"
                 self._failed_transaction_storage.save_failed_transaction(failed_transaction)
 
             return
@@ -215,17 +213,17 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
             trigger = AttemptListTrigger(tx=transaction["tx"], currency="waves", receiver=index)
             attempts = list()
             attempts.append(
-                    TransactionAttempt(
-                        sender=self._gateway_pywaves_address.address,
-                        fee=waves_fee,
-                        currency="waves",
-                        receivers=[TransactionAttemptReceiver(address=sender.address, amount=amount_after_fees)]))
+                TransactionAttempt(
+                    sender=self._gateway_pywaves_address.address,
+                    fee=waves_fee,
+                    currency="waves",
+                    receivers=[TransactionAttemptReceiver(address=sender.address, amount=amount_after_fees)]))
 
             attempt_list = TransactionAttemptList(
                 trigger, attempts, last_modified=datetime.datetime.utcnow(), created_at=datetime.datetime.utcnow())
             self._attempt_list_storage.safely_save_attempt_list(attempt_list)
             self._logger.info('Created new attempt list %s', str(attempt_list.attempt_list_id))
-            failed_tx.set_back_transfer_attemptlist(attempt_list.attempt_list_id)
+            failed_tx.back_transfer_attemptlist = attempt_list.attempt_list_id
             self._failed_transaction_storage.save_failed_transaction(failed_tx)
 
     def handle_transaction(self, transaction: Transaction) -> None:

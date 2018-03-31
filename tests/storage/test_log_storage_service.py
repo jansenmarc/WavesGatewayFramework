@@ -40,7 +40,7 @@ class LogStorageServiceTest(unittest.TestCase):
 
         messages = self._log_storage_service.get_messages()
 
-        self._collection.find.assert_called()
+        self._collection.find.assert_called_once_with()
         self.assertEqual(messages, [{
             "id": "12345",
             "date": "2018-03-02T09:12:33",

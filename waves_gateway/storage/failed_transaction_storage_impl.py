@@ -49,21 +49,21 @@ class FailedTransactionStorageImpl(FailedTransactionStorage):
             res.append(self._failed_transaction_as_dict(self._cursor_as_failed_transaction(each)))
         return res
 
-    def _failed_transaction_as_dict(self, gateway_event: FailedTransaction) -> dict:
+    def _failed_transaction_as_dict(self, failed_transaction: FailedTransaction) -> dict:
         """
         inherit
         """
         res = dict()
 
-        res[FailedTransaction.DICT_ID] = gateway_event.id
-        res[FailedTransaction.DICT_CURRENCY] = gateway_event.currency
-        res[FailedTransaction.DICT_CAUSE] = gateway_event.cause
-        res[FailedTransaction.DICT_MESSAGE] = gateway_event.message
-        res[FailedTransaction.DICT_DATE] = gateway_event.date
-        res[FailedTransaction.DICT_TRANSACTION] = gateway_event.transaction
+        res[FailedTransaction.DICT_ID] = failed_transaction.id
+        res[FailedTransaction.DICT_CURRENCY] = failed_transaction.currency
+        res[FailedTransaction.DICT_CAUSE] = failed_transaction.cause
+        res[FailedTransaction.DICT_MESSAGE] = failed_transaction.message
+        res[FailedTransaction.DICT_DATE] = failed_transaction.date
+        res[FailedTransaction.DICT_TRANSACTION] = failed_transaction.transaction
 
-        if gateway_event.back_transfer_attemptlist:
-            res[FailedTransaction.DICT_BACK_TRANSFER_ATTEMPTLIST] = gateway_event.back_transfer_attemptlist
+        if failed_transaction.back_transfer_attemptlist:
+            res[FailedTransaction.DICT_BACK_TRANSFER_ATTEMPTLIST] = failed_transaction.back_transfer_attemptlist
 
         return res
 
@@ -76,6 +76,6 @@ class FailedTransactionStorageImpl(FailedTransactionStorage):
                                      cursor[FailedTransaction.DICT_DATE], cursor[FailedTransaction.DICT_TRANSACTION],
                                      None)
         if FailedTransaction.DICT_BACK_TRANSFER_ATTEMPTLIST in cursor:
-            failed_t.set_back_transfer_attemptlist(cursor[FailedTransaction.DICT_BACK_TRANSFER_ATTEMPTLIST])
+            failed_t.back_transfer_attemptlist = cursor[FailedTransaction.DICT_BACK_TRANSFER_ATTEMPTLIST]
 
         return failed_t

@@ -248,7 +248,8 @@ class CoinTransactionConsumerImplTestSingleReceiver(TestCase):
         self._public_configuration.custom_currency_name.return_value = "Dash"
 
         self._coin_transaction_consumer_impl.handle_transaction(incoming_transaction)
-        self._failed_transaction_storage.save_failed_transaction.assert_called()
+        self.assertTrue(self._failed_transaction_storage.save_failed_transaction.called)
+
 
     @patch('datetime.datetime', autospec=True)
     def test_case_transfer_back(self, magicMock: MagicMock):

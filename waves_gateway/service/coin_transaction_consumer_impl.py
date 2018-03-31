@@ -135,8 +135,7 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
                       "required amount. Will be skipped, but marked as processed."
             self._logger.warn(message)
 
-            failed_transaction = FailedTransaction(self._public_configuration.custom_currency_name,
-                                                   "amount too small",
+            failed_transaction = FailedTransaction(self._public_configuration.custom_currency_name, "amount too small",
                                                    str(message).format(), datetime.datetime.now(), {
                                                        "tx": tx,
                                                        "receiver": receiver.address,
@@ -151,7 +150,8 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
         # already be prevented by the filter method
         if receiver_waves_address is None:
             transaction = {"tx": tx, "receiver": receiver.address, "amount": receiver.amount, "senders": sender_array}
-            failed_transaction = FailedTransaction(self._public_configuration.custom_currency_name, "no mapping was found",
+            failed_transaction = FailedTransaction(
+                self._public_configuration.custom_currency_name, "no mapping was found",
                 "No mapping was found for some reason. This in an internal error as this should already be prevented by the filter method",
                 datetime.datetime.now(), transaction)
 
@@ -263,7 +263,7 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
             self._attempt_list_storage.safely_save_attempt_list(attempt_list)
             self._logger.info('Created new attempt list %s', str(attempt_list.attempt_list_id))
 
-            failed_tx.set_back_transfer_attemptlist(attempt_list.attempt_list_id)
+            failed_tx.back_transfer_attemptlist = attempt_list.attempt_list_id
             self._failed_transaction_storage.save_failed_transaction(failed_tx)
 
     def handle_transaction(self, transaction: Transaction) -> None:

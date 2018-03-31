@@ -252,7 +252,7 @@ class WavesTransactionConsumerImplTestSingleReceiver(TestCase):
         tx = "78265"
 
         self._waves_transaction_consumer_impl._handle_receiver(tx, self._gateway_waves_receiver, 0)
-        self._failed_transaction_storage.save_failed_transaction.assert_called()
+        self.assertTrue(self._failed_transaction_storage.save_failed_transaction.called)
 
     @patch('datetime.datetime', autospec=True)
     def test_transfer_back(self, mock_datetime: MagicMock):
@@ -284,5 +284,5 @@ class WavesTransactionConsumerImplTestSingleReceiver(TestCase):
 
         self._waves_transaction_consumer_impl._handle_receiver(tx, self._gateway_waves_receiver, 0,
                                                                [TransactionSender(sender_address)])
-        self._failed_transaction_storage.save_failed_transaction.assert_called()
+        self.assertTrue(self._failed_transaction_storage.save_failed_transaction.called)
         self._attempt_list_storage.safely_save_attempt_list.assert_called_once_with(attempt_list)

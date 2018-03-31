@@ -47,7 +47,7 @@ class FlaskRestController(object):
 
     def __init__(self, flask: Any, gateway_controller: GatewayController, logger: Logger,
                  attempt_list_serializer: TransactionAttemptListSerializer, public_configuration: PublicConfiguration,
-                 public_configuration_serializer: PublicConfigurationSerializer, api_key: API_KEY) -> None:
+                 public_configuration_serializer: PublicConfigurationSerializer, api_key: str) -> None:
         self._flask = flask
         self._gateway_controller = gateway_controller
         self._logger = logger.getChild(self.__class__.__name__)
@@ -226,9 +226,9 @@ class FlaskRestController(object):
         key = flask_module.request.headers['api-key']
         if key is not None and key == self._key:
             attempt_list_id = flask_module.request.args.get('attempt_list_id')  # type: Optional[str]
-            res = self._gateway_controller.trigger_attemptlist_retry(attempt_list_id)
-            if res is True:
-                return res
+            retry_was_successful = self._gateway_controller.trigger_attemptlist_retry(attempt_list_id)
+            if retry_was_successful:
+                return
             else:
                 flask_module.abort(400)
         else:
