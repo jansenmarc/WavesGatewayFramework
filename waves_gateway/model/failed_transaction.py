@@ -22,7 +22,7 @@ class FailedTransaction(object):
                  cause: str,
                  message: str,
                  date,
-                 transaction: dict,
+                 transaction,
                  back_transfer_attemptlist: Optional[str] = None,
                  id: Optional[str] = None) -> None:
         self._cause = cause
@@ -46,10 +46,6 @@ class FailedTransaction(object):
         return self._currency
 
     @property
-    def cause(self) -> str:
-        return self._cause
-
-    @property
     def message(self) -> str:
         return self._message
 
@@ -58,7 +54,7 @@ class FailedTransaction(object):
         return self._date
 
     @property
-    def transaction(self) -> dict:
+    def transaction(self):
         return self._transaction
 
     @property
@@ -69,6 +65,10 @@ class FailedTransaction(object):
     def back_transfer_attemptlist(self, id):
         self._back_transfer_attemptlist = id
 
+    @property
+    def cause(self) -> str:
+        return self._cause
+
     @cause.setter
-    def cause(self, cause: str):
-        self._cause = cause
+    def cause(self, cause_: str):
+        self._cause = cause_
