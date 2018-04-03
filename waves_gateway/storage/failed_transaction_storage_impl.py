@@ -71,10 +71,10 @@ class FailedTransactionStorageImpl(FailedTransactionStorage):
         """
         inherit
         """
-        failed_t = FailedTransaction(cursor[FailedTransaction.DICT_ID], cursor[FailedTransaction.DICT_CURRENCY],
-                                     cursor[FailedTransaction.DICT_CAUSE], cursor[FailedTransaction.DICT_MESSAGE],
-                                     cursor[FailedTransaction.DICT_DATE], cursor[FailedTransaction.DICT_TRANSACTION],
-                                     None)
+        failed_t = FailedTransaction(cursor[FailedTransaction.DICT_CURRENCY], cursor[FailedTransaction.DICT_CAUSE],
+                                     cursor[FailedTransaction.DICT_MESSAGE], cursor[FailedTransaction.DICT_DATE],
+                                     cursor[FailedTransaction.DICT_TRANSACTION], None,
+                                     cursor[FailedTransaction.DICT_ID])
         if FailedTransaction.DICT_BACK_TRANSFER_ATTEMPTLIST in cursor:
             failed_t.back_transfer_attemptlist = cursor[FailedTransaction.DICT_BACK_TRANSFER_ATTEMPTLIST]
 
