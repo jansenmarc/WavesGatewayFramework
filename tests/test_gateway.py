@@ -164,7 +164,7 @@ class GatewayTest(TestCase):
         test_dependency_map = dict()
         self._test_injector = Injector(dependency_map=test_dependency_map)
 
-    @patch('waves_gateway.common.INJECTOR', autospec=True)
+    @patch('waves_gateway.common.CHILD_INJECTOR', autospec=True)
     @patch('pywaves.setNode', autospec=True)
     def test_gateway_init(self, mock_set_node: MagicMock, mock_injector: MagicMock):
         mock_injector.get.side_effect = self._test_injector.get
@@ -226,7 +226,6 @@ class GatewayTest(TestCase):
             self._test_injector.get(TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME),
             Gateway.DEFAULT_ATTEMPT_LIST_STORAGE_COLLECTION_NAME)
         self.assertIs(self._test_injector.get(GATEWAY_COIN_ADDRESS_SECRET), gateway_coin_address_secret)
-        self.assertIs(self._test_injector.get(GATEWAY_COIN_ADDRESS), gateway_coin_address_secret.public)
         self.assertIs(self._test_injector.get(WAVES_NODE), waves_node)
         self.assertIs(self._test_injector.get(WAVES_ASSET_ID), waves_asset_id)
         self.assertIs(self._test_injector.get(WAVES_CHAIN), Gateway.DEFAULT_WAVES_CHAIN)
@@ -235,5 +234,4 @@ class GatewayTest(TestCase):
         self.assertIs(self._test_injector.get(COIN_ADDRESS_VALIDATION_SERVICE), coin_address_validation_service)
         self.assertIs(self._test_injector.get(ATTEMPT_LIST_MAX_COMPLETION_TRIES), Gateway.DEFAULT_MAX_COMPLETION_TRIES)
         self.assertIs(self._test_injector.get(GATEWAY_WAVES_ADDRESS_SECRET), gateway_waves_address_secret)
-        self.assertIs(self._test_injector.get(GATEWAY_WAVES_ADDRESS), gateway_waves_address_secret.public)
         self.assertIs(self._test_injector.get(MongoDatabase), mongo_database)

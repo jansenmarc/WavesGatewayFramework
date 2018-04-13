@@ -3,8 +3,13 @@ Injector
 """
 
 from typing import List, Any, Dict, Optional, Callable, Union, NewType, Type
+
+from gevent import pool
+
 from .exceptions import InjectorError
 from .utils import map_array
+from copy import copy
+from inspect import getdoc
 
 
 class InjectionToken(object):
@@ -12,7 +17,7 @@ class InjectionToken(object):
     Represents a token that can be used to inject something.
     """
 
-    def __init__(self, name: str, _type: Optional[Any] = None) -> None:
+    def __init__(self, name: str, _type: Optional[Any] = Any) -> None:
         self._name = name
         self._type = _type
 
@@ -21,6 +26,14 @@ class InjectionToken(object):
             return '(' + self._name + ', ' + str(self._type.__name__) + ')'
         else:
             return self._name
+
+    @property
+    def type(self) -> Optional[Any]:
+        return self._type
+
+    @property
+    def name(self) -> str:
+        return self._name
 
 
 Token = Union[Callable, str, InjectionToken]
@@ -77,6 +90,7 @@ class DependencyConfiguration(object):
 
 
 GLOBAL_DEPENDENCY_MAP = dict()  # type: Dict[Token, DependencyConfiguration]
+CHILD_DEPENDENCY_MAP = dict()  # type: Dict[Token, DependencyConfiguration]
 
 
 class Injector(object):
@@ -87,8 +101,13 @@ class Injector(object):
     injector.
     """
 
-    def __init__(self, dependency_map: Dict[Token, Any]) -> None:
+    def __init__(self, dependency_map: Dict[Token, Any], parent: Any = None) -> None:
         self._dependency_map = dependency_map
+
+        if parent is not None and not isinstance(parent, Injector):
+            raise TypeError("parent must be of type Injector")
+
+        self._parent = parent  # type: Injector
 
     def provide(self, token: Token, instance: Any, weak=False) -> None:
         if token in self._dependency_map and self._dependency_map[token].weak is False:
@@ -107,9 +126,33 @@ class Injector(object):
         """Returns whether the given token is registered in this injector or one of its parents (if any)."""
         return token in self._dependency_map
 
+    def _create_provider_not_resolved_message(self, token: Token) -> str:
+        res = ""
+
+        res += "The initialization of the Gateway-Framework has failed.\n"
+        res += "Some dependencies could not be automatically resolved.\n"
+
+        doc_header = "\n\n*********************Documentation*********************\n"
+
+        if not isinstance(token, InjectionToken):
+            res += "Cannot resolve required provider: " + str(token) + ".\n"
+            res += doc_header
+            res += getdoc(token)
+        elif isinstance(token, InjectionToken):
+            res += "Cannot resolve required provider '" + token.name + "' of type '" + str(token.type) + "'.\n"
+
+            if token.type is not None:
+                res += doc_header
+                res += getdoc(token.type)
+
+        return res
+
     def get(self, token: Token) -> Any:
         if not self.is_registered(token):
-            raise InjectorError("Cannot provide " + str(token))
+            if self._parent is not None and self._parent.is_registered(token):
+                self._dependency_map[token] = copy(self._parent._dependency_map[token])
+            else:
+                raise InjectorError(self._create_provider_not_resolved_message(token))
 
         if self._dependency_map[token].instance is not None:
             return self._dependency_map[token].instance
@@ -167,6 +210,7 @@ class Injector(object):
 
 
 INJECTOR = Injector(GLOBAL_DEPENDENCY_MAP)
+CHILD_INJECTOR = Injector(CHILD_DEPENDENCY_MAP, INJECTOR)
 
 INJECTOR.provide(Injector, INJECTOR)
 
@@ -212,6 +256,20 @@ class Injectable(object):
         return clazz
 
 
+class ChildInjectable(Injectable):
+    """
+    Declares the annotated class to be injectable. Uses the child dependency_map by default.
+    """
+
+    def __init__(self,
+                 provides: Optional[Token] = None,
+                 deps: List[Token] = None,
+                 dependency_map: Dict[Token, DependencyConfiguration] = CHILD_DEPENDENCY_MAP,
+                 opt_deps: List[Token] = None,
+                 weak: bool = False) -> None:
+        super().__init__(provides, deps, dependency_map, opt_deps, weak)
+
+
 class Factory(object):
     """
     Declares an annotated function to be a factory for something that is injectable.
@@ -247,3 +305,19 @@ class Factory(object):
             factory=lambda injector: injector.invoke(self._deps, func, self._opt_deps), weak=self._weak)
 
         return func
+
+
+class ChildFactory(Factory):
+    """
+    Declares an annotated function to be a factory for something that is injectable.
+    The factory function itself can have dependencies and provides a token.
+    Uses the child dependency_map by default.
+    """
+
+    def __init__(self,
+                 provides: Token,
+                 deps: List[Token] = None,
+                 opt_deps: List[Token] = None,
+                 dependency_map: Dict[Token, DependencyConfiguration] = CHILD_DEPENDENCY_MAP,
+                 weak: bool = False) -> None:
+        super().__init__(provides, deps, opt_deps, dependency_map, weak)

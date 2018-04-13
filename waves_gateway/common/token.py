@@ -3,11 +3,16 @@ Collection of common tokens in th Application.
 """
 
 import pywaves
+from typing import Union
+
+from decimal import Decimal
+
 from waves_gateway.model import KeyPair
 from .injector import InjectionToken
 from pymongo.collection import Collection
 
 LOGGING_HANDLER_LIST = InjectionToken('LOGGING_HANDLER_LIST', list)
+INSTANTIATED_MANAGED_LOGGER_LIST = InjectionToken('INSTANTIATED_MANAGED_LOGGER_LIST', list)
 MANAGED_LOGGER_LIST = InjectionToken('MANAGED_LOGGER_LIST', list)
 POLLING_DELAY_SECONDS = InjectionToken('POLLING_DELAY_SECONDS', float)
 CUSTOM_CURRENCY_NAME = InjectionToken('CUSTOM_CURRENCY_NAME', str)
@@ -47,3 +52,9 @@ WAVES_MAX_HANDLE_TRANSACTION_TRIES = InjectionToken('WAVES_MAX_HANDLE_TRANSACTIO
 WAVES_LAST_BLOCK_DISTANCE = InjectionToken('WAVES_LAST_BLOCK_DISTANCE', int)
 COIN_LAST_BLOCK_DISTANCE = InjectionToken('COIN_LAST_BLOCK_DISTANCE', int)
 WEB_PRIMARY_COLOR = InjectionToken('WEB_PRIMARY_COLOR', str)
+GATEWAY_FEE = InjectionToken('GATEWAY_FEE', Union[int, Decimal])
+COIN_FEE = InjectionToken('COIN_FEE', Union[int, Decimal])
+WAVES_FEE = InjectionToken('WAVES_FEE', int)
+MONGODB_DB_NAME = InjectionToken('MONGODB_DB_NAME', str)
+MONGODB_HOST = InjectionToken('MONGODB_HOST', str)
+MONGODB_PORT = InjectionToken('MONGODB_PORT', int)

@@ -25,3 +25,8 @@ class GatewayConfigFile(object):
         self.environment = None  # type: Optional[str]
         self.gateway_host = None  # type: Optional[str]
         self.gateway_port = None  # type: Optional[int]
+        self.transaction_web_link = None  # type: Optional[str]
+        self.address_web_link = None  # type: Optional[str]
+        self.custom_currency_name = None  # type: Optional[str]
+        self.waves_asset_id = None  # type: Optional[str]
+        self.web_primary_color = None  # type: Optional[str]

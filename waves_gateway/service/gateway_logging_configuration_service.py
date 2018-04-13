@@ -5,10 +5,10 @@ GatewayLoggingConfigurationService
 from logging import Logger, Handler
 from typing import Optional, Union, List
 
-from waves_gateway.common import Injectable, LOGGING_HANDLER_LIST, MANAGED_LOGGER_LIST
+from waves_gateway.common import Injectable, LOGGING_HANDLER_LIST, INSTANTIATED_MANAGED_LOGGER_LIST
 
 
-@Injectable(deps=[Logger, LOGGING_HANDLER_LIST, MANAGED_LOGGER_LIST])
+@Injectable(deps=[Logger, LOGGING_HANDLER_LIST, INSTANTIATED_MANAGED_LOGGER_LIST])
 class GatewayLoggingConfigurationService(object):
     """
     Controls the logging of the Gateway.

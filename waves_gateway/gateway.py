@@ -4,16 +4,18 @@ Gateway
 
 import logging
 import os
-from typing import Optional, List
+from typing import Optional, List, Any
 
 import flask  # type: ignore
+import pymongo
 import pywaves  # type: ignore
+import gevent
 
 from flask import Flask
 
 from waves_gateway.service import COIN_TRANSACTION_POLLING_SERVICE, \
     WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, IntegerConverterService
-from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, MANAGED_LOGGER_LIST, POLLING_DELAY_SECONDS, \
+from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, INSTANTIATED_MANAGED_LOGGER_LIST, POLLING_DELAY_SECONDS, \
     CUSTOM_CURRENCY_NAME, GATEWAY_OWNER_ADDRESS, WALLET_STORAGE_COLLECTION_NAME, MAP_STORAGE_COLLECTION_NAME, \
     KEY_VALUE_STORAGE_COLLECTION_NAME, TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME, GATEWAY_COIN_ADDRESS_SECRET, \
     GATEWAY_COIN_ADDRESS, WAVES_NODE, WAVES_ASSET_ID, WAVES_CHAIN, ONLY_ONE_TRANSACTION_RECEIVER, \
@@ -22,7 +24,8 @@ from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, MANAGED_LOGGER_L
     GATEWAY_HOST, GATEWAY_PORT, WALLET_STORAGE_COLLECTION, MAP_STORAGE_COLLECTION, KEY_VALUE_STORAGE_COLLECTION, \
     TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION, GATEWAY_PYWAVES_ADDRESS, COIN_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, \
     WAVES_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, FLASK_NAME, COIN_MAX_HANDLE_TRANSACTION_TRIES, \
-    WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE, COIN_LAST_BLOCK_DISTANCE, WEB_PRIMARY_COLOR
+    WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE, COIN_LAST_BLOCK_DISTANCE, WEB_PRIMARY_COLOR, \
+    CHILD_INJECTOR, Token, INJECTOR, MANAGED_LOGGER_LIST, MONGODB_HOST, MONGODB_PORT, MONGODB_DB_NAME
 from waves_gateway.model import PollingDelayConfig
 from waves_gateway.factory import CoinAddressFactory
 
@@ -47,7 +50,7 @@ def flask_factory(flask_name: str):
     return flask.Flask(flask_name, static_folder=os.path.join(directory, 'static'))
 
 
-@Factory(logging.Logger, deps=[Flask, LOGGING_HANDLER_LIST, MANAGED_LOGGER_LIST])
+@Factory(logging.Logger, deps=[Flask, LOGGING_HANDLER_LIST, INSTANTIATED_MANAGED_LOGGER_LIST])
 def logger_factory(flask: Flask, logging_handlers: List[logging.Handler], managed_loggers: List[logging.Logger]):
     """Creates the major logger instance of the Gateway."""
     logger = flask.logger
@@ -104,8 +107,12 @@ def collection_factory(collection_name: str, database: MongoDatabase):
 @Factory(GATEWAY_PYWAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET, WAVES_NODE, WAVES_CHAIN])
 def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair, waves_node: str, waves_chain: str):
     """Creates an address instance from the pywaves library that represents the Gateway waves address."""
+    timeout = gevent.Timeout(10, Exception("Failed to communicate with Waves node - Timeout after 10 seconds"))
+    timeout.start()
     pywaves.setNode(waves_node, waves_chain)
-    return pywaves.Address(gateway_waves_address_secret.public, privateKey=gateway_waves_address_secret.secret)
+    address = pywaves.Address(gateway_waves_address_secret.public, privateKey=gateway_waves_address_secret.secret)
+    timeout.cancel()
+    return address
 
 
 @Factory(
@@ -217,6 +224,38 @@ def waves_transaction_web_link_factory(waves_chain: str):
         return 'https://wavesexplorer.com/tx/{{tx}}'
 
 
+@Factory(INSTANTIATED_MANAGED_LOGGER_LIST, deps=[MANAGED_LOGGER_LIST])
+def instantiated_managed_loggers_factory(managed_loggers: List[str]) -> List[logging.Logger]:
+    """Extends the provided list of managed_loggers and creates a list of Logger instances."""
+    res = list()  # type: List[logging.Logger]
+
+    if managed_loggers is None:
+        managed_loggers = list()
+
+    if "werkzeug" not in managed_loggers:
+        managed_loggers.append("werkzeug")
+
+    for logger_name in managed_loggers:
+        logger_instance = logging.getLogger(logger_name)
+        logger_instance.handlers = []
+        logger_instance.setLevel(logging.DEBUG)
+        res.append(logger_instance)
+
+    return res
+
+
+@Factory(GATEWAY_COIN_ADDRESS, deps=[GATEWAY_COIN_ADDRESS_SECRET])
+def gateway_coin_address_factory(gateway_coin_address_secret: common.KeyPair):
+    """Forwards to the public part of gateway_coin_address_secret."""
+    return gateway_coin_address_secret.public
+
+
+@Factory(GATEWAY_WAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET])
+def gateway_waves_address_factory(gateway_waves_address_secret: common.KeyPair):
+    """Forwards to the public part of gateway_waves_address_secret."""
+    return gateway_waves_address_secret.public
+
+
 class Gateway(object):
     """
     Provides the configuration for the Gateway.
@@ -260,23 +299,9 @@ class Gateway(object):
     DEFAULT_COIN_LAST_BLOCK_DISTANCE = 0
     DEFAULT_WAVES_LAST_BLOCK_DISTANCE = 1
     DEFAULT_WEB_PRIMARY_COLOR = '#2196f3'
-
-    def _init_managed_loggers(self, managed_loggers: List[str]) -> None:
-        res = list()  # type: List[logging.Logger]
-
-        if managed_loggers is None:
-            managed_loggers = list()
-
-        if "werkzeug" not in managed_loggers:
-            managed_loggers.append("werkzeug")
-
-        for logger_name in managed_loggers:
-            logger_instance = logging.getLogger(logger_name)
-            logger_instance.handlers = []
-            logger_instance.setLevel(logging.DEBUG)
-            res.append(logger_instance)
-
-        self._injector.overwrite(MANAGED_LOGGER_LIST, res)
+    DEFAULT_MANAGED_LOGGERS = list()  # type: List[str]
+    DEFAULT_MONGO_DATABASE_NAME = 'waves-gateway'
+    DEFAULT_ONLY_ONE_TRANSACTION_RECEIVER = False
 
     def __init__(self,
                  coin_address_factory: factory.CoinAddressFactory,
@@ -299,7 +324,7 @@ class Gateway(object):
                  only_one_transaction_receiver: bool = False,
                  custom_currency_name: str = DEFAULT_CUSTOM_CURRENCY_NAME,
                  logging_handlers: Optional[list] = None,
-                 managed_loggers: List[str] = list(),
+                 managed_loggers: List[str] = DEFAULT_MANAGED_LOGGERS,
                  attempt_list_max_completion_tries: int = DEFAULT_MAX_COMPLETION_TRIES,
                  host: str = DEFAULT_HOSTNAME,
                  port: int = DEFAULT_PORT,
@@ -422,7 +447,7 @@ class Gateway(object):
             This may be used to prevent a check of the highest block.
 
         """
-        self._injector = common.INJECTOR
+        self._injector = common.CHILD_INJECTOR
         self._injector.overwrite(CoinAddressFactory, coin_address_factory)
         self._injector.overwrite(COIN_CHAIN_QUERY_SERVICE, coin_chain_query_service)
         self._injector.overwrite_if_exists(LOGGING_HANDLER_LIST, logging_handlers)
@@ -436,7 +461,6 @@ class Gateway(object):
         self._injector.overwrite(TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME,
                                  transaction_attempt_list_storage_collection_name)
         self._injector.overwrite(GATEWAY_COIN_ADDRESS_SECRET, gateway_coin_address_secret)
-        self._injector.overwrite(GATEWAY_COIN_ADDRESS, gateway_coin_address_secret.public)
         self._injector.overwrite(WAVES_NODE, waves_node)
         self._injector.overwrite(WAVES_ASSET_ID, waves_asset_id)
         self._injector.overwrite(WAVES_CHAIN, waves_chain)
@@ -448,7 +472,6 @@ class Gateway(object):
         self._injector.overwrite(COIN_ADDRESS_VALIDATION_SERVICE, coin_address_validation_service)
         self._injector.overwrite(ATTEMPT_LIST_MAX_COMPLETION_TRIES, attempt_list_max_completion_tries)
         self._injector.overwrite(GATEWAY_WAVES_ADDRESS_SECRET, gateway_waves_address_secret)
-        self._injector.overwrite(GATEWAY_WAVES_ADDRESS, gateway_waves_address_secret.public)
         self._injector.overwrite_if_exists(MongoDatabase, mongo_database)
         self._injector.overwrite_if_exists(storage.KeyValueStorage, key_value_storage)
         self._injector.overwrite_if_exists(storage.MapStorage, map_storage)
@@ -461,14 +484,12 @@ class Gateway(object):
         self._injector.overwrite(NUM_ATTEMPT_LIST_WORKERS, num_attempt_list_workers)
         self._injector.overwrite(GATEWAY_HOST, host)
         self._injector.overwrite(GATEWAY_PORT, port)
-        self._injector.overwrite(FLASK_NAME, Gateway.DEFAULT_FLASK_NAME)
         self._injector.overwrite(COIN_MAX_HANDLE_TRANSACTION_TRIES, coin_max_handle_transaction_tries)
         self._injector.overwrite(WAVES_MAX_HANDLE_TRANSACTION_TRIES, waves_max_handle_transaction_tries)
         self._injector.overwrite(COIN_LAST_BLOCK_DISTANCE, coin_last_block_distance)
         self._injector.overwrite(WAVES_LAST_BLOCK_DISTANCE, waves_last_block_distance)
         self._injector.overwrite(WEB_PRIMARY_COLOR, web_primary_color)
-
-        self._init_managed_loggers(managed_loggers)
+        self._injector.overwrite(MANAGED_LOGGER_LIST, managed_loggers)
 
         self._application_service = self._injector.get(
             service.GatewayApplicationService)  # type: service.GatewayApplicationService
@@ -479,3 +500,55 @@ class Gateway(object):
 
         self.set_log_level = self._logging_service.set_log_level
         self.run = self._application_service.run
+
+
+INJECTOR.provide(FLASK_NAME, Gateway.DEFAULT_FLASK_NAME)
+INJECTOR.provide(MANAGED_LOGGER_LIST, Gateway.DEFAULT_MANAGED_LOGGERS)
+INJECTOR.provide(GATEWAY_HOST, Gateway.DEFAULT_HOSTNAME)
+INJECTOR.provide(GATEWAY_PORT, Gateway.DEFAULT_PORT)
+INJECTOR.provide(WAVES_CHAIN, Gateway.DEFAULT_WAVES_CHAIN)
+INJECTOR.provide(NUM_ATTEMPT_LIST_WORKERS, Gateway.DEFAULT_NUM_ATTEMPT_LIST_WORKERS)
+INJECTOR.provide(ATTEMPT_LIST_MAX_COMPLETION_TRIES, Gateway.DEFAULT_MAX_COMPLETION_TRIES)
+INJECTOR.provide(WALLET_STORAGE_COLLECTION_NAME, Gateway.DEFAULT_WALLET_STORAGE_COLLECTION_NAME)
+INJECTOR.provide(MAP_STORAGE_COLLECTION_NAME, Gateway.DEFAULT_MAP_STORAGE_COLLECTION_NAME)
+INJECTOR.provide(TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME, Gateway.DEFAULT_ATTEMPT_LIST_STORAGE_COLLECTION_NAME)
+INJECTOR.provide(KEY_VALUE_STORAGE_COLLECTION_NAME, Gateway.DEFAULT_KEY_VALUE_STORAGE_COLLECTION_NAME)
+INJECTOR.provide(ONLY_ONE_TRANSACTION_RECEIVER, Gateway.DEFAULT_ONLY_ONE_TRANSACTION_RECEIVER)
+INJECTOR.provide(COIN_MAX_HANDLE_TRANSACTION_TRIES, Gateway.DEFAULT_COIN_MAX_HANDLE_TRANSACTION_TRIES)
+INJECTOR.provide(WAVES_MAX_HANDLE_TRANSACTION_TRIES, Gateway.DEFAULT_WAVES_MAX_HANDLE_TRANSACTION_TRIES)
+INJECTOR.provide(COIN_LAST_BLOCK_DISTANCE, Gateway.DEFAULT_COIN_LAST_BLOCK_DISTANCE)
+INJECTOR.provide(WAVES_LAST_BLOCK_DISTANCE, Gateway.DEFAULT_WAVES_LAST_BLOCK_DISTANCE)
+
+
+@Factory(MongoDatabase, opt_deps=[MONGODB_HOST, MONGODB_PORT, MONGODB_DB_NAME])
+def pymongo_factory(mongo_host: Optional[str] = None,
+                    mongo_port: Optional[int] = None,
+                    db_name: Optional[str] = Gateway.DEFAULT_MONGO_DATABASE_NAME) -> pymongo.MongoClient:
+    """Provides a default MongoDatabase instance based on the provided configuration."""
+    return pymongo.MongoClient(host=mongo_host, port=mongo_port).get_database(db_name)
+
+
+def define(token: Token, value: Any):
+    """Provides a specific value associated to a token."""
+    CHILD_INJECTOR.provide(token, value)
+
+
+def run():
+    """
+    Starts the Gateway. Resolves all dependencies, loads any configuration files if available, constructs all instances
+    and finally starts the workers.
+    """
+    config_parser = CHILD_INJECTOR.get(service.GatewayConfigParser)  # type: service.GatewayConfigParser
+
+    if os.path.isfile("config.cfg"):
+        config_file = config_parser.parse_config_file("config.cfg")
+        config_parser.populate_injector(config_file, CHILD_INJECTOR)
+
+    logger = CHILD_INJECTOR.get(logging.Logger).getChild("run")  # type: logging.Logger
+    logger.info("Resolving dependencies...")
+
+    app_service = CHILD_INJECTOR.get(service.GatewayApplicationService)  # type: service.GatewayApplicationService
+    CHILD_INJECTOR.get(controller.FlaskRestController)
+    logger.info("Successfully collected all dependencies")
+
+    app_service.run()

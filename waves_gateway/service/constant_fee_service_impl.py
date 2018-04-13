@@ -6,9 +6,11 @@ from typing import Optional, Union
 
 from decimal import Decimal
 
+from waves_gateway.common import Injectable, GATEWAY_FEE, COIN_FEE, WAVES_FEE
 from .fee_service import FeeService
 
 
+@Injectable(FeeService, deps=[GATEWAY_FEE, COIN_FEE], opt_deps=[WAVES_FEE])
 class ConstantFeeServiceImpl(FeeService):
     """
     Implements a FeeService that uses constant values.
