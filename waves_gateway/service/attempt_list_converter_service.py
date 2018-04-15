@@ -39,10 +39,12 @@ class AttemptListConverterService(object):
                 TransactionAttemptReceiver(
                     amount=cv.revert_amount_conversion(amount), address=attempt.receivers[i].address))
 
-        fee = cast(int, attempt.fee)  # type: int
+        fee = attempt.fee
 
-        return TransactionAttempt(
-            receivers=receivers, fee=cv.revert_amount_conversion(fee), sender=attempt.sender, currency=attempt.currency)
+        if attempt.currency == "coin":
+            fee = cv.revert_amount_conversion(cast(int, fee))
+
+        return TransactionAttempt(receivers=receivers, fee=fee, sender=attempt.sender, currency=attempt.currency)
 
     def revert_attempt_list_conversion(self, attempt_list: TransactionAttemptList):
         converted_attempts = []
