@@ -1,21 +1,27 @@
 <div class="jumbotron">
-  <h1 class="display-3 d-none d-md-block">{{publicConfiguration.custom_currency_name}} Gateway</h1>
-  <p class="lead">
-      You need to request a {{publicConfiguration.custom_currency_name}} address for the Gateway.
-      Please provide the Waves address you want your {{publicConfiguration.custom_currency_name}} asset to be transferred to.
-      Finally, transfer the wished amount of {{publicConfiguration.custom_currency_name}} to the generated address and the Gateway will
-      transfer the equivalent amount of {{publicConfiguration.custom_currency_name}} asset to your Waves address.
-  </p>
-  <hr class="my-4">
+    <h1 class="display-3 d-none d-md-block">{{publicConfiguration.custom_currency_name}} Gateway</h1>
+    <p class="lead">
+        You need to request a {{publicConfiguration.custom_currency_name}} address for the Gateway.
+        Please provide the Waves address you want your {{publicConfiguration.custom_currency_name}} asset to be
+        transferred to.
+        Finally, transfer the wished amount of {{publicConfiguration.custom_currency_name}} to the generated address and
+        the Gateway will
+        transfer the equivalent amount of {{publicConfiguration.custom_currency_name}} asset to your Waves address.
+    </p>
+    <hr class="my-4">
     <form class="form row justify-content-center align-items-center" [formGroup]="addressFactoryForm"
           (ngSubmit)="onSubmit()">
 
         <div class="col-md-4 col-sm-12">
             <div class="form-group" [class.has-danger]="wavesAddressControl.touched && wavesAddressControl.invalid">
                 <label for="wavesAddress" class="control-label">Waves Address</label>
-                <input type="text" class="form-control" id="wavesAddress" formControlName="wavesAddress" autocomplete="off">
-                <div class="form-control-feedback" *ngIf="wavesAddressControl.hasError('wavesAddressInvalid')">Not a valid Waves address</div>
-                <div class="form-control-feedback" *ngIf="wavesAddressControl.hasError('serverError')">Unknown error</div>
+                <input type="text" class="form-control" id="wavesAddress" formControlName="wavesAddress"
+                       autocomplete="off">
+                <div class="form-control-feedback" *ngIf="wavesAddressControl.hasError('wavesAddressInvalid')">Not a
+                    valid Waves address
+                </div>
+                <div class="form-control-feedback" *ngIf="wavesAddressControl.hasError('serverError')">Unknown error
+                </div>
             </div>
         </div>
         <div class="col-md-4 d-none d-md-block text-center">
@@ -23,8 +29,17 @@
         </div>
         <div class="col-md-4 col-sm-12">
             <div class="form-group">
-                <label for="coinAddress" class="control-label">{{publicConfiguration?.custom_currency_name}} Address</label>
-                <input type="text" class="form-control" id="coinAddress" formControlName="coinAddress" autocomplete="off">
+                <label for="coinAddress" class="control-label">{{publicConfiguration?.custom_currency_name}}
+                    Address</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="coinAddress" formControlName="coinAddress"
+                           autocomplete="off" #coinAddressInput readonly="readonly">
+                    <span class="input-group-btn">
+                         <button class="btn" appPrimary type="button" (click)="copyToClipboard()" [disabled]="!hasCoinAddress">
+                             <span appOcticon="clippy" color="white"></span>
+                         </button>
+                    </span>
+                </div>
             </div>
         </div>
         <div class="col-md-4 col-sm-12 d-block d-md-none">
@@ -32,10 +47,12 @@
         </div>
     </form>
     <hr class="my-4">
-     <p class="lead">
-         The other way around works by specifying the destination {{publicConfiguration.custom_currency_name}} address as an attachment.
-         You need to perform a Waves transaction of {{publicConfiguration.custom_currency_name}} asset to the Gateway Waves Address with this attachment.
-     </p>
+    <p class="lead">
+        The other way around works by specifying the destination {{publicConfiguration.custom_currency_name}} address as
+        an attachment.
+        You need to perform a Waves transaction of {{publicConfiguration.custom_currency_name}} asset to the Gateway
+        Waves Address with this attachment.
+    </p>
 
 </div>
 
