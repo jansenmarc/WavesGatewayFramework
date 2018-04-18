@@ -18,7 +18,7 @@ import 'rxjs/add/operator/filter';
   styleUrls: ['./address-factory.component.css']
 })
 export class AddressFactoryComponent implements OnInit {
-  private hasCoinAddress: boolean;
+  hasCoinAddress: boolean;
 
   @ViewChild('coinAddressInput') coinAddressInput: ElementRef;
 
