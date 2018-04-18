@@ -90,7 +90,7 @@ class DocsCommand(Command):
 setup(
     name='waves_gateway',
     url='https://github.com/jansenmarc/WavesGatewayFramework',
-    version='1.0.1',
+    version='1.0.2',
     author='Henning Gerrits',
     test_suite='nose.collector',
     tests_require=['nose'],
