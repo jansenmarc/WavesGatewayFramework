@@ -168,8 +168,7 @@ class GatewayTest(TestCase):
     @patch('pywaves.setNode', autospec=True)
     def test_gateway_init(self, mock_set_node: MagicMock, mock_injector: MagicMock):
         mock_injector.get.side_effect = self._test_injector.get
-        mock_injector.overwrite.side_effect = self._test_injector.overwrite
-        mock_injector.overwrite_if_exists.side_effect = self._test_injector.overwrite_if_exists
+        mock_injector.provide.side_effect = self._test_injector.provide
 
         coin_address_factory = MagicMock()
         coin_chain_query_service = MagicMock()
@@ -186,9 +185,9 @@ class GatewayTest(TestCase):
         logging_configuration_service = MagicMock()
         mongo_database = MagicMock()
 
-        self._test_injector.overwrite(GatewayApplicationService, gateway_application_service)
-        self._test_injector.overwrite(FlaskRestController, flask_rest_controller)
-        self._test_injector.overwrite(GatewayLoggingConfigurationService, logging_configuration_service)
+        self._test_injector.provide(GatewayApplicationService, gateway_application_service)
+        self._test_injector.provide(FlaskRestController, flask_rest_controller)
+        self._test_injector.provide(GatewayLoggingConfigurationService, logging_configuration_service)
 
         gateway = Gateway(
             coin_address_factory=coin_address_factory,

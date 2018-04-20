@@ -27,7 +27,8 @@ from waves_gateway.storage import WalletStorage, MapStorage, KeyValueStorage
 from waves_gateway.common import convert_to_int, convert_to_decimal, ProxyGuard, InvalidTransactionIdentifier,\
     InjectionToken, ChildInjectable as Injectable, ChildFactory as Factory, CHILD_INJECTOR as INJECTOR, Injector, InjectorError, \
     Token, COIN_NODE, CUSTOM_CURRENCY_NAME, WAVES_ASSET_ID, ProxyFactory, GATEWAY_WAVES_ADDRESS_SECRET, GATEWAY_OWNER_ADDRESS, \
-    GATEWAY_COIN_ADDRESS_SECRET, MANAGED_LOGGER_LIST, WAVES_NODE, POLLING_DELAY_SECONDS, GATEWAY_FEE, COIN_FEE, WAVES_FEE
+    GATEWAY_COIN_ADDRESS_SECRET, MANAGED_LOGGER_LIST, WAVES_NODE, POLLING_DELAY_SECONDS, GATEWAY_FEE, COIN_FEE, \
+    WAVES_FEE, LOG_FILE_NAME
 
 from typing import NewType
 

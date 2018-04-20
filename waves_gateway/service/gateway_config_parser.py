@@ -8,15 +8,19 @@ from typing import Union, Optional, List
 from waves_gateway.common import Injectable, KeyPair, InvalidConfigError, Injector, GATEWAY_COIN_ADDRESS_SECRET, \
     COIN_NODE, WAVES_NODE, GATEWAY_WAVES_ADDRESS_SECRET, GATEWAY_HOST, GATEWAY_PORT, GATEWAY_OWNER_ADDRESS, WAVES_CHAIN, \
     LOGGING_HANDLER_LIST, COIN_FEE, GATEWAY_FEE, MONGODB_HOST, MONGODB_PORT, MONGODB_DB_NAME, \
-    COIN_TRANSACTION_WEB_LINK, COIN_ADDRESS_WEB_LINK, CUSTOM_CURRENCY_NAME, WAVES_ASSET_ID, WEB_PRIMARY_COLOR
+    COIN_TRANSACTION_WEB_LINK, COIN_ADDRESS_WEB_LINK, CUSTOM_CURRENCY_NAME, WAVES_ASSET_ID, WEB_PRIMARY_COLOR, \
+    LOG_FILE_NAME
 from waves_gateway.model import GatewayConfigFile
 
 
-@Injectable()
+@Injectable(deps=[LOG_FILE_NAME])
 class GatewayConfigParser(object):
     """
     May be used to parse a gateway configuration file.
     """
+
+    def __init__(self, log_file_name: str):
+        self._log_file_name = log_file_name
 
     def _parse_node_section(self, config_parser: ConfigParser, parsed_config: GatewayConfigFile) -> None:
         parsed_config.waves_node = config_parser.get('node', 'waves', fallback=None)
@@ -129,7 +133,7 @@ class GatewayConfigParser(object):
         logging_handlers = []  # type: List[logging.Handler]
 
         if environment == "prod":
-            file_handler = RotatingFileHandler("ripple-gateway.log", maxBytes=10485760, backupCount=20, encoding='utf8')
+            file_handler = RotatingFileHandler(self._log_file_name, maxBytes=10485760, backupCount=20, encoding='utf8')
             file_handler.setLevel(logging.INFO)
             file_handler.setFormatter(formatter)
             logging_handlers.append(file_handler)

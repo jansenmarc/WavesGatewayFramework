@@ -62,7 +62,7 @@ class TestInjector(TestCase):
         with self.assertRaises(InjectorError):
             self._global_injector.get(MissingDepsClass)
 
-        self._global_injector.overwrite('missing_dep', 'dep')
+        self._global_injector.provide('missing_dep', 'dep')
         missing_deps_instance = self._global_injector.get(MissingDepsClass)  # type: MissingDepsClass
         self.assertIs(missing_deps_instance.missing_dep, 'dep')
 

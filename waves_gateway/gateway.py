@@ -14,7 +14,8 @@ import gevent
 from flask import Flask
 
 from waves_gateway.service import COIN_TRANSACTION_POLLING_SERVICE, \
-    WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, IntegerConverterService
+    WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, \
+    IntegerConverterService
 from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, INSTANTIATED_MANAGED_LOGGER_LIST, POLLING_DELAY_SECONDS, \
     CUSTOM_CURRENCY_NAME, GATEWAY_OWNER_ADDRESS, WALLET_STORAGE_COLLECTION_NAME, MAP_STORAGE_COLLECTION_NAME, \
     KEY_VALUE_STORAGE_COLLECTION_NAME, TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME, GATEWAY_COIN_ADDRESS_SECRET, \
@@ -25,7 +26,7 @@ from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, INSTANTIATED_MAN
     TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION, GATEWAY_PYWAVES_ADDRESS, COIN_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, \
     WAVES_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, FLASK_NAME, COIN_MAX_HANDLE_TRANSACTION_TRIES, \
     WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE, COIN_LAST_BLOCK_DISTANCE, WEB_PRIMARY_COLOR, \
-    CHILD_INJECTOR, Token, INJECTOR, MANAGED_LOGGER_LIST, MONGODB_HOST, MONGODB_PORT, MONGODB_DB_NAME
+    CHILD_INJECTOR, Token, INJECTOR, MANAGED_LOGGER_LIST, MONGODB_HOST, MONGODB_PORT, MONGODB_DB_NAME, LOG_FILE_NAME
 from waves_gateway.model import PollingDelayConfig
 from waves_gateway.factory import CoinAddressFactory
 
@@ -38,9 +39,11 @@ import waves_gateway.factory as factory
 from pymongo.database import Database as MongoDatabase  # type: ignore
 
 from waves_gateway.model import PublicConfiguration
-from waves_gateway.service import COIN_CHAIN_QUERY_SERVICE, COIN_ADDRESS_VALIDATION_SERVICE, COIN_TRANSACTION_SERVICE, COIN_INTEGER_CONVERTER_SERVICE, \
+from waves_gateway.service import COIN_CHAIN_QUERY_SERVICE, COIN_ADDRESS_VALIDATION_SERVICE, COIN_TRANSACTION_SERVICE, \
+    COIN_INTEGER_CONVERTER_SERVICE, \
     ASSET_INTEGER_CONVERTER_SERVICE
-from waves_gateway.storage import CoinBlockHeightStorageProxyImpl, WavesBlockHeightStorageProxyImpl, CoinPollingStateStorageProxyImpl, WavesPollingStateStorageProxyImpl, PollingStateStorageProxy
+from waves_gateway.storage import CoinBlockHeightStorageProxyImpl, WavesBlockHeightStorageProxyImpl, \
+    CoinPollingStateStorageProxyImpl, WavesPollingStateStorageProxyImpl, PollingStateStorageProxy
 
 
 @Factory(Flask, deps=[FLASK_NAME])
@@ -447,55 +450,68 @@ class Gateway(object):
             This may be used to prevent a check of the highest block.
 
         """
-        self._injector = common.CHILD_INJECTOR
-        self._injector.overwrite(CoinAddressFactory, coin_address_factory)
-        self._injector.overwrite(COIN_CHAIN_QUERY_SERVICE, coin_chain_query_service)
-        self._injector.overwrite_if_exists(LOGGING_HANDLER_LIST, logging_handlers)
-        self._injector.overwrite_if_exists(POLLING_DELAY_SECONDS, polling_delay_s)
-        self._injector.overwrite_if_exists(PollingDelayConfig, polling_delay_config)
-        self._injector.overwrite(CUSTOM_CURRENCY_NAME, custom_currency_name)
-        self._injector.overwrite(GATEWAY_OWNER_ADDRESS, gateway_owner_address)
-        self._injector.overwrite(WALLET_STORAGE_COLLECTION_NAME, wallet_storage_collection_name)
-        self._injector.overwrite(MAP_STORAGE_COLLECTION_NAME, map_storage_collection_name)
-        self._injector.overwrite(KEY_VALUE_STORAGE_COLLECTION_NAME, key_value_storage_collection_name)
-        self._injector.overwrite(TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME,
-                                 transaction_attempt_list_storage_collection_name)
-        self._injector.overwrite(GATEWAY_COIN_ADDRESS_SECRET, gateway_coin_address_secret)
-        self._injector.overwrite(WAVES_NODE, waves_node)
-        self._injector.overwrite(WAVES_ASSET_ID, waves_asset_id)
-        self._injector.overwrite(WAVES_CHAIN, waves_chain)
-        self._injector.overwrite(ONLY_ONE_TRANSACTION_RECEIVER, only_one_transaction_receiver)
-        self._injector.overwrite_if_exists(COIN_TRANSACTION_WEB_LINK, coin_transaction_web_link)
-        self._injector.overwrite_if_exists(WAVES_TRANSACTION_WEB_LINK, waves_transaction_web_link)
-        self._injector.overwrite_if_exists(COIN_ADDRESS_WEB_LINK, coin_address_web_link)
-        self._injector.overwrite_if_exists(WAVES_ADDRESS_WEB_LINK, waves_address_web_link)
-        self._injector.overwrite(COIN_ADDRESS_VALIDATION_SERVICE, coin_address_validation_service)
-        self._injector.overwrite(ATTEMPT_LIST_MAX_COMPLETION_TRIES, attempt_list_max_completion_tries)
-        self._injector.overwrite(GATEWAY_WAVES_ADDRESS_SECRET, gateway_waves_address_secret)
-        self._injector.overwrite_if_exists(MongoDatabase, mongo_database)
-        self._injector.overwrite_if_exists(storage.KeyValueStorage, key_value_storage)
-        self._injector.overwrite_if_exists(storage.MapStorage, map_storage)
-        self._injector.overwrite_if_exists(storage.WalletStorage, wallet_storage)
-        self._injector.overwrite_if_exists(COIN_INTEGER_CONVERTER_SERVICE, coin_integer_converter_service)
-        self._injector.overwrite_if_exists(ASSET_INTEGER_CONVERTER_SERVICE, asset_integer_converter_service)
-        self._injector.overwrite(service.FeeService, fee_service)
-        self._injector.overwrite(COIN_TRANSACTION_SERVICE, coin_transaction_service)
-        self._injector.overwrite_if_exists(controller.GatewayController, gateway_controller)
-        self._injector.overwrite(NUM_ATTEMPT_LIST_WORKERS, num_attempt_list_workers)
-        self._injector.overwrite(GATEWAY_HOST, host)
-        self._injector.overwrite(GATEWAY_PORT, port)
-        self._injector.overwrite(COIN_MAX_HANDLE_TRANSACTION_TRIES, coin_max_handle_transaction_tries)
-        self._injector.overwrite(WAVES_MAX_HANDLE_TRANSACTION_TRIES, waves_max_handle_transaction_tries)
-        self._injector.overwrite(COIN_LAST_BLOCK_DISTANCE, coin_last_block_distance)
-        self._injector.overwrite(WAVES_LAST_BLOCK_DISTANCE, waves_last_block_distance)
-        self._injector.overwrite(WEB_PRIMARY_COLOR, web_primary_color)
-        self._injector.overwrite(MANAGED_LOGGER_LIST, managed_loggers)
+        define(CoinAddressFactory, coin_address_factory)
+        define(COIN_CHAIN_QUERY_SERVICE, coin_chain_query_service)
+        if logging_handlers is not None:
+            define(LOGGING_HANDLER_LIST, logging_handlers)
+        if polling_delay_s is not None:
+            define(POLLING_DELAY_SECONDS, polling_delay_s)
+        if polling_delay_config is not None:
+            define(PollingDelayConfig, polling_delay_config)
+        define(CUSTOM_CURRENCY_NAME, custom_currency_name)
+        define(GATEWAY_OWNER_ADDRESS, gateway_owner_address)
+        define(WALLET_STORAGE_COLLECTION_NAME, wallet_storage_collection_name)
+        define(MAP_STORAGE_COLLECTION_NAME, map_storage_collection_name)
+        define(KEY_VALUE_STORAGE_COLLECTION_NAME, key_value_storage_collection_name)
+        define(TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME,
+               transaction_attempt_list_storage_collection_name)
+        define(GATEWAY_COIN_ADDRESS_SECRET, gateway_coin_address_secret)
+        define(WAVES_NODE, waves_node)
+        define(WAVES_ASSET_ID, waves_asset_id)
+        define(WAVES_CHAIN, waves_chain)
+        define(ONLY_ONE_TRANSACTION_RECEIVER, only_one_transaction_receiver)
+        if coin_transaction_web_link is not None:
+            define(COIN_TRANSACTION_WEB_LINK, coin_transaction_web_link)
+        if waves_transaction_web_link is not None:
+            define(WAVES_TRANSACTION_WEB_LINK, waves_transaction_web_link)
+        if coin_transaction_web_link is not None:
+            define(COIN_ADDRESS_WEB_LINK, coin_address_web_link)
+        if waves_address_web_link is not None:
+            define(WAVES_ADDRESS_WEB_LINK, waves_address_web_link)
+        define(COIN_ADDRESS_VALIDATION_SERVICE, coin_address_validation_service)
+        define(ATTEMPT_LIST_MAX_COMPLETION_TRIES, attempt_list_max_completion_tries)
+        define(GATEWAY_WAVES_ADDRESS_SECRET, gateway_waves_address_secret)
+        if mongo_database is not None:
+            define(MongoDatabase, mongo_database)
+        if key_value_storage is not None:
+            define(storage.KeyValueStorage, key_value_storage)
+        if map_storage is not None:
+            define(storage.MapStorage, map_storage)
+        if wallet_storage is not None:
+            define(storage.WalletStorage, wallet_storage)
+        if coin_integer_converter_service is not None:
+            define(COIN_INTEGER_CONVERTER_SERVICE, coin_integer_converter_service)
+        if asset_integer_converter_service is not None:
+            define(ASSET_INTEGER_CONVERTER_SERVICE, asset_integer_converter_service)
+        define(service.FeeService, fee_service)
+        define(COIN_TRANSACTION_SERVICE, coin_transaction_service)
+        if gateway_controller is not None:
+            define(controller.GatewayController, gateway_controller)
+        define(NUM_ATTEMPT_LIST_WORKERS, num_attempt_list_workers)
+        define(GATEWAY_HOST, host)
+        define(GATEWAY_PORT, port)
+        define(COIN_MAX_HANDLE_TRANSACTION_TRIES, coin_max_handle_transaction_tries)
+        define(WAVES_MAX_HANDLE_TRANSACTION_TRIES, waves_max_handle_transaction_tries)
+        define(COIN_LAST_BLOCK_DISTANCE, coin_last_block_distance)
+        define(WAVES_LAST_BLOCK_DISTANCE, waves_last_block_distance)
+        define(WEB_PRIMARY_COLOR, web_primary_color)
+        define(MANAGED_LOGGER_LIST, managed_loggers)
 
-        self._application_service = self._injector.get(
+        self._application_service = common.CHILD_INJECTOR.get(
             service.GatewayApplicationService)  # type: service.GatewayApplicationService
 
-        self._flask_rest_controller = self._injector.get(controller.FlaskRestController)
-        self._logging_service = self._injector.get(
+        self._flask_rest_controller = common.CHILD_INJECTOR.get(controller.FlaskRestController)
+        self._logging_service = common.CHILD_INJECTOR.get(
             service.GatewayLoggingConfigurationService)  # type: service.GatewayLoggingConfigurationService
 
         self.set_log_level = self._logging_service.set_log_level
@@ -518,7 +534,8 @@ INJECTOR.provide(COIN_MAX_HANDLE_TRANSACTION_TRIES, Gateway.DEFAULT_COIN_MAX_HAN
 INJECTOR.provide(WAVES_MAX_HANDLE_TRANSACTION_TRIES, Gateway.DEFAULT_WAVES_MAX_HANDLE_TRANSACTION_TRIES)
 INJECTOR.provide(COIN_LAST_BLOCK_DISTANCE, Gateway.DEFAULT_COIN_LAST_BLOCK_DISTANCE)
 INJECTOR.provide(WAVES_LAST_BLOCK_DISTANCE, Gateway.DEFAULT_WAVES_LAST_BLOCK_DISTANCE)
-
+INJECTOR.provide(WEB_PRIMARY_COLOR, Gateway.DEFAULT_WEB_PRIMARY_COLOR)
+INJECTOR.provide(LOG_FILE_NAME, "gateway.log")
 
 @Factory(MongoDatabase, opt_deps=[MONGODB_HOST, MONGODB_PORT, MONGODB_DB_NAME])
 def pymongo_factory(mongo_host: Optional[str] = None,
@@ -530,7 +547,7 @@ def pymongo_factory(mongo_host: Optional[str] = None,
 
 def define(token: Token, value: Any):
     """Provides a specific value associated to a token."""
-    CHILD_INJECTOR.provide(token, value)
+    common.CHILD_INJECTOR.provide(token, value)
 
 
 def run():
@@ -538,17 +555,17 @@ def run():
     Starts the Gateway. Resolves all dependencies, loads any configuration files if available, constructs all instances
     and finally starts the workers.
     """
-    config_parser = CHILD_INJECTOR.get(service.GatewayConfigParser)  # type: service.GatewayConfigParser
+    config_parser = common.CHILD_INJECTOR.get(service.GatewayConfigParser)  # type: service.GatewayConfigParser
 
     if os.path.isfile("config.cfg"):
         config_file = config_parser.parse_config_file("config.cfg")
-        config_parser.populate_injector(config_file, CHILD_INJECTOR)
+        config_parser.populate_injector(config_file, common.CHILD_INJECTOR)
 
-    logger = CHILD_INJECTOR.get(logging.Logger).getChild("run")  # type: logging.Logger
+    logger = common.CHILD_INJECTOR.get(logging.Logger).getChild("run")  # type: logging.Logger
     logger.info("Resolving dependencies...")
 
-    app_service = CHILD_INJECTOR.get(service.GatewayApplicationService)  # type: service.GatewayApplicationService
-    CHILD_INJECTOR.get(controller.FlaskRestController)
+    app_service = common.CHILD_INJECTOR.get(service.GatewayApplicationService)  # type: service.GatewayApplicationService
+    common.CHILD_INJECTOR.get(controller.FlaskRestController)
     logger.info("Successfully collected all dependencies")
 
     app_service.run()

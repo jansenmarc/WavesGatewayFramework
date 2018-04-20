@@ -3,9 +3,6 @@ Injector
 """
 
 from typing import List, Any, Dict, Optional, Callable, Union, NewType, Type
-
-from gevent import pool
-
 from .exceptions import InjectorError
 from .utils import map_array
 from copy import copy
@@ -114,13 +111,6 @@ class Injector(object):
             raise InjectorError('Token ' + str(token) + " is already defined and cannot be overwritten.")
 
         self._dependency_map[token] = DependencyConfiguration(instance=instance, weak=weak)
-
-    def overwrite(self, token: Token, instance: Any) -> None:
-        self._dependency_map[token] = DependencyConfiguration(instance=instance)
-
-    def overwrite_if_exists(self, token: Token, instance: Optional[Any]) -> None:
-        if instance is not None:
-            self.overwrite(token, instance)
 
     def is_registered(self, token: Token) -> bool:
         """Returns whether the given token is registered in this injector or one of its parents (if any)."""
