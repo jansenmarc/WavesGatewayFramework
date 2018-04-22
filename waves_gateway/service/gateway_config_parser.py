@@ -50,6 +50,7 @@ class GatewayConfigParser(object):
 
     def _parse_other_section(self, config_parser: ConfigParser, parsed_config: GatewayConfigFile) -> None:
         parsed_config.waves_chain = config_parser.get('other', 'waves_chain', fallback="mainnet")
+        parsed_config.waves_chain_id = config_parser.get('other', 'waves_chain_id', fallback=None)
         parsed_config.environment = config_parser.get('other', 'environment', fallback="prod")
 
     def _parse_server_section(self, config_parser: ConfigParser, parsed_config: GatewayConfigFile):

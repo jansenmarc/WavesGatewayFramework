@@ -22,7 +22,8 @@ from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, MANAGED_LOGGER_L
     GATEWAY_HOST, GATEWAY_PORT, WALLET_STORAGE_COLLECTION, MAP_STORAGE_COLLECTION, KEY_VALUE_STORAGE_COLLECTION, \
     TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION, GATEWAY_PYWAVES_ADDRESS, COIN_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, \
     WAVES_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, FLASK_NAME, COIN_MAX_HANDLE_TRANSACTION_TRIES, \
-    WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE, COIN_LAST_BLOCK_DISTANCE, WEB_PRIMARY_COLOR
+    WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE, COIN_LAST_BLOCK_DISTANCE, WEB_PRIMARY_COLOR, \
+    WAVES_CHAIN_ID
 from waves_gateway.model import PollingDelayConfig
 from waves_gateway.factory import CoinAddressFactory
 
@@ -101,10 +102,10 @@ def collection_factory(collection_name: str, database: MongoDatabase):
     return database.get_collection(collection_name)
 
 
-@Factory(GATEWAY_PYWAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET, WAVES_NODE, WAVES_CHAIN])
-def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair, waves_node: str, waves_chain: str):
+@Factory(GATEWAY_PYWAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET, WAVES_NODE, WAVES_CHAIN], opt_deps=[WAVES_CHAIN_ID])
+def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair, waves_node: str, waves_chain: str, waves_chain_id: Optional[str] = None):
     """Creates an address instance from the pywaves library that represents the Gateway waves address."""
-    pywaves.setNode(waves_node, waves_chain)
+    pywaves.setNode(waves_node, waves_chain, waves_chain_id)
     return pywaves.Address(gateway_waves_address_secret.public, privateKey=gateway_waves_address_secret.secret)
 
 
@@ -319,7 +320,9 @@ class Gateway(object):
                  waves_max_handle_transaction_tries: int = DEFAULT_WAVES_MAX_HANDLE_TRANSACTION_TRIES,
                  coin_last_block_distance: int = DEFAULT_COIN_LAST_BLOCK_DISTANCE,
                  waves_last_block_distance: int = DEFAULT_WAVES_LAST_BLOCK_DISTANCE,
-                 web_primary_color: str = DEFAULT_WEB_PRIMARY_COLOR) -> None:
+                 web_primary_color: str = DEFAULT_WEB_PRIMARY_COLOR,
+                 waves_chain_id: Optional[str] = None
+                 ) -> None:
         """
         Creates a new Gateway instance.
 
@@ -467,6 +470,7 @@ class Gateway(object):
         self._injector.overwrite(COIN_LAST_BLOCK_DISTANCE, coin_last_block_distance)
         self._injector.overwrite(WAVES_LAST_BLOCK_DISTANCE, waves_last_block_distance)
         self._injector.overwrite(WEB_PRIMARY_COLOR, web_primary_color)
+        self._injector.overwrite_if_exists(WAVES_CHAIN_ID, waves_chain_id)
 
         self._init_managed_loggers(managed_loggers)
 
