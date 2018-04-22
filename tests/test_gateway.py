@@ -15,7 +15,9 @@ from waves_gateway.common import Injector, InjectorError, LOGGING_HANDLER_LIST, 
     COIN_TRANSACTION_WEB_LINK, WAVES_TRANSACTION_WEB_LINK, WAVES_ADDRESS_WEB_LINK, ATTEMPT_LIST_MAX_COMPLETION_TRIES, \
     GATEWAY_WAVES_ADDRESS_SECRET, GATEWAY_WAVES_ADDRESS
 from waves_gateway.gateway import Gateway, flask_factory, logger_factory, \
-    logging_handlers_factory, polling_delay_config_factory, collection_factory, coin_transaction_polling_service_factory, waves_transaction_polling_service_factory, public_configuration_factory, Gateway
+    logging_handlers_factory, polling_delay_config_factory, collection_factory, \
+    coin_transaction_polling_service_factory, waves_transaction_polling_service_factory, public_configuration_factory, \
+    Gateway
 from waves_gateway.service import GatewayApplicationService, GatewayLoggingConfigurationService, \
     COIN_CHAIN_QUERY_SERVICE, COIN_ADDRESS_VALIDATION_SERVICE
 from waves_gateway.controller import FlaskRestController
@@ -171,6 +173,7 @@ class GatewayTest(TestCase):
         mock_injector.overwrite.side_effect = self._test_injector.overwrite
         mock_injector.overwrite_if_exists.side_effect = self._test_injector.overwrite_if_exists
 
+        api_key = MagicMock()
         coin_address_factory = MagicMock()
         coin_chain_query_service = MagicMock()
         gateway_waves_address_secret = KeyPair(public="16285786287935", secret="721365976829835")
@@ -185,12 +188,15 @@ class GatewayTest(TestCase):
         flask_rest_controller = MagicMock()
         logging_configuration_service = MagicMock()
         mongo_database = MagicMock()
+        failed_tx_storage = MagicMock()
+        log_storage = MagicMock()
 
         self._test_injector.overwrite(GatewayApplicationService, gateway_application_service)
         self._test_injector.overwrite(FlaskRestController, flask_rest_controller)
         self._test_injector.overwrite(GatewayLoggingConfigurationService, logging_configuration_service)
 
         gateway = Gateway(
+            api_key=api_key,
             coin_address_factory=coin_address_factory,
             coin_chain_query_service=coin_chain_query_service,
             gateway_waves_address_secret=gateway_waves_address_secret,
@@ -202,7 +208,10 @@ class GatewayTest(TestCase):
             fee_service=fee_service,
             only_one_transaction_receiver=False,
             coin_address_validation_service=coin_address_validation_service,
-            mongo_database=mongo_database)
+            failed_transaction_storage=failed_tx_storage,
+            support_messages_storage=log_storage,
+            mongo_database=mongo_database,
+            logging_handlers=[])
 
         gateway.set_log_level(logging.INFO)
         logging_configuration_service.set_log_level.assert_called_once_with(logging.INFO)
@@ -213,7 +222,6 @@ class GatewayTest(TestCase):
         self.assertIs(self._test_injector.get(COIN_CHAIN_QUERY_SERVICE), coin_chain_query_service)
         self.assertIs(self._test_injector.get(CoinAddressFactory), coin_address_factory)
         self.assertFalse(self._test_injector.is_registered(PollingDelayConfig))
-        self.assertFalse(self._test_injector.is_registered(LOGGING_HANDLER_LIST))
         self.assertFalse(self._test_injector.is_registered(POLLING_DELAY_SECONDS))
         self.assertIs(self._test_injector.get(CUSTOM_CURRENCY_NAME), Gateway.DEFAULT_CUSTOM_CURRENCY_NAME)
         self.assertIs(

@@ -36,6 +36,8 @@ class GatewayConfigParserTest(TestCase):
             [other]
             environment = test
             waves_chain = testnet
+            [api]
+            key = 1234567890
         """
 
         parsed = self._parser.parse_config_file_content(config_file)
@@ -62,6 +64,7 @@ class GatewayConfigParserTest(TestCase):
         # --- [other] ---
         self.assertEqual(parsed.environment, "test")
         self.assertEqual(parsed.waves_chain, "testnet")
+        self.assertEqual(parsed.gateway_api_key, "1234567890")
 
     def test_using_old_ltc_should_fail(self):
         config_file = """

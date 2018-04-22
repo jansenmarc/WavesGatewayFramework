@@ -12,17 +12,22 @@ import pywaves  # type: ignore
 from flask import Flask
 
 from waves_gateway.service import COIN_TRANSACTION_POLLING_SERVICE, \
-    WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, IntegerConverterService
+    WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, \
+    IntegerConverterService, support_log_handler
 from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, MANAGED_LOGGER_LIST, POLLING_DELAY_SECONDS, \
     CUSTOM_CURRENCY_NAME, GATEWAY_OWNER_ADDRESS, WALLET_STORAGE_COLLECTION_NAME, MAP_STORAGE_COLLECTION_NAME, \
-    KEY_VALUE_STORAGE_COLLECTION_NAME, TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME, GATEWAY_COIN_ADDRESS_SECRET, \
+    KEY_VALUE_STORAGE_COLLECTION_NAME, FAILED_TRANSACTION_STORAGE_COLLECTION_NAME, \
+    TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME, \
+    GATEWAY_COIN_ADDRESS_SECRET, \
     GATEWAY_COIN_ADDRESS, WAVES_NODE, WAVES_ASSET_ID, WAVES_CHAIN, ONLY_ONE_TRANSACTION_RECEIVER, \
     COIN_TRANSACTION_WEB_LINK, WAVES_TRANSACTION_WEB_LINK, COIN_ADDRESS_WEB_LINK, WAVES_ADDRESS_WEB_LINK, \
     ATTEMPT_LIST_MAX_COMPLETION_TRIES, GATEWAY_WAVES_ADDRESS_SECRET, GATEWAY_WAVES_ADDRESS, NUM_ATTEMPT_LIST_WORKERS, \
     GATEWAY_HOST, GATEWAY_PORT, WALLET_STORAGE_COLLECTION, MAP_STORAGE_COLLECTION, KEY_VALUE_STORAGE_COLLECTION, \
+    GATEWAY_FAILED_TRANSACTION_STORAGE_COLLECTION, \
     TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION, GATEWAY_PYWAVES_ADDRESS, COIN_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, \
     WAVES_CHAIN_QUERY_SERVICE_CONVERTER_PROXY, FLASK_NAME, COIN_MAX_HANDLE_TRANSACTION_TRIES, \
-    WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE, COIN_LAST_BLOCK_DISTANCE, WEB_PRIMARY_COLOR
+    WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE, COIN_LAST_BLOCK_DISTANCE, WEB_PRIMARY_COLOR, \
+    GATEWAY_MESSAGE_STORAGE_COLLECTION, GATEWAY_MESSAGE_STORAGE_COLLECTION_NAME
 from waves_gateway.model import PollingDelayConfig
 from waves_gateway.factory import CoinAddressFactory
 
@@ -37,7 +42,8 @@ from pymongo.database import Database as MongoDatabase  # type: ignore
 from waves_gateway.model import PublicConfiguration
 from waves_gateway.service import COIN_CHAIN_QUERY_SERVICE, COIN_ADDRESS_VALIDATION_SERVICE, COIN_TRANSACTION_SERVICE, COIN_INTEGER_CONVERTER_SERVICE, \
     ASSET_INTEGER_CONVERTER_SERVICE
-from waves_gateway.storage import CoinBlockHeightStorageProxyImpl, WavesBlockHeightStorageProxyImpl, CoinPollingStateStorageProxyImpl, WavesPollingStateStorageProxyImpl, PollingStateStorageProxy
+from waves_gateway.storage import CoinBlockHeightStorageProxyImpl, WavesBlockHeightStorageProxyImpl, \
+    CoinPollingStateStorageProxyImpl, WavesPollingStateStorageProxyImpl, PollingStateStorageProxy, LogStorageService
 
 
 @Factory(Flask, deps=[FLASK_NAME])
@@ -96,6 +102,9 @@ def polling_delay_config_factory(polling_delay_s: Optional[float]):
 @Factory(WALLET_STORAGE_COLLECTION, deps=[WALLET_STORAGE_COLLECTION_NAME, MongoDatabase])
 @Factory(MAP_STORAGE_COLLECTION, deps=[MAP_STORAGE_COLLECTION_NAME, MongoDatabase])
 @Factory(KEY_VALUE_STORAGE_COLLECTION, deps=[KEY_VALUE_STORAGE_COLLECTION_NAME, MongoDatabase])
+@Factory(
+    GATEWAY_FAILED_TRANSACTION_STORAGE_COLLECTION, deps=[FAILED_TRANSACTION_STORAGE_COLLECTION_NAME, MongoDatabase])
+@Factory(GATEWAY_MESSAGE_STORAGE_COLLECTION, deps=[GATEWAY_MESSAGE_STORAGE_COLLECTION_NAME, MongoDatabase])
 def collection_factory(collection_name: str, database: MongoDatabase):
     """Creates a new collection with the given name."""
     return database.get_collection(collection_name)
@@ -255,6 +264,8 @@ class Gateway(object):
     DEFAULT_MAP_STORAGE_COLLECTION_NAME = 'mapping'
     DEFAULT_ATTEMPT_LIST_STORAGE_COLLECTION_NAME = 'attempt_list'
     DEFAULT_KEY_VALUE_STORAGE_COLLECTION_NAME = 'key_value'
+    DEFAULT_FAILED_TRANSACTIONS_STORAGE_COLLECTION_NAME = 'failed_transactions'
+    DEFAULT_SUPPORT_MESSAGES_STORAGE_COLLECTION_NAME = 'support_messages'
     DEFAULT_COIN_MAX_HANDLE_TRANSACTION_TRIES = 5
     DEFAULT_WAVES_MAX_HANDLE_TRANSACTION_TRIES = 5
     DEFAULT_COIN_LAST_BLOCK_DISTANCE = 0
@@ -279,6 +290,7 @@ class Gateway(object):
         self._injector.overwrite(MANAGED_LOGGER_LIST, res)
 
     def __init__(self,
+                 api_key: str,
                  coin_address_factory: factory.CoinAddressFactory,
                  coin_chain_query_service: service.ChainQueryService,
                  gateway_waves_address_secret: model.KeyPair,
@@ -310,7 +322,11 @@ class Gateway(object):
                  wallet_storage_collection_name: str = DEFAULT_WALLET_STORAGE_COLLECTION_NAME,
                  map_storage_collection_name: str = DEFAULT_MAP_STORAGE_COLLECTION_NAME,
                  key_value_storage_collection_name: str = DEFAULT_KEY_VALUE_STORAGE_COLLECTION_NAME,
+                 failed_transaction_storage_collection_name: str = DEFAULT_FAILED_TRANSACTIONS_STORAGE_COLLECTION_NAME,
+                 support_messages_storage_collection_name: str = DEFAULT_SUPPORT_MESSAGES_STORAGE_COLLECTION_NAME,
                  key_value_storage: Optional[storage.KeyValueStorage] = None,
+                 failed_transaction_storage: Optional[storage.FailedTransactionStorage] = None,
+                 support_messages_storage: Optional[storage.LogStorageService] = None,
                  map_storage: Optional[storage.MapStorage] = None,
                  wallet_storage: Optional[storage.WalletStorage] = None,
                  mongo_database: Optional[MongoDatabase] = None,
@@ -422,10 +438,11 @@ class Gateway(object):
             This may be used to prevent a check of the highest block.
 
         """
+
         self._injector = common.INJECTOR
+        self._injector.overwrite(common.API_KEY, api_key)
         self._injector.overwrite(CoinAddressFactory, coin_address_factory)
         self._injector.overwrite(COIN_CHAIN_QUERY_SERVICE, coin_chain_query_service)
-        self._injector.overwrite_if_exists(LOGGING_HANDLER_LIST, logging_handlers)
         self._injector.overwrite_if_exists(POLLING_DELAY_SECONDS, polling_delay_s)
         self._injector.overwrite_if_exists(PollingDelayConfig, polling_delay_config)
         self._injector.overwrite(CUSTOM_CURRENCY_NAME, custom_currency_name)
@@ -433,6 +450,8 @@ class Gateway(object):
         self._injector.overwrite(WALLET_STORAGE_COLLECTION_NAME, wallet_storage_collection_name)
         self._injector.overwrite(MAP_STORAGE_COLLECTION_NAME, map_storage_collection_name)
         self._injector.overwrite(KEY_VALUE_STORAGE_COLLECTION_NAME, key_value_storage_collection_name)
+        self._injector.overwrite(FAILED_TRANSACTION_STORAGE_COLLECTION_NAME, failed_transaction_storage_collection_name)
+        self._injector.overwrite(GATEWAY_MESSAGE_STORAGE_COLLECTION_NAME, support_messages_storage_collection_name)
         self._injector.overwrite(TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME,
                                  transaction_attempt_list_storage_collection_name)
         self._injector.overwrite(GATEWAY_COIN_ADDRESS_SECRET, gateway_coin_address_secret)
@@ -451,6 +470,8 @@ class Gateway(object):
         self._injector.overwrite(GATEWAY_WAVES_ADDRESS, gateway_waves_address_secret.public)
         self._injector.overwrite_if_exists(MongoDatabase, mongo_database)
         self._injector.overwrite_if_exists(storage.KeyValueStorage, key_value_storage)
+        self._injector.overwrite_if_exists(storage.LogStorageService, support_messages_storage)
+        self._injector.overwrite_if_exists(storage.FailedTransactionStorage, failed_transaction_storage)
         self._injector.overwrite_if_exists(storage.MapStorage, map_storage)
         self._injector.overwrite_if_exists(storage.WalletStorage, wallet_storage)
         self._injector.overwrite_if_exists(COIN_INTEGER_CONVERTER_SERVICE, coin_integer_converter_service)
@@ -467,6 +488,13 @@ class Gateway(object):
         self._injector.overwrite(COIN_LAST_BLOCK_DISTANCE, coin_last_block_distance)
         self._injector.overwrite(WAVES_LAST_BLOCK_DISTANCE, waves_last_block_distance)
         self._injector.overwrite(WEB_PRIMARY_COLOR, web_primary_color)
+
+        formatter = logging.Formatter("[%(asctime)s] %(levelname)s {%(name)s} - %(message)s")
+        support_handler = support_log_handler.SupportLogHandler(self._injector.get(LogStorageService))
+        support_handler.setLevel(logging.INFO)
+        support_handler.setFormatter(formatter)
+        logging_handlers.append(support_handler)
+        self._injector.overwrite_if_exists(LOGGING_HANDLER_LIST, logging_handlers)
 
         self._init_managed_loggers(managed_loggers)
 

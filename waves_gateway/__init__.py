@@ -16,11 +16,11 @@ gevent.hub.Hub.NOT_ERROR = (Exception, )
 from waves_gateway.factory import CoinAddressFactory
 from waves_gateway.model import KeyPair, \
     TransactionAttemptReceiver, \
-    TransactionAttempt, Transaction, TransactionReceiver, TransactionSender, PollingDelayConfig, GatewayConfigFile
+    TransactionAttempt, Transaction, TransactionReceiver, TransactionSender, PollingDelayConfig, GatewayConfigFile, FailedTransaction
 from .gateway import Gateway
 from waves_gateway.service import ChainQueryService, TransactionService, IntegerConverterService, \
-    FeeService, ConstantFeeServiceImpl, AddressValidationService, COIN_INTEGER_CONVERTER_SERVICE, COIN_TRANSACTION_SERVICE, COIN_CHAIN_QUERY_SERVICE, COIN_ADDRESS_VALIDATION_SERVICE, GatewayConfigParser, GatewayApplicationService
-from waves_gateway.storage import WalletStorage, MapStorage, KeyValueStorage
+    support_log_handler, FeeService, ConstantFeeServiceImpl, AddressValidationService, COIN_INTEGER_CONVERTER_SERVICE, COIN_TRANSACTION_SERVICE, COIN_CHAIN_QUERY_SERVICE, COIN_ADDRESS_VALIDATION_SERVICE, GatewayConfigParser, GatewayApplicationService
+from waves_gateway.storage import WalletStorage, MapStorage, KeyValueStorage, FailedTransactionStorage, LogStorageService
 from waves_gateway.common import convert_to_int, convert_to_decimal, ProxyGuard, InvalidTransactionIdentifier, InjectionToken, Injectable, Factory, INJECTOR, Injector, InjectorError, Token, COIN_NODE, CUSTOM_CURRENCY_NAME, WAVES_ASSET_ID, ProxyFactory
 
 from typing import NewType

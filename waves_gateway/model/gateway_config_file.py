@@ -25,3 +25,4 @@ class GatewayConfigFile(object):
         self.environment = None  # type: Optional[str]
         self.gateway_host = None  # type: Optional[str]
         self.gateway_port = None  # type: Optional[int]
+        self.gateway_api_key = None  # type: Optional[str]

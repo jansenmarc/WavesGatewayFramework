@@ -6,7 +6,8 @@ import logging
 
 from waves_gateway.service import AddressValidationService, ChainQueryService, TransactionConsumer
 
-from waves_gateway.storage import MapStorage, WalletStorage, TransactionAttemptListStorage
+from waves_gateway.storage import MapStorage, WalletStorage, TransactionAttemptListStorage, FailedTransactionStorage, \
+    LogStorageService, KeyValueStorage
 from waves_gateway.common import WavesAddressInvalidError, InvalidTransactionIdentifier
 from waves_gateway.controller import GatewayControllerImpl
 from waves_gateway.factory import CoinAddressFactory
@@ -25,6 +26,9 @@ class GatewayControllerImplTest(unittest.TestCase):
         self._coin_transaction_consumer = MagicMock()
         self._waves_chain_query_service = MagicMock()
         self._waves_transaction_consumer = MagicMock()
+        self._failed_transaction_storage = MagicMock()
+        self._log_storage_service = MagicMock()
+        self._key_value_storage = MagicMock()
 
         self._gateway_controller = GatewayControllerImpl(
             coin_address_factory=cast(CoinAddressFactory, self._coin_address_factory),
@@ -36,7 +40,10 @@ class GatewayControllerImplTest(unittest.TestCase):
             coin_chain_query_service=cast(ChainQueryService, self._coin_chain_query_service),
             coin_transaction_consumer=cast(TransactionConsumer, self._coin_transaction_consumer),
             waves_chain_query_service=cast(ChainQueryService, self._waves_chain_query_service),
-            waves_transaction_consumer=cast(TransactionConsumer, self._waves_transaction_consumer))
+            waves_transaction_consumer=cast(TransactionConsumer, self._waves_transaction_consumer),
+            failed_transaction_storage=cast(FailedTransactionStorage, self._failed_transaction_storage),
+            log_storage_service=cast(LogStorageService, self._log_storage_service),
+            key_value_storage=cast(KeyValueStorage, self._key_value_storage))
 
     def test_create_address_already_exists(self):
         mock_waves_address = "72936587"

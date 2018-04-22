@@ -11,20 +11,21 @@ import pywaves  # type: ignore
 from waves_gateway.common import MappingNotFoundForCoinAddress, \
     MultipleGatewayReceiversError, Injectable, GATEWAY_OWNER_ADDRESS, GATEWAY_COIN_ADDRESS, \
     ONLY_ONE_TRANSACTION_RECEIVER, GATEWAY_WAVES_ADDRESS, GATEWAY_PYWAVES_ADDRESS
-from waves_gateway.model import Transaction, TransactionReceiver, \
+from waves_gateway.model import Transaction, TransactionReceiver, FailedTransaction, \
     TransactionAttempt, TransactionAttemptReceiver, TransactionAttemptList, \
-    AttemptListTrigger, TransactionSender
+    AttemptListTrigger, TransactionSender, PublicConfiguration
 from waves_gateway.storage import MapStorage, TransactionAttemptListStorage
 from .fee_service import FeeService
 from .transaction_attempt_list_service import TransactionAttemptListService
 from .transaction_consumer import TransactionConsumer
 from .fee_service_converter_proxy_impl import FeeServiceConverterProxyImpl
+from waves_gateway.storage import FailedTransactionStorage
 
 
 @Injectable(deps=[
     TransactionAttemptListService, GATEWAY_COIN_ADDRESS, MapStorage, Logger, GATEWAY_WAVES_ADDRESS,
     GATEWAY_OWNER_ADDRESS, FeeServiceConverterProxyImpl, ONLY_ONE_TRANSACTION_RECEIVER, GATEWAY_PYWAVES_ADDRESS,
-    TransactionAttemptListStorage
+    TransactionAttemptListStorage, FailedTransactionStorage, PublicConfiguration
 ])
 class CoinTransactionConsumerImpl(TransactionConsumer):
     """
@@ -34,7 +35,9 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
     def __init__(self, attempt_service: TransactionAttemptListService, gateway_coin_address: str,
                  map_storage: MapStorage, logger: Logger, gateway_waves_address: str, gateway_owner_address: str,
                  fee_service: FeeService, only_one_transaction_receiver: bool, gateway_pywaves_address: pywaves.Address,
-                 attempt_list_storage: TransactionAttemptListStorage) -> None:
+                 attempt_list_storage: TransactionAttemptListStorage,
+                 failed_transaction_storage: FailedTransactionStorage,
+                 public_configuration: PublicConfiguration) -> None:
         self._attempt_service = attempt_service
         self._gateway_coin_address = gateway_coin_address
         self._map_storage = map_storage
@@ -45,6 +48,8 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
         self._only_one_transaction_receiver = only_one_transaction_receiver
         self._gateway_pywaves_address = gateway_pywaves_address
         self._attempt_list_storage = attempt_list_storage
+        self._failed_transaction_storage = failed_transaction_storage
+        self._public_configuration = public_configuration
 
     def _is_gateway_managed_coin_address(self, address: str) -> bool:
         """
@@ -119,15 +124,38 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
 
         # ---------- Pre-Check ----------
 
+        sender_array = []
+        if senders is not None and len(senders) > 0:
+            for sender in senders:
+                sender_array.append(sender.address)
+
         # transaction must have minimum amount to be handled
         if amount_after_fees <= 0:
-            self._logger.warn("Received transaction %s with an amount of %s, but it is less than the at least "
-                              "required amount. Will be skipped, but marked as processed.", tx, receiver.amount)
+            message = "Received transaction " + tx + " with an amount of " + str(receiver.amount) +", but it is less than the at least " \
+                      "required amount. Will be skipped, but marked as processed."
+            self._logger.warn(message)
+
+            failed_transaction = FailedTransaction(self._public_configuration.custom_currency_name, "amount too small",
+                                                   str(message).format(), datetime.datetime.now(), {
+                                                       "tx": tx,
+                                                       "receiver": receiver.address,
+                                                       "amount": receiver.amount,
+                                                       "senders": sender_array
+                                                   })
+
+            self._failed_transaction_storage.save_failed_transaction(failed_transaction)
             return
 
         # no mapping was found for some reason; this in an internal error as this should
         # already be prevented by the filter method
         if receiver_waves_address is None:
+            transaction = {"tx": tx, "receiver": receiver.address, "amount": receiver.amount, "senders": sender_array}
+            failed_transaction = FailedTransaction(
+                self._public_configuration.custom_currency_name, "no mapping was found",
+                "No mapping was found for some reason. This in an internal error as this should already be prevented by the filter method",
+                datetime.datetime.now(), transaction)
+
+            self._transfer_back(transaction, receiver, senders[0], index, failed_transaction)
             raise MappingNotFoundForCoinAddress(gateway_managed_address)
 
         attempt_list = self._attempt_list_storage.find_by_trigger(
@@ -177,6 +205,66 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
                 trigger, attempts, last_modified=datetime.datetime.utcnow(), created_at=datetime.datetime.utcnow())
             self._attempt_list_storage.safely_save_attempt_list(attempt_list)
             self._logger.info('Created new attempt list %s', str(attempt_list.attempt_list_id))
+
+    def _transfer_back(self, transaction, receiver: TransactionReceiver, sender: TransactionSender, index,
+                       failed_tx: FailedTransaction):
+
+        # fee to be used for the custom currency
+        coin_fee = cast(int, self._fee_service.get_coin_fee())
+
+        # fee to be transferred to the Gateway owner
+        gateway_fee = cast(int, self._fee_service.get_gateway_fee())
+
+        received_amount = cast(int, receiver.amount)
+
+        # because of transfering back in waves, the waves fee must be calculated, not coin fee
+        if self._only_one_transaction_receiver:
+            amount_after_fees = received_amount - 2 * coin_fee - gateway_fee
+        else:
+            amount_after_fees = received_amount - coin_fee - gateway_fee
+
+        attempt_list = self._attempt_list_storage.find_by_trigger(
+            AttemptListTrigger(tx=transaction["tx"], receiver=index, currency="coin"))
+
+        if attempt_list is None:
+            trigger = AttemptListTrigger(tx=transaction["tx"], currency="coin", receiver=index)
+
+            attempts = list()
+
+            if self._only_one_transaction_receiver:
+                attempts.append(
+                    TransactionAttempt(
+                        sender=self._gateway_coin_address,
+                        fee=coin_fee,
+                        currency="coin",
+                        receivers=[TransactionAttemptReceiver(address=self._gateway_owner_address,
+                                                              amount=gateway_fee)]))
+
+                attempts.append(
+                    TransactionAttempt(
+                        sender=self._gateway_coin_address,
+                        fee=coin_fee,
+                        currency="coin",
+                        receivers=[TransactionAttemptReceiver(address=sender.address, amount=amount_after_fees)]))
+            else:
+                attempts.append(
+                    TransactionAttempt(
+                        sender=self._gateway_coin_address,
+                        fee=coin_fee,
+                        currency="coin",
+                        receivers=[
+                            TransactionAttemptReceiver(address=sender.address, amount=amount_after_fees),
+                            TransactionAttemptReceiver(address=self._gateway_owner_address, amount=gateway_fee)
+                        ]))
+
+            attempt_list = TransactionAttemptList(
+                trigger, attempts, last_modified=datetime.datetime.utcnow(), created_at=datetime.datetime.utcnow())
+
+            self._attempt_list_storage.safely_save_attempt_list(attempt_list)
+            self._logger.info('Created new attempt list %s', str(attempt_list.attempt_list_id))
+
+            failed_tx.back_transfer_attemptlist = attempt_list.attempt_list_id
+            self._failed_transaction_storage.save_failed_transaction(failed_tx)
 
     def handle_transaction(self, transaction: Transaction) -> None:
         """

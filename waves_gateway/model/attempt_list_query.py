@@ -14,11 +14,15 @@ class AttemptListQuery(object):
                  trigger_tx: Optional[str] = None,
                  trigger_currency: Optional[str] = None,
                  trigger_receiver: Optional[int] = None,
-                 anything: Optional[str] = None) -> None:
+                 anything: Optional[str] = None,
+                 attempt: Optional[int] = None,
+                 tries: Optional[int] = None) -> None:
         self._trigger_tx = trigger_tx
         self._trigger_currency = trigger_currency
         self._trigger_receiver = trigger_receiver
         self._anything = anything
+        self._attempt = attempt
+        self._tries = tries
 
     @property
     def trigger_tx(self) -> str:
@@ -31,6 +35,14 @@ class AttemptListQuery(object):
     @property
     def trigger_receiver(self) -> int:
         return self._trigger_receiver
+
+    @property
+    def attempt(self) -> int:
+        return self._attempt
+
+    @property
+    def tries(self) -> int:
+        return self._tries
 
     @property
     def anything(self) -> str:
@@ -47,5 +59,7 @@ class AttemptListQuery(object):
         res = res and self.trigger_tx == other.trigger_tx
         res = res and self.trigger_currency == other.trigger_currency
         res = res and self.trigger_receiver == other.trigger_receiver
+        res = res and self.attempt == other.attempt
+        res = res and self.tries == other.tries
 
         return res

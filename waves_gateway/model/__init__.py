@@ -12,3 +12,4 @@ from .attempt_list_query import AttemptListQuery
 from .polling_delay_config import PollingDelayConfig
 from .gateway_config_file import GatewayConfigFile
 from .polling_state import PollingState, PollingTransactionState
+from .failed_transaction import FailedTransaction

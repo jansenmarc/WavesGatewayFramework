@@ -38,6 +38,9 @@ class GatewayControllerConverterProxyImpl(GatewayController):
         else:
             return self._converter.revert_attempt_list_conversion(result)
 
+    def get_average_attempt_list_tries(self):
+        return self._gateway_controller.get_average_attempt_list_tries()
+
     def __init__(self, attempt_list_converter_service: AttemptListConverterService,
                  gateway_controller: GatewayController) -> None:
         self._converter = attempt_list_converter_service
@@ -47,5 +50,17 @@ class GatewayControllerConverterProxyImpl(GatewayController):
         return self._converter.revert_attempt_list_conversion(
             self._gateway_controller.get_attempt_list_by_trigger(trigger))
 
+    def get_failed_transactions(self):
+        return self._gateway_controller.get_failed_transactions()
+
+    def get_block_heights(self):
+        return self._gateway_controller.get_block_heights()
+
+    def get_log_messages(self):
+        return self._gateway_controller.get_log_messages()
+
     def create_address(self, waves_address: str) -> str:
         return self._gateway_controller.create_address(waves_address)
+
+    def trigger_attemptlist_retry(self, id: str) -> bool:
+        return self._gateway_controller.trigger_attemptlist_retry(id)
