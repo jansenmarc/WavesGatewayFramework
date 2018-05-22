@@ -9,7 +9,7 @@ from waves_gateway.factory import CoinAddressFactory
 
 from waves_gateway.model import PollingDelayConfig
 from waves_gateway.common import Injector, InjectorError, LOGGING_HANDLER_LIST, POLLING_DELAY_SECONDS, \
-    CUSTOM_CURRENCY_NAME, WALLET_STORAGE_COLLECTION_NAME, MAP_STORAGE_COLLECTION_NAME, \
+    BASE_CURRENCY_NAME, CUSTOM_CURRENCY_NAME, WALLET_STORAGE_COLLECTION_NAME, MAP_STORAGE_COLLECTION_NAME, \
     KEY_VALUE_STORAGE_COLLECTION_NAME, TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME, GATEWAY_COIN_ADDRESS_SECRET, \
     KeyPair, GATEWAY_COIN_ADDRESS, WAVES_NODE, WAVES_ASSET_ID, WAVES_CHAIN, ONLY_ONE_TRANSACTION_RECEIVER, \
     COIN_TRANSACTION_WEB_LINK, WAVES_TRANSACTION_WEB_LINK, WAVES_ADDRESS_WEB_LINK, ATTEMPT_LIST_MAX_COMPLETION_TRIES, \
@@ -131,8 +131,8 @@ class FactoryTest(TestCase):
         self.assertIs(res, mock_transaction_polling_service_instance)
 
     def test_public_configuration_factory(self):
-        custom_currency_name = 'test_currency'
         base_currency_name = 'Turtle Network'
+        custom_currency_name = 'test_currency'
         gateway_waves_address = '7923846'
         gateway_coin_address = '732964876'
         waves_node = 'http://test_node'
@@ -217,7 +217,9 @@ class GatewayTest(TestCase):
         self.assertFalse(self._test_injector.is_registered(PollingDelayConfig))
         self.assertFalse(self._test_injector.is_registered(LOGGING_HANDLER_LIST))
         self.assertFalse(self._test_injector.is_registered(POLLING_DELAY_SECONDS))
+        self.assertIs(self._test_injector.get(BASE_CURRENCY_NAME), Gateway.DEFAULT_BASE_CURRENCY_NAME)
         self.assertIs(self._test_injector.get(CUSTOM_CURRENCY_NAME), Gateway.DEFAULT_CUSTOM_CURRENCY_NAME)
+
         self.assertIs(
             self._test_injector.get(WALLET_STORAGE_COLLECTION_NAME), Gateway.DEFAULT_WALLET_STORAGE_COLLECTION_NAME)
         self.assertIs(self._test_injector.get(MAP_STORAGE_COLLECTION_NAME), Gateway.DEFAULT_MAP_STORAGE_COLLECTION_NAME)

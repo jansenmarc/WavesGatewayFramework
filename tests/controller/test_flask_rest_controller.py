@@ -15,8 +15,8 @@ class FlaskRestControllerSpec(TestCase):
         self._flask = MagicMock()
         self._logger = MagicMock()
         self._attempt_list_serializer = MagicMock()
-        self._custom_currency_name = 'Test Coin'
         self._base_currency_name = 'Turtle Network'
+        self._custom_currency_name = 'Test Coin'
         self._public_configuration = MagicMock()
         self._public_configuration_serializer = MagicMock()
 

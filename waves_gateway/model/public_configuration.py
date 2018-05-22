@@ -11,8 +11,8 @@ class PublicConfiguration:
     for example via ReST.
     """
 
-    CUSTOM_CURRENCY_NAME_DICT_KEY = 'custom_currency_name'
     BASE_CURRENCY_NAME_DICT_KEY = 'base_currency_name'
+    CUSTOM_CURRENCY_NAME_DICT_KEY = 'custom_currency_name'
     GATEWAY_WAVES_ADDRESS_DICT_KEY = 'gateway_waves_address'
     GATEWAY_COIN_HOLDER_DICT_KEY = 'gateway_coin_holder'
     WAVES_NODE_DICT_KEY = 'waves_node'
@@ -48,12 +48,12 @@ class PublicConfiguration:
         self._web_primary_color = web_primary_color
 
     @property
-    def custom_currency_name(self) -> str:
-        return self._custom_currency_name
-
-    @property
     def base_currency_name(self) -> str:
         return self._base_currency_name
+
+    @property
+    def custom_currency_name(self) -> str:
+        return self._custom_currency_name
 
     @property
     def gateway_waves_address(self) -> str:

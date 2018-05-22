@@ -247,7 +247,7 @@ class Gateway(object):
     """
 
     DEFAULT_FLASK_NAME = 'waves-gw'
-    BASE_CURRENCY_NAME = 'Turtle Network'
+    DEFAULT_BASE_CURRENCY_NAME = 'Turtle Network'
     DEFAULT_CUSTOM_CURRENCY_NAME = 'Custom Currency'
     DEFAULT_POLLING_DELAY = 0
     DEFAULT_WAVES_POLLING_DELAY = 0
@@ -302,7 +302,7 @@ class Gateway(object):
                  asset_integer_converter_service: Optional[service.IntegerConverterService] = None,
                  waves_chain=DEFAULT_WAVES_CHAIN,
                  only_one_transaction_receiver: bool = False,
-                 base_currency_name: str = BASE_CURRENCY_NAME,
+                 base_currency_name: str = DEFAULT_BASE_CURRENCY_NAME,
                  custom_currency_name: str = DEFAULT_CUSTOM_CURRENCY_NAME,
                  logging_handlers: Optional[list] = None,
                  managed_loggers: List[str] = list(),
@@ -440,8 +440,8 @@ class Gateway(object):
         self._injector.overwrite_if_exists(LOGGING_HANDLER_LIST, logging_handlers)
         self._injector.overwrite_if_exists(POLLING_DELAY_SECONDS, polling_delay_s)
         self._injector.overwrite_if_exists(PollingDelayConfig, polling_delay_config)
-        self._injector.overwrite(CUSTOM_CURRENCY_NAME, custom_currency_name)
         self._injector.overwrite(BASE_CURRENCY_NAME, base_currency_name)
+        self._injector.overwrite(CUSTOM_CURRENCY_NAME, custom_currency_name)
         self._injector.overwrite(GATEWAY_OWNER_ADDRESS, gateway_owner_address)
         self._injector.overwrite(WALLET_STORAGE_COLLECTION_NAME, wallet_storage_collection_name)
         self._injector.overwrite(MAP_STORAGE_COLLECTION_NAME, map_storage_collection_name)
