@@ -1,0 +1,279 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.service.coin_transaction_consumer_impl &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.service.coin_transaction_consumer_impl</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CoinTransactionConsumerImpl</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">pywaves</span>  <span class="c1"># type: ignore</span>
+
+<span class="kn">from</span> <span class="nn">waves_gateway.common</span> <span class="k">import</span> <span class="n">MappingNotFoundForCoinAddress</span><span class="p">,</span> \
+    <span class="n">MultipleGatewayReceiversError</span><span class="p">,</span> <span class="n">Injectable</span><span class="p">,</span> <span class="n">GATEWAY_OWNER_ADDRESS</span><span class="p">,</span> <span class="n">GATEWAY_COIN_ADDRESS</span><span class="p">,</span> \
+    <span class="n">ONLY_ONE_TRANSACTION_RECEIVER</span><span class="p">,</span> <span class="n">GATEWAY_WAVES_ADDRESS</span><span class="p">,</span> <span class="n">GATEWAY_PYWAVES_ADDRESS</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.model</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionReceiver</span><span class="p">,</span> \
+    <span class="n">TransactionAttempt</span><span class="p">,</span> <span class="n">TransactionAttemptReceiver</span><span class="p">,</span> <span class="n">TransactionAttemptList</span><span class="p">,</span> \
+    <span class="n">AttemptListTrigger</span><span class="p">,</span> <span class="n">TransactionSender</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.storage</span> <span class="k">import</span> <span class="n">MapStorage</span><span class="p">,</span> <span class="n">TransactionAttemptListStorage</span>
+<span class="kn">from</span> <span class="nn">.fee_service</span> <span class="k">import</span> <span class="n">FeeService</span>
+<span class="kn">from</span> <span class="nn">.transaction_attempt_list_service</span> <span class="k">import</span> <span class="n">TransactionAttemptListService</span>
+<span class="kn">from</span> <span class="nn">.transaction_consumer</span> <span class="k">import</span> <span class="n">TransactionConsumer</span>
+<span class="kn">from</span> <span class="nn">.fee_service_converter_proxy_impl</span> <span class="k">import</span> <span class="n">FeeServiceConverterProxyImpl</span>
+
+
+<div class="viewcode-block" id="CoinTransactionConsumerImpl"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.coin_transaction_consumer_impl.CoinTransactionConsumerImpl">[docs]</a><span class="nd">@Injectable</span><span class="p">(</span><span class="n">deps</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">TransactionAttemptListService</span><span class="p">,</span> <span class="n">GATEWAY_COIN_ADDRESS</span><span class="p">,</span> <span class="n">MapStorage</span><span class="p">,</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">GATEWAY_WAVES_ADDRESS</span><span class="p">,</span>
+    <span class="n">GATEWAY_OWNER_ADDRESS</span><span class="p">,</span> <span class="n">FeeServiceConverterProxyImpl</span><span class="p">,</span> <span class="n">ONLY_ONE_TRANSACTION_RECEIVER</span><span class="p">,</span> <span class="n">GATEWAY_PYWAVES_ADDRESS</span><span class="p">,</span>
+    <span class="n">TransactionAttemptListStorage</span>
+<span class="p">])</span>
+<span class="k">class</span> <span class="nc">CoinTransactionConsumerImpl</span><span class="p">(</span><span class="n">TransactionConsumer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles fetched transactions of the custom currency.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_service</span><span class="p">:</span> <span class="n">TransactionAttemptListService</span><span class="p">,</span> <span class="n">gateway_coin_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">map_storage</span><span class="p">:</span> <span class="n">MapStorage</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">gateway_waves_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gateway_owner_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">fee_service</span><span class="p">:</span> <span class="n">FeeService</span><span class="p">,</span> <span class="n">only_one_transaction_receiver</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">gateway_pywaves_address</span><span class="p">:</span> <span class="n">pywaves</span><span class="o">.</span><span class="n">Address</span><span class="p">,</span>
+                 <span class="n">attempt_list_storage</span><span class="p">:</span> <span class="n">TransactionAttemptListStorage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_service</span> <span class="o">=</span> <span class="n">attempt_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_coin_address</span> <span class="o">=</span> <span class="n">gateway_coin_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span> <span class="o">=</span> <span class="n">map_storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_waves_address</span> <span class="o">=</span> <span class="n">gateway_waves_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_owner_address</span> <span class="o">=</span> <span class="n">gateway_owner_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fee_service</span> <span class="o">=</span> <span class="n">fee_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_only_one_transaction_receiver</span> <span class="o">=</span> <span class="n">only_one_transaction_receiver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_pywaves_address</span> <span class="o">=</span> <span class="n">gateway_pywaves_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span> <span class="o">=</span> <span class="n">attempt_list_storage</span>
+
+    <span class="k">def</span> <span class="nf">_is_gateway_managed_coin_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if there is a mapping entry belonging to the given address.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span><span class="o">.</span><span class="n">coin_address_exists</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_gateway_coin_holder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">address</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_coin_address</span>
+
+<div class="viewcode-block" id="CoinTransactionConsumerImpl.filter_transaction"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.coin_transaction_consumer_impl.CoinTransactionConsumerImpl.filter_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">filter_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns whether the transaction is addressed to a gateway managed address.</span>
+<span class="sd">        This is the case if at least one of the receivers is a gateway managed address.</span>
+<span class="sd">        But, not the main gateway address.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span><span class="o">.</span><span class="n">gateway_transaction_exists</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">tx</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter_receivers</span><span class="p">(</span><span class="n">transaction</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+    <span class="k">def</span> <span class="nf">_filter_receivers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filters a given list of transaction receivers for those ones that are gateway managed, but not the</span>
+<span class="sd">        main gateway coin holder. Those shall be further processed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">receivers</span><span class="p">)):</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">receivers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">address</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_gateway_managed_coin_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_gateway_coin_holder</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+                <span class="n">attempt_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span><span class="o">.</span><span class="n">find_by_trigger</span><span class="p">(</span>
+                    <span class="n">AttemptListTrigger</span><span class="p">(</span><span class="n">tx</span><span class="o">=</span><span class="n">transaction</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span> <span class="n">currency</span><span class="o">=</span><span class="s2">&quot;coin&quot;</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">i</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">attempt_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">attempt_list</span><span class="o">.</span><span class="n">is_complete</span><span class="p">():</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">_handle_transaction_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                     <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                     <span class="n">receiver</span><span class="p">:</span> <span class="n">TransactionReceiver</span><span class="p">,</span>
+                                     <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                     <span class="n">senders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TransactionSender</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># ---------- Pre-Calculation ----------</span>
+
+        <span class="c1"># the gateway address that coins were transferred to</span>
+        <span class="n">gateway_managed_address</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">address</span>
+
+        <span class="c1"># the custom currency fee to be used</span>
+        <span class="n">coin_fee</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fee_service</span><span class="o">.</span><span class="n">get_coin_fee</span><span class="p">())</span>
+
+        <span class="c1"># the waves fee to be used; not used in the calculation</span>
+        <span class="n">waves_fee</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fee_service</span><span class="o">.</span><span class="n">get_waves_fee</span><span class="p">())</span>
+
+        <span class="c1"># the fee for the gateway owner; service costs</span>
+        <span class="n">gateway_fee</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fee_service</span><span class="o">.</span><span class="n">get_gateway_fee</span><span class="p">())</span>
+
+        <span class="c1"># the amount of coins that were received by this receiver</span>
+        <span class="n">received_amount</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">receiver</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+
+        <span class="c1"># the waves address to receive the amount of coins</span>
+        <span class="n">receiver_waves_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_storage</span><span class="o">.</span><span class="n">get_waves_address_by_coin_address</span><span class="p">(</span><span class="n">gateway_managed_address</span><span class="p">)</span>
+
+        <span class="c1"># the amount of coins to be transferred after applying the fees</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_only_one_transaction_receiver</span><span class="p">:</span>
+            <span class="n">amount_after_fees</span> <span class="o">=</span> <span class="n">received_amount</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">coin_fee</span> <span class="o">-</span> <span class="n">gateway_fee</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">amount_after_fees</span> <span class="o">=</span> <span class="n">received_amount</span> <span class="o">-</span> <span class="n">coin_fee</span> <span class="o">-</span> <span class="n">gateway_fee</span>
+
+        <span class="c1"># ---------- Pre-Check ----------</span>
+
+        <span class="c1"># transaction must have minimum amount to be handled</span>
+        <span class="k">if</span> <span class="n">amount_after_fees</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Received transaction </span><span class="si">%s</span><span class="s2"> with an amount of </span><span class="si">%s</span><span class="s2">, but it is less than the at least &quot;</span>
+                              <span class="s2">&quot;required amount. Will be skipped, but marked as processed.&quot;</span><span class="p">,</span> <span class="n">tx</span><span class="p">,</span> <span class="n">receiver</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># no mapping was found for some reason; this in an internal error as this should</span>
+        <span class="c1"># already be prevented by the filter method</span>
+        <span class="k">if</span> <span class="n">receiver_waves_address</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MappingNotFoundForCoinAddress</span><span class="p">(</span><span class="n">gateway_managed_address</span><span class="p">)</span>
+
+        <span class="n">attempt_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span><span class="o">.</span><span class="n">find_by_trigger</span><span class="p">(</span>
+            <span class="n">AttemptListTrigger</span><span class="p">(</span><span class="n">tx</span><span class="o">=</span><span class="n">tx</span><span class="p">,</span> <span class="n">currency</span><span class="o">=</span><span class="s2">&quot;coin&quot;</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">attempt_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">attempts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_only_one_transaction_receiver</span><span class="p">:</span>
+                <span class="n">attempts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">TransactionAttempt</span><span class="p">(</span>
+                        <span class="n">sender</span><span class="o">=</span><span class="n">gateway_managed_address</span><span class="p">,</span>
+                        <span class="n">currency</span><span class="o">=</span><span class="s2">&quot;coin&quot;</span><span class="p">,</span>
+                        <span class="n">fee</span><span class="o">=</span><span class="n">coin_fee</span><span class="p">,</span>
+                        <span class="n">receivers</span><span class="o">=</span><span class="p">[</span>
+                            <span class="n">TransactionAttemptReceiver</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_coin_address</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">amount_after_fees</span><span class="p">),</span>
+                        <span class="p">]))</span>
+
+                <span class="n">attempts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">TransactionAttempt</span><span class="p">(</span>
+                        <span class="n">sender</span><span class="o">=</span><span class="n">gateway_managed_address</span><span class="p">,</span>
+                        <span class="n">currency</span><span class="o">=</span><span class="s2">&quot;coin&quot;</span><span class="p">,</span>
+                        <span class="n">fee</span><span class="o">=</span><span class="n">coin_fee</span><span class="p">,</span>
+                        <span class="n">receivers</span><span class="o">=</span><span class="p">[</span><span class="n">TransactionAttemptReceiver</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_owner_address</span><span class="p">,</span>
+                                                              <span class="n">amount</span><span class="o">=</span><span class="n">gateway_fee</span><span class="p">)]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attempts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">TransactionAttempt</span><span class="p">(</span>
+                        <span class="n">sender</span><span class="o">=</span><span class="n">gateway_managed_address</span><span class="p">,</span>
+                        <span class="n">currency</span><span class="o">=</span><span class="s2">&quot;coin&quot;</span><span class="p">,</span>
+                        <span class="n">fee</span><span class="o">=</span><span class="n">coin_fee</span><span class="p">,</span>
+                        <span class="n">receivers</span><span class="o">=</span><span class="p">[</span>
+                            <span class="n">TransactionAttemptReceiver</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_coin_address</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">amount_after_fees</span><span class="p">),</span>
+                            <span class="n">TransactionAttemptReceiver</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_owner_address</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">gateway_fee</span><span class="p">)</span>
+                        <span class="p">]))</span>
+
+            <span class="n">attempts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">TransactionAttempt</span><span class="p">(</span>
+                    <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_pywaves_address</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                    <span class="n">fee</span><span class="o">=</span><span class="n">waves_fee</span><span class="p">,</span>
+                    <span class="n">currency</span><span class="o">=</span><span class="s2">&quot;waves&quot;</span><span class="p">,</span>
+                    <span class="n">receivers</span><span class="o">=</span><span class="p">[</span><span class="n">TransactionAttemptReceiver</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">receiver_waves_address</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">amount_after_fees</span><span class="p">)]))</span>
+
+            <span class="n">trigger</span> <span class="o">=</span> <span class="n">AttemptListTrigger</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="s2">&quot;coin&quot;</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="n">senders</span><span class="p">)</span>
+            <span class="n">attempt_list</span> <span class="o">=</span> <span class="n">TransactionAttemptList</span><span class="p">(</span>
+                <span class="n">trigger</span><span class="p">,</span> <span class="n">attempts</span><span class="p">,</span> <span class="n">last_modified</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">(),</span> <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_list_storage</span><span class="o">.</span><span class="n">safely_save_attempt_list</span><span class="p">(</span><span class="n">attempt_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created new attempt list </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">attempt_list</span><span class="o">.</span><span class="n">attempt_list_id</span><span class="p">))</span>
+
+<div class="viewcode-block" id="CoinTransactionConsumerImpl.handle_transaction"><a class="viewcode-back" href="../../../waves_gateway.service.html#waves_gateway.service.coin_transaction_consumer_impl.CoinTransactionConsumerImpl.handle_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">handle_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes an incoming transaction in the custom currency.</span>
+
+<span class="sd">        First, it fetches the current amount of coins stored on the gateway managed address which should</span>
+<span class="sd">        already include what has been transferred.</span>
+<span class="sd">        The amount of coins of the transaction must be determined.</span>
+
+<span class="sd">        The further processing depends on whether this is a account based system.</span>
+<span class="sd">        If not, an internal transaction is done, transferring the received amount to the</span>
+<span class="sd">        main gateway address.</span>
+<span class="sd">        Otherwise, the internal transaction is skipped.</span>
+
+<span class="sd">        Finally, the waves transaction is performed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">receivers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_receivers</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">receivers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MultipleGatewayReceiversError</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">tx</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">receivers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_transaction_receiver</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">receivers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">senders</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

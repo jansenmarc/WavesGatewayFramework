@@ -1,0 +1,264 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.serializer package &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="waves_gateway.service package" href="waves_gateway.service.html" />
+    <link rel="prev" title="waves_gateway.model package" href="waves_gateway.model.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="waves-gateway-serializer-package">
+<h1>waves_gateway.serializer package<a class="headerlink" href="#waves-gateway-serializer-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-waves_gateway.serializer.key_pair_serializer">
+<span id="waves-gateway-serializer-key-pair-serializer-module"></span><h2>waves_gateway.serializer.key_pair_serializer module<a class="headerlink" href="#module-waves_gateway.serializer.key_pair_serializer" title="Permalink to this headline">¶</a></h2>
+<p>KeyPairSerializer</p>
+<dl class="class">
+<dt id="waves_gateway.serializer.key_pair_serializer.KeyPairSerializer">
+<em class="property">class </em><code class="descclassname">waves_gateway.serializer.key_pair_serializer.</code><code class="descname">KeyPairSerializer</code><a class="reference internal" href="_modules/waves_gateway/serializer/key_pair_serializer.html#KeyPairSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.key_pair_serializer.KeyPairSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Can be used to serialize and deserialize a KeyPair derived alias such as an
+AccountSecret instance or an AddressSecret.</p>
+<dl class="method">
+<dt id="waves_gateway.serializer.key_pair_serializer.KeyPairSerializer.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><em>key_pair: waves_gateway.model.key_pair.KeyPair</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/waves_gateway/serializer/key_pair_serializer.html#KeyPairSerializer.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.key_pair_serializer.KeyPairSerializer.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms a KeyPair into a dictionary that contains all attributes of the KeyPair.
+After that, the dict may be persisted and deserialized later.
+For example, the dict representation may be converted into JSON using the standard json library.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.serializer.key_pair_serializer.KeyPairSerializer.from_dict">
+<code class="descname">from_dict</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; waves_gateway.model.key_pair.KeyPair<a class="reference internal" href="_modules/waves_gateway/serializer/key_pair_serializer.html#KeyPairSerializer.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.key_pair_serializer.KeyPairSerializer.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to reconstruct a KeyPair from the given dictionary.
+This may fail if the dictionary does not define the necessary properties.
+In this case a ParseError is thrown.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.serializer.mapping_entry_serializer">
+<span id="waves-gateway-serializer-mapping-entry-serializer-module"></span><h2>waves_gateway.serializer.mapping_entry_serializer module<a class="headerlink" href="#module-waves_gateway.serializer.mapping_entry_serializer" title="Permalink to this headline">¶</a></h2>
+<p>MappingEntrySerializer</p>
+<dl class="class">
+<dt id="waves_gateway.serializer.mapping_entry_serializer.MappingEntrySerializer">
+<em class="property">class </em><code class="descclassname">waves_gateway.serializer.mapping_entry_serializer.</code><code class="descname">MappingEntrySerializer</code><a class="reference internal" href="_modules/waves_gateway/serializer/mapping_entry_serializer.html#MappingEntrySerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.mapping_entry_serializer.MappingEntrySerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines how a MappingEntry can be serialized and deserialized.</p>
+<dl class="method">
+<dt id="waves_gateway.serializer.mapping_entry_serializer.MappingEntrySerializer.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><em>entry: waves_gateway.model.mapping_entry.MappingEntry</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/waves_gateway/serializer/mapping_entry_serializer.html#MappingEntrySerializer.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.mapping_entry_serializer.MappingEntrySerializer.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a mapping entry into a dictionary containing all attributes.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.serializer.polling_state_serializer">
+<span id="waves-gateway-serializer-polling-state-serializer-module"></span><h2>waves_gateway.serializer.polling_state_serializer module<a class="headerlink" href="#module-waves_gateway.serializer.polling_state_serializer" title="Permalink to this headline">¶</a></h2>
+<p>PollingStateSerializer</p>
+<dl class="class">
+<dt id="waves_gateway.serializer.polling_state_serializer.PollingStateSerializer">
+<em class="property">class </em><code class="descclassname">waves_gateway.serializer.polling_state_serializer.</code><code class="descname">PollingStateSerializer</code><span class="sig-paren">(</span><em>polling_transaction_state_serializer: waves_gateway.serializer.polling_transaction_state_serializer.PollingTransactionStateSerializer</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/waves_gateway/serializer/polling_state_serializer.html#PollingStateSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.polling_state_serializer.PollingStateSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.serializer.serializer.Serializer" title="waves_gateway.serializer.serializer.Serializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">waves_gateway.serializer.serializer.Serializer</span></code></a></p>
+<p>Defines how a PollingState can be serialized and deserialized.</p>
+<dl class="method">
+<dt id="waves_gateway.serializer.polling_state_serializer.PollingStateSerializer.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><em>polling_state: waves_gateway.model.polling_state.PollingState</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/waves_gateway/serializer/polling_state_serializer.html#PollingStateSerializer.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.polling_state_serializer.PollingStateSerializer.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.serializer.polling_state_serializer.PollingStateSerializer.from_dict">
+<code class="descname">from_dict</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; waves_gateway.model.polling_state.PollingState<a class="reference internal" href="_modules/waves_gateway/serializer/polling_state_serializer.html#PollingStateSerializer.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.polling_state_serializer.PollingStateSerializer.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.serializer.polling_transaction_state_serializer">
+<span id="waves-gateway-serializer-polling-transaction-state-serializer-module"></span><h2>waves_gateway.serializer.polling_transaction_state_serializer module<a class="headerlink" href="#module-waves_gateway.serializer.polling_transaction_state_serializer" title="Permalink to this headline">¶</a></h2>
+<p>PollingTransactionStateSerializer</p>
+<dl class="class">
+<dt id="waves_gateway.serializer.polling_transaction_state_serializer.PollingTransactionStateSerializer">
+<em class="property">class </em><code class="descclassname">waves_gateway.serializer.polling_transaction_state_serializer.</code><code class="descname">PollingTransactionStateSerializer</code><a class="reference internal" href="_modules/waves_gateway/serializer/polling_transaction_state_serializer.html#PollingTransactionStateSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.polling_transaction_state_serializer.PollingTransactionStateSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#waves_gateway.serializer.serializer.Serializer" title="waves_gateway.serializer.serializer.Serializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">waves_gateway.serializer.serializer.Serializer</span></code></a></p>
+<p>Defines how a PollingTransactionState can be serialized and deserialized.</p>
+<dl class="method">
+<dt id="waves_gateway.serializer.polling_transaction_state_serializer.PollingTransactionStateSerializer.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><em>value: waves_gateway.model.polling_state.PollingTransactionState</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/waves_gateway/serializer/polling_transaction_state_serializer.html#PollingTransactionStateSerializer.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.polling_transaction_state_serializer.PollingTransactionStateSerializer.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.serializer.polling_transaction_state_serializer.PollingTransactionStateSerializer.from_dict">
+<code class="descname">from_dict</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; waves_gateway.model.polling_state.PollingTransactionState<a class="reference internal" href="_modules/waves_gateway/serializer/polling_transaction_state_serializer.html#PollingTransactionStateSerializer.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.polling_transaction_state_serializer.PollingTransactionStateSerializer.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.serializer.public_configuration_serializer">
+<span id="waves-gateway-serializer-public-configuration-serializer-module"></span><h2>waves_gateway.serializer.public_configuration_serializer module<a class="headerlink" href="#module-waves_gateway.serializer.public_configuration_serializer" title="Permalink to this headline">¶</a></h2>
+<p>PublicConfigurationSerializer</p>
+<dl class="class">
+<dt id="waves_gateway.serializer.public_configuration_serializer.PublicConfigurationSerializer">
+<em class="property">class </em><code class="descclassname">waves_gateway.serializer.public_configuration_serializer.</code><code class="descname">PublicConfigurationSerializer</code><a class="reference internal" href="_modules/waves_gateway/serializer/public_configuration_serializer.html#PublicConfigurationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.public_configuration_serializer.PublicConfigurationSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines the conversion of a PublicConfiguration instance into a dict object.
+The resulting object may be delivered to the Web Application.</p>
+<dl class="method">
+<dt id="waves_gateway.serializer.public_configuration_serializer.PublicConfigurationSerializer.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><em>value: waves_gateway.model.public_configuration.PublicConfiguration</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/waves_gateway/serializer/public_configuration_serializer.html#PublicConfigurationSerializer.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.public_configuration_serializer.PublicConfigurationSerializer.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.serializer.serializer">
+<span id="waves-gateway-serializer-serializer-module"></span><h2>waves_gateway.serializer.serializer module<a class="headerlink" href="#module-waves_gateway.serializer.serializer" title="Permalink to this headline">¶</a></h2>
+<p>Serializer</p>
+<dl class="class">
+<dt id="waves_gateway.serializer.serializer.Serializer">
+<em class="property">class </em><code class="descclassname">waves_gateway.serializer.serializer.</code><code class="descname">Serializer</code><a class="reference internal" href="_modules/waves_gateway/serializer/serializer.html#Serializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.serializer.Serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for all serializers. Ensures a similar API.</p>
+<dl class="method">
+<dt id="waves_gateway.serializer.serializer.Serializer.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><em>value: Any</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/waves_gateway/serializer/serializer.html#Serializer.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.serializer.Serializer.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.serializer.serializer.Serializer.from_dict">
+<code class="descname">from_dict</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="_modules/waves_gateway/serializer/serializer.html#Serializer.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.serializer.Serializer.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.serializer.transaction_attempt_list_serializer">
+<span id="waves-gateway-serializer-transaction-attempt-list-serializer-module"></span><h2>waves_gateway.serializer.transaction_attempt_list_serializer module<a class="headerlink" href="#module-waves_gateway.serializer.transaction_attempt_list_serializer" title="Permalink to this headline">¶</a></h2>
+<p>TransactionAttemptListSerializer</p>
+<dl class="class">
+<dt id="waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer">
+<em class="property">class </em><code class="descclassname">waves_gateway.serializer.transaction_attempt_list_serializer.</code><code class="descname">TransactionAttemptListSerializer</code><a class="reference internal" href="_modules/waves_gateway/serializer/transaction_attempt_list_serializer.html#TransactionAttemptListSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines a conversion from an TransactionAttemptList instance into a dict instance
+and backwards. The dict instance can be used for persistence or an external API.</p>
+<dl class="method">
+<dt id="waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer.attempt_list_as_dict">
+<code class="descname">attempt_list_as_dict</code><span class="sig-paren">(</span><em>attempt_list: waves_gateway.model.transaction_attempt_list.TransactionAttemptList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/waves_gateway/serializer/transaction_attempt_list_serializer.html#TransactionAttemptListSerializer.attempt_list_as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer.attempt_list_as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer.attempt_list_from_dict">
+<code class="descname">attempt_list_from_dict</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; waves_gateway.model.transaction_attempt_list.TransactionAttemptList<a class="reference internal" href="_modules/waves_gateway/serializer/transaction_attempt_list_serializer.html#TransactionAttemptListSerializer.attempt_list_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.serializer.transaction_attempt_list_serializer.TransactionAttemptListSerializer.attempt_list_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-waves_gateway.serializer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-waves_gateway.serializer" title="Permalink to this headline">¶</a></h2>
+<p>Defines serializers for the data models defined in the waves_gateway.model module.
+Those serializers may be used to persist the models.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">waves_gateway.serializer package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer.key_pair_serializer">waves_gateway.serializer.key_pair_serializer module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer.mapping_entry_serializer">waves_gateway.serializer.mapping_entry_serializer module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer.polling_state_serializer">waves_gateway.serializer.polling_state_serializer module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer.polling_transaction_state_serializer">waves_gateway.serializer.polling_transaction_state_serializer module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer.public_configuration_serializer">waves_gateway.serializer.public_configuration_serializer module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer.serializer">waves_gateway.serializer.serializer module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer.transaction_attempt_list_serializer">waves_gateway.serializer.transaction_attempt_list_serializer module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.serializer">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="waves_gateway.html">waves_gateway package</a><ul>
+      <li>Previous: <a href="waves_gateway.model.html" title="previous chapter">waves_gateway.model package</a></li>
+      <li>Next: <a href="waves_gateway.service.html" title="next chapter">waves_gateway.service package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/waves_gateway.serializer.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/waves_gateway.serializer.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

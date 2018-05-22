@@ -1,0 +1,128 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>waves_gateway.controller.gateway_controller_converter_proxy_impl &#8212; Waves-Gateway-Framework  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for waves_gateway.controller.gateway_controller_converter_proxy_impl</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">GatewayControllerConverterProxyImpl</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.common</span> <span class="k">import</span> <span class="n">map_array</span><span class="p">,</span> <span class="n">Injectable</span>
+<span class="kn">from</span> <span class="nn">waves_gateway.service</span> <span class="k">import</span> <span class="n">AttemptListConverterService</span>
+
+<span class="kn">from</span> <span class="nn">waves_gateway.model</span> <span class="k">import</span> <span class="n">AttemptListTrigger</span><span class="p">,</span> <span class="n">TransactionAttemptList</span><span class="p">,</span> <span class="n">AttemptListQuery</span>
+
+<span class="kn">from</span> <span class="nn">.gateway_controller</span> <span class="k">import</span> <span class="n">GatewayController</span>
+
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl">[docs]</a><span class="nd">@Injectable</span><span class="p">(</span><span class="n">deps</span><span class="o">=</span><span class="p">[</span><span class="n">AttemptListConverterService</span><span class="p">,</span> <span class="n">GatewayController</span><span class="p">])</span>
+<span class="k">class</span> <span class="nc">GatewayControllerConverterProxyImpl</span><span class="p">(</span><span class="n">GatewayController</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reverts the amount conversion which the Gateway internally uses before overhanding the results</span>
+<span class="sd">    to an external API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl.check_coin_transaction"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.check_coin_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">check_coin_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span><span class="o">.</span><span class="n">check_coin_transaction</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl.check_waves_transaction"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.check_waves_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">check_waves_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span><span class="o">.</span><span class="n">check_waves_transaction</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl.validate_waves_address"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.validate_waves_address">[docs]</a>    <span class="k">def</span> <span class="nf">validate_waves_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span><span class="o">.</span><span class="n">validate_waves_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl.query_attempt_lists"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.query_attempt_lists">[docs]</a>    <span class="k">def</span> <span class="nf">query_attempt_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">AttemptListQuery</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span><span class="o">.</span><span class="n">query_attempt_lists</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">map_array</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span><span class="o">.</span><span class="n">revert_attempt_list_conversion</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">results</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl.get_attempt_list_by_id"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.get_attempt_list_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_attempt_list_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span><span class="o">.</span><span class="n">get_attempt_list_by_id</span><span class="p">(</span><span class="n">attempt_list_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span><span class="o">.</span><span class="n">revert_attempt_list_conversion</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt_list_converter_service</span><span class="p">:</span> <span class="n">AttemptListConverterService</span><span class="p">,</span>
+                 <span class="n">gateway_controller</span><span class="p">:</span> <span class="n">GatewayController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span> <span class="o">=</span> <span class="n">attempt_list_converter_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span> <span class="o">=</span> <span class="n">gateway_controller</span>
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl.get_attempt_list_by_trigger"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.get_attempt_list_by_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">get_attempt_list_by_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="n">AttemptListTrigger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionAttemptList</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span><span class="o">.</span><span class="n">revert_attempt_list_conversion</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span><span class="o">.</span><span class="n">get_attempt_list_by_trigger</span><span class="p">(</span><span class="n">trigger</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GatewayControllerConverterProxyImpl.create_address"><a class="viewcode-back" href="../../../waves_gateway.controller.html#waves_gateway.controller.gateway_controller_converter_proxy_impl.GatewayControllerConverterProxyImpl.create_address">[docs]</a>    <span class="k">def</span> <span class="nf">create_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waves_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_controller</span><span class="o">.</span><span class="n">create_address</span><span class="p">(</span><span class="n">waves_address</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Henning Gerrits.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

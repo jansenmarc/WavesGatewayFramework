@@ -1,0 +1,22 @@
+waves\_gateway.factory package
+==============================
+
+Submodules
+----------
+
+waves\_gateway.factory.coin\_address\_factory module
+----------------------------------------------------
+
+.. automodule:: waves_gateway.factory.coin_address_factory
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: waves_gateway.factory
+    :members:
+    :undoc-members:
+    :show-inheritance:
