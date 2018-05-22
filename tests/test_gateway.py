@@ -132,6 +132,7 @@ class FactoryTest(TestCase):
 
     def test_public_configuration_factory(self):
         custom_currency_name = 'test_currency'
+        base_currency_name = 'Turtle Network'
         gateway_waves_address = '7923846'
         gateway_coin_address = '732964876'
         waves_node = 'http://test_node'
@@ -142,11 +143,12 @@ class FactoryTest(TestCase):
         coin_address_web_link = 'http://coin_address_web_link'
         web_primary_color = 'orange'
 
-        res = public_configuration_factory(custom_currency_name, gateway_waves_address, gateway_coin_address,
+        res = public_configuration_factory(base_currency_name,custom_currency_name, gateway_waves_address, gateway_coin_address,
                                            waves_node, waves_asset_id, waves_transaction_web_link,
                                            waves_address_web_link, web_primary_color, coin_transaction_web_link,
                                            coin_address_web_link)
 
+        self.assertEqual(res.base_currency_name, base_currency_name)
         self.assertEqual(res.custom_currency_name, custom_currency_name)
         self.assertEqual(res.gateway_waves_address, gateway_waves_address)
         self.assertEqual(res.gateway_coin_holder, gateway_coin_address)

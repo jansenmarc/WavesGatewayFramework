@@ -11,6 +11,7 @@ class PublicConfigurationSerializerSpec(unittest.TestCase):
 
     def test_as_dict(self):
         config = PublicConfiguration(
+            base_currecy_name="Turtle Network",
             custom_currency_name="Litecoin",
             gateway_coin_address="9652973",
             gateway_waves_address="2798273189",
@@ -27,6 +28,7 @@ class PublicConfigurationSerializerSpec(unittest.TestCase):
         self.assertEqual(res[PublicConfiguration.COIN_TRANSACTION_WEB_LINK], config.coin_transaction_web_link)
         self.assertEqual(res[PublicConfiguration.WAVES_TRANSACTION_WEB_LINK], config.waves_transaction_web_link)
         self.assertEqual(res[PublicConfiguration.CUSTOM_CURRENCY_NAME_DICT_KEY], config.custom_currency_name)
+        self.assertEqual(res[PublicConfiguration.BASE_CURRENCY_NAME_DICT_KEY], config.base_currency_name)
         self.assertEqual(res[PublicConfiguration.GATEWAY_COIN_HOLDER_DICT_KEY], config.gateway_coin_holder)
         self.assertEqual(res[PublicConfiguration.GATEWAY_WAVES_ADDRESS_DICT_KEY], config.gateway_waves_address)
         self.assertEqual(res[PublicConfiguration.WAVES_ASSET_ID], config.waves_asset_id)

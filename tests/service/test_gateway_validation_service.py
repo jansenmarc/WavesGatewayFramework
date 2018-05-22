@@ -11,6 +11,7 @@ class TestGatewayValidation(TestCase):
         self._gateway_waves_address_secret = KeyPair("7829657843", "8723657")
         self._gateway_owner_address = "78362487423"
         self._custom_currency_name = "test_coin"
+        self._base_currency_name = "Turtle Network"
         self._gateway_coin_address_secret = KeyPair("68762375", "798234672")
 
         self._gateway_validation_service = GatewayValidationService(
@@ -19,6 +20,7 @@ class TestGatewayValidation(TestCase):
             gateway_waves_address_secret=self._gateway_waves_address_secret,
             gateway_owner_address=self._gateway_owner_address,
             custom_currency_name=self._custom_currency_name,
+            base_currency_name=self._base_currency_name,
             gateway_coin_address_secret=self._gateway_coin_address_secret)
 
     def test_should_success_if_all_valid(self):
