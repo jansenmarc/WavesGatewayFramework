@@ -103,8 +103,12 @@ def collection_factory(collection_name: str, database: MongoDatabase):
     return database.get_collection(collection_name)
 
 
-@Factory(GATEWAY_PYWAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET, WAVES_NODE, WAVES_CHAIN], opt_deps=[WAVES_CHAIN_ID])
-def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair, waves_node: str, waves_chain: str, waves_chain_id: Optional[str] = None):
+@Factory(
+    GATEWAY_PYWAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET, WAVES_NODE, WAVES_CHAIN], opt_deps=[WAVES_CHAIN_ID])
+def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair,
+                            waves_node: str,
+                            waves_chain: str,
+                            waves_chain_id: Optional[str] = None):
     """Creates an address instance from the pywaves library that represents the Gateway waves address."""
     pywaves.setNode(waves_node, waves_chain, waves_chain_id)
     return pywaves.Address(gateway_waves_address_secret.public, privateKey=gateway_waves_address_secret.secret)
@@ -161,8 +165,8 @@ def waves_transaction_polling_service_factory(waves_chain_query_service_converte
 @Factory(
     PublicConfiguration,
     deps=[
-        BASE_CURRENCY_NAME, CUSTOM_CURRENCY_NAME, GATEWAY_WAVES_ADDRESS, GATEWAY_COIN_ADDRESS, WAVES_NODE, WAVES_ASSET_ID,
-        WAVES_TRANSACTION_WEB_LINK, WAVES_ADDRESS_WEB_LINK, WEB_PRIMARY_COLOR
+        BASE_CURRENCY_NAME, CUSTOM_CURRENCY_NAME, GATEWAY_WAVES_ADDRESS, GATEWAY_COIN_ADDRESS, WAVES_NODE,
+        WAVES_ASSET_ID, WAVES_TRANSACTION_WEB_LINK, WAVES_ADDRESS_WEB_LINK, WEB_PRIMARY_COLOR
     ],
     opt_deps=[COIN_TRANSACTION_WEB_LINK, COIN_ADDRESS_WEB_LINK])
 def public_configuration_factory(base_currency_name: str,
@@ -326,8 +330,7 @@ class Gateway(object):
                  coin_last_block_distance: int = DEFAULT_COIN_LAST_BLOCK_DISTANCE,
                  waves_last_block_distance: int = DEFAULT_WAVES_LAST_BLOCK_DISTANCE,
                  web_primary_color: str = DEFAULT_WEB_PRIMARY_COLOR,
-                 waves_chain_id: Optional[str] = None
-                 ) -> None:
+                 waves_chain_id: Optional[str] = None) -> None:
         """
         Creates a new Gateway instance.
 

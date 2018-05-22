@@ -22,7 +22,8 @@ class GatewayValidationService(object):
 
     def __init__(self, waves_address_validation_service: AddressValidationService,
                  coin_address_validation_service: AddressValidationService, gateway_waves_address_secret: KeyPair,
-                 gateway_owner_address: str, base_currency_name: str, custom_currency_name: str, gateway_coin_address_secret: KeyPair) -> None:
+                 gateway_owner_address: str, base_currency_name: str, custom_currency_name: str,
+                 gateway_coin_address_secret: KeyPair) -> None:
         self._waves_address_validation_service = waves_address_validation_service
         self._coin_address_validation_service = coin_address_validation_service
         self._gateway_waves_address_secret = gateway_waves_address_secret
