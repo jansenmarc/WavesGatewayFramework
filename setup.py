@@ -90,14 +90,14 @@ class DocsCommand(Command):
 setup(
     name='waves_gateway',
     url='https://github.com/jansenmarc/WavesGatewayFramework',
-    version='1.0.0',
+    version='1.0.3',
     author='Henning Gerrits',
     test_suite='nose.collector',
     tests_require=['nose'],
     keywords='waves gateway wavesplatform',
     python_requires='>=3.5',
     install_requires=[
-        'PyWaves>=0.7.9', 'python-doc-inherit>=0.3.0', 'simplejson>=3.11.1', 'requests>=2.9.1', 'base58>=0.2.5',
+        'PyWaves>=0.8.8', 'python-doc-inherit>=0.3.0', 'simplejson>=3.11.1', 'requests>=2.9.1', 'base58>=0.2.5',
         'pymongo>=3.4.0', 'Flask>=0.12.2', 'gevent>=1.2.2'
     ],
     description='A framework to connect other cryptocurrencies to the Waves-Platform.',

@@ -166,12 +166,8 @@ class TransactionPollingService(greenlet.Greenlet):
         self._polling_state_storage.set_polling_state(self._polling_state)
 
     def _handle_transactions(self, transactions: List[Transaction]) -> None:
-        handle_task_group = pool.Group()
-
         for tr in transactions:
-            handle_task_group.spawn(lambda: self._handle_transaction(tr))
-
-        handle_task_group.join(raise_error=True)
+            self._handle_transaction(tr)
 
     def _iteration(self):
         """

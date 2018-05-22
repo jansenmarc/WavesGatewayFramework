@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -18,7 +18,9 @@ import 'rxjs/add/operator/filter';
   styleUrls: ['./address-factory.component.css']
 })
 export class AddressFactoryComponent implements OnInit {
-  private lock = false;
+  hasCoinAddress: boolean;
+
+  @ViewChild('coinAddressInput') coinAddressInput: ElementRef;
 
   addressFactoryForm: FormGroup;
   publicConfiguration: PublicConfiguration;
@@ -35,7 +37,7 @@ export class AddressFactoryComponent implements OnInit {
   ngOnInit() {
     this.addressFactoryForm = this.fb.group({
       wavesAddress: ['', Validators.required],
-      coinAddress: [{ disabled: true, value: '' }]
+      coinAddress: ''
     });
   }
 
@@ -49,6 +51,7 @@ export class AddressFactoryComponent implements OnInit {
       .subscribe(
         res => {
           this.addressFactoryForm.get('coinAddress').patchValue(res);
+          this.hasCoinAddress = true;
         },
         err => {
           if (err.status === 400) {
@@ -68,5 +71,10 @@ export class AddressFactoryComponent implements OnInit {
 
   onSubmit() {
     this.performRequest();
+  }
+
+  copyToClipboard() {
+    this.coinAddressInput.nativeElement.select();
+    console.log(document.execCommand('Copy'));
   }
 }
