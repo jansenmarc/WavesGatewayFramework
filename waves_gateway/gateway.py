@@ -106,7 +106,10 @@ def collection_factory(collection_name: str, database: MongoDatabase):
 def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair, waves_node: str, waves_chain: str, waves_chain_id: Optional[str] = None):
     """Creates an address instance from the pywaves library that represents the Gateway waves address."""
     pywaves.setNode(waves_node, waves_chain, waves_chain_id)
-    return pywaves.Address(gateway_waves_address_secret.public, privateKey=gateway_waves_address_secret.secret)
+    address = pywaves.Address(privateKey=gateway_waves_address_secret.secret)
+    if address.address != gateway_waves_address_secret.public:
+        raise ValueError("Gateway account private key doesn't match the address provided")
+    return address
 
 
 @Factory(
