@@ -95,23 +95,38 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
 
         received_amount = cast(int, receiver.amount)
 
+        # receiver coin address
+        coin_receiver_address = self._waves_chain_query_service.get_coin_receiver_address_from_transaction(tx)
+
+        coin_receivers: List[TransactionAttemptReceiver] = []
+
+        # only add the gateway receiver if the gateway fee is being collected
+        if gateway_fee > 0:
+            coin_receivers.insert(0, TransactionAttemptReceiver(
+                address=self._gateway_owner_address,
+                amount=gateway_fee,
+            ))
+
         # the amount of coins to be transferred after applying the fees
         if self._only_one_transaction_receiver:
-            amount_after_fees = received_amount - 2 * coin_fee - gateway_fee
+            amount_after_fees = received_amount - (1 + len(coin_receivers)) * coin_fee - gateway_fee
         else:
             amount_after_fees = received_amount - coin_fee - gateway_fee
 
-        # receiver coin address
-        coin_receiver = self._waves_chain_query_service.get_coin_receiver_address_from_transaction(tx)
+        # add the main receiver before other receivers
+        coin_receivers.insert(0, TransactionAttemptReceiver(
+            address=coin_receiver_address,
+            amount=amount_after_fees,
+        ))
 
         # ---------- Pre-Check ----------
 
-        if not self._coin_address_validation_service.validate_address(coin_receiver):
+        if not self._coin_address_validation_service.validate_address(coin_receiver_address):
             self._logger.warning("Received transaction %s with an invalid coin receiver address %s. "
-                                 "Will be skipped.", tx, coin_receiver)
+                                 "Will be skipped.", tx, coin_receiver_address)
             return
 
-        if self._gateway_coin_holder_secret.public == coin_receiver:
+        if self._gateway_coin_holder_secret.public == coin_receiver_address:
             self._logger.warning("Received transaction %s with the address of the Gateway coin holder."
                                  "Will be skipped as an transaction to itself has no effect.", tx)
             return
@@ -131,30 +146,21 @@ class WavesTransactionConsumerImpl(TransactionConsumer):
             attempts = list()
 
             if self._only_one_transaction_receiver:
-                attempts.append(
+                attempts.extend([
                     TransactionAttempt(
                         sender=self._gateway_coin_holder_secret.public,
                         fee=coin_fee,
                         currency="coin",
-                        receivers=[TransactionAttemptReceiver(address=self._gateway_owner_address,
-                                                              amount=gateway_fee)]))
-
-                attempts.append(
-                    TransactionAttempt(
-                        sender=self._gateway_coin_holder_secret.public,
-                        fee=coin_fee,
-                        currency="coin",
-                        receivers=[TransactionAttemptReceiver(address=coin_receiver, amount=amount_after_fees)]))
+                        receivers=[receiver])
+                    for receiver in coin_receivers
+                ])
             else:
                 attempts.append(
                     TransactionAttempt(
                         sender=self._gateway_coin_holder_secret.public,
                         fee=coin_fee,
                         currency="coin",
-                        receivers=[
-                            TransactionAttemptReceiver(address=coin_receiver, amount=amount_after_fees),
-                            TransactionAttemptReceiver(address=self._gateway_owner_address, amount=gateway_fee)
-                        ]))
+                        receivers=coin_receivers))
 
             attempt_list = TransactionAttemptList(
                 trigger, attempts, last_modified=datetime.datetime.utcnow(), created_at=datetime.datetime.utcnow())

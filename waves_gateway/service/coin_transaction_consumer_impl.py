@@ -111,11 +111,26 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
         # the waves address to receive the amount of coins
         receiver_waves_address = self._map_storage.get_waves_address_by_coin_address(gateway_managed_address)
 
+        coin_receivers: List[TransactionAttemptReceiver] = []
+
+        # only add the gateway receiver if the gateway fee is being collected
+        if gateway_fee > 0:
+            coin_receivers.insert(0, TransactionAttemptReceiver(
+                address=self._gateway_owner_address,
+                amount=gateway_fee,
+            ))
+
         # the amount of coins to be transferred after applying the fees
         if self._only_one_transaction_receiver:
-            amount_after_fees = received_amount - 2 * coin_fee - gateway_fee
+            amount_after_fees = received_amount - (1 + len(coin_receivers)) * coin_fee - gateway_fee
         else:
             amount_after_fees = received_amount - coin_fee - gateway_fee
+
+        # add the main receiver before other receivers
+        coin_receivers.insert(0, TransactionAttemptReceiver(
+            address=self._gateway_coin_address,
+            amount=amount_after_fees,
+        ))
 
         # ---------- Pre-Check ----------
 
@@ -138,32 +153,21 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
             attempts = list()
 
             if self._only_one_transaction_receiver:
-                attempts.append(
+                attempts.extend([
                     TransactionAttempt(
                         sender=gateway_managed_address,
                         currency="coin",
                         fee=coin_fee,
-                        receivers=[
-                            TransactionAttemptReceiver(address=self._gateway_coin_address, amount=amount_after_fees),
-                        ]))
-
-                attempts.append(
-                    TransactionAttempt(
-                        sender=gateway_managed_address,
-                        currency="coin",
-                        fee=coin_fee,
-                        receivers=[TransactionAttemptReceiver(address=self._gateway_owner_address,
-                                                              amount=gateway_fee)]))
+                        receivers=[receiver])
+                    for receiver in coin_receivers
+                ])
             else:
                 attempts.append(
                     TransactionAttempt(
                         sender=gateway_managed_address,
                         currency="coin",
                         fee=coin_fee,
-                        receivers=[
-                            TransactionAttemptReceiver(address=self._gateway_coin_address, amount=amount_after_fees),
-                            TransactionAttemptReceiver(address=self._gateway_owner_address, amount=gateway_fee)
-                        ]))
+                        receivers=coin_receivers))
 
             attempts.append(
                 TransactionAttempt(

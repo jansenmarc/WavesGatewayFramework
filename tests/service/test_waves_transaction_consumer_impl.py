@@ -215,7 +215,79 @@ class WavesTransactionConsumerImplTestSingleReceiver(TestCase):
                 sender=self._gateway_coin_address_secret.public,
                 fee=self._coin_standard_fee,
                 currency="coin",
-                receivers=[TransactionAttemptReceiver(address=self._gateway_owner_address, amount=self._gateway_fee)]),
+                receivers=[TransactionAttemptReceiver(address=coin_receiver, amount=amount_after_fees)]),
+            TransactionAttempt(
+                sender=self._gateway_coin_address_secret.public,
+                fee=self._coin_standard_fee,
+                currency="coin",
+                receivers=[TransactionAttemptReceiver(address=self._gateway_owner_address, amount=self._gateway_fee)])
+        ]
+
+        trigger = AttemptListTrigger(tx=tx, currency="waves", receiver=0)
+
+        self._attempt_list_storage.find_by_trigger.return_value = None
+        attempt_list = TransactionAttemptList(trigger=trigger, attempts=attempts, created_at=now, last_modified=now)
+
+        self._waves_chain_query_service.get_coin_receiver_address_from_transaction.return_value = coin_receiver
+
+        self._waves_transaction_consumer_impl._handle_receiver(tx, self._gateway_waves_receiver, 0)
+
+        self._waves_chain_query_service.get_coin_receiver_address_from_transaction.assert_called_once_with(tx)
+        self._attempt_service.continue_transaction_attempt_list.assert_not_called()
+        self._attempt_list_storage.find_by_trigger.assert_called_once_with(
+            AttemptListTrigger(tx=tx, currency="waves", receiver=0))
+        self._attempt_list_storage.safely_save_attempt_list.assert_called_once_with(attempt_list)
+
+
+class WavesTransactionConsumerImplTestSingleReceiverNoGwFee(TestCase):
+    def setUp(self):
+        self._coin_standard_fee = 7269
+        self._gateway_waves_receiver = TransactionReceiver("9823748", 923235)
+        self._gateway_waves_address_secret = KeyPair(public="9238746", secret="9236478")
+        self._coin_transaction_service = MagicMock()
+        self._waves_chain_query_service = MagicMock(spec=WavesChainQueryServiceImpl)
+        self._waves_transaction_storage = MagicMock()
+        self._logger = MagicMock()
+        self._gateway_coin_address_secret = KeyPair(public="9374682o", secret="sdkjrlig")
+        self._coin_transaction_storage = MagicMock()
+        self._gateway_owner_coin_holder = "23u4oi362"
+        self._gateway_fee = 0
+        self._gateway_owner_address = "923768"
+        self._fee_service = MagicMock()
+        self._only_one_transaction_receiver = True
+        self._attempt_service = MagicMock()
+        self._gateway_pywaves_address = MagicMock()
+        self._gateway_pywaves_address.address = self._gateway_waves_receiver.address
+        self._attempt_list_storage = MagicMock()
+        self._coin_address_validation_service = MagicMock()
+
+        self._waves_transaction_consumer_impl = WavesTransactionConsumerImpl(
+            gateway_waves_address_secret=self._gateway_waves_address_secret,
+            waves_chain_query_service=cast(WavesChainQueryServiceImpl, self._waves_chain_query_service),
+            logger=cast(Logger, self._logger),
+            gateway_owner_address=self._gateway_owner_address,
+            gateway_coin_address_secret=self._gateway_coin_address_secret,
+            fee_service=cast(FeeService, self._fee_service),
+            only_one_transaction_receiver=cast(bool, self._only_one_transaction_receiver),
+            attempt_service=cast(TransactionAttemptListService, self._attempt_service),
+            gateway_pywaves_address=cast(pywaves.Address, self._gateway_pywaves_address),
+            attempt_list_storage=cast(TransactionAttemptListStorage, self._attempt_list_storage),
+            coin_address_validation_service=cast(AddressValidationService, self._coin_address_validation_service))
+
+        self._fee_service.get_coin_fee.return_value = self._coin_standard_fee
+        self._fee_service.get_gateway_fee.return_value = self._gateway_fee
+
+    @patch('datetime.datetime', autospec=True)
+    def test_handle_receiver(self, mock_datetime: MagicMock):
+        now = MagicMock()
+        mock_datetime.utcnow.return_value = now
+
+        coin_receiver = "82396457"
+        amount_after_fees = self._gateway_waves_receiver.amount - self._coin_standard_fee
+        tx = "78265"
+        self._coin_address_validation_service.validate_address.return_value = True
+
+        attempts = [
             TransactionAttempt(
                 sender=self._gateway_coin_address_secret.public,
                 fee=self._coin_standard_fee,
