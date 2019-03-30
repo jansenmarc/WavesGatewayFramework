@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.4
+
+### Bugfixes
+- Adjustments for changed PyWaves behavior. See: https://github.com/jansenmarc/WavesGatewayFramework/issues/20
+
 ## v1.0.3
 
 ### Added
