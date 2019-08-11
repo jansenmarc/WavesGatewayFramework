@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.5
+- Hotfix for Pip dependency resolvement issues (https://github.com/jansenmarc/WavesGatewayFramework/issues/26)
+
 ## v1.0.4
 
 ### Bugfixes
