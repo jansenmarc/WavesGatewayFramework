@@ -79,8 +79,13 @@ class GatewayApplicationService(object):
 
         task_group = gevent.pool.Group()
 
-        gevent.signal(signal.SIGINT, self._coin_transaction_polling_service.cancel)
-        gevent.signal(signal.SIGINT, self._waves_transaction_polling_service.cancel)
+       # gevent.signal(signal.SIGINT, self._coin_transaction_polling_service.cancel)
+       # gevent.signal(signal.SIGINT, self._waves_transaction_polling_service.cancel)
+
+       gevent.signal_handler(signal.SIGINT, 
+               self._coin_transaction_polling_service.cancel)
+       gevent.signal_handler(signal.SIGINT, 
+               self._waves_transaction_polling_services.cancel)
 
         task_group.start(self._coin_transaction_polling_service)
         task_group.start(self._waves_transaction_polling_service)
@@ -94,7 +99,8 @@ class GatewayApplicationService(object):
         http = gevent.pywsgi.WSGIServer(
             (self._host, self._port), self._flask, log=gevent.pywsgi.LoggingLogAdapter(self._logger.getChild('pywsgi')))
 
-        gevent.signal(signal.SIGINT, http.close)
+        # gevent.signal(signal.SIGINT, http.close)
+        gevent.signal_handler(signal.SIGINT, http.close)
 
         self._logger.info('Listening on %s:%s', self._host, str(self._port))
 
