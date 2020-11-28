@@ -79,8 +79,8 @@ class GatewayApplicationService(object):
 
         task_group = gevent.pool.Group()
 
-        gevent.signal(signal.SIGINT, self._coin_transaction_polling_service.cancel)
-        gevent.signal(signal.SIGINT, self._waves_transaction_polling_service.cancel)
+        gevent.signal_handler(signal.SIGINT, self._coin_transaction_polling_service.cancel)
+        gevent.signal_handler(signal.SIGINT, self._waves_transaction_polling_service.cancel)
 
         task_group.start(self._coin_transaction_polling_service)
         task_group.start(self._waves_transaction_polling_service)
@@ -88,13 +88,13 @@ class GatewayApplicationService(object):
         attempt_list_workers = self._create_attempt_list_workers()
 
         for worker in attempt_list_workers:
-            gevent.signal(signal.SIGINT, worker.cancel)
+            gevent.signal_handler(signal.SIGINT, worker.cancel)
             task_group.start(worker)
 
         http = gevent.pywsgi.WSGIServer(
             (self._host, self._port), self._flask, log=gevent.pywsgi.LoggingLogAdapter(self._logger.getChild('pywsgi')))
 
-        gevent.signal(signal.SIGINT, http.close)
+        gevent.signal_handler(signal.SIGINT, http.close)
 
         self._logger.info('Listening on %s:%s', self._host, str(self._port))
 
