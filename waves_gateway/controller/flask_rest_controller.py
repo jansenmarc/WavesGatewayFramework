@@ -72,9 +72,9 @@ class FlaskRestController(object):
             lambda attempt_list_id: self._get_attempt_list_by_id(attempt_list_id),
             methods=['GET'])
 
-        self._add_url_rule('/', 'redirect', lambda: flask_module.redirect('static/'), methods=['GET'])
+        self._add_url_rule('/', 'redirect', lambda: flask_module.redirect('/static/'), methods=['GET'])
 
-        self._add_url_rule('/static/', 'index', lambda: flask_module.redirect('static/index.html'), methods=['GET'])
+        self._add_url_rule('/static/', 'index', lambda: flask_module.redirect('/static/index.html'), methods=['GET'])
 
         self._add_url_rule(
             '/api/v1/public-config',
