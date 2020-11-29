@@ -14,6 +14,7 @@ from flask import Flask
 from waves_gateway.service import COIN_TRANSACTION_POLLING_SERVICE, \
     WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, IntegerConverterService
 from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, MANAGED_LOGGER_LIST, POLLING_DELAY_SECONDS, \
+    BASE_CURRENCY_NAME, \
     CUSTOM_CURRENCY_NAME, GATEWAY_OWNER_ADDRESS, WALLET_STORAGE_COLLECTION_NAME, MAP_STORAGE_COLLECTION_NAME, \
     KEY_VALUE_STORAGE_COLLECTION_NAME, TRANSACTION_ATTEMPT_LIST_STORAGE_COLLECTION_NAME, GATEWAY_COIN_ADDRESS_SECRET, \
     GATEWAY_COIN_ADDRESS, WAVES_NODE, WAVES_ASSET_ID, WAVES_CHAIN, ONLY_ONE_TRANSACTION_RECEIVER, \
@@ -102,8 +103,12 @@ def collection_factory(collection_name: str, database: MongoDatabase):
     return database.get_collection(collection_name)
 
 
-@Factory(GATEWAY_PYWAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET, WAVES_NODE, WAVES_CHAIN], opt_deps=[WAVES_CHAIN_ID])
-def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair, waves_node: str, waves_chain: str, waves_chain_id: Optional[str] = None):
+@Factory(
+    GATEWAY_PYWAVES_ADDRESS, deps=[GATEWAY_WAVES_ADDRESS_SECRET, WAVES_NODE, WAVES_CHAIN], opt_deps=[WAVES_CHAIN_ID])
+def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair,
+                            waves_node: str,
+                            waves_chain: str,
+                            waves_chain_id: Optional[str] = None):
     """Creates an address instance from the pywaves library that represents the Gateway waves address."""
     pywaves.setNode(waves_node, waves_chain, waves_chain_id)
     address = pywaves.Address(privateKey=gateway_waves_address_secret.secret)
@@ -163,11 +168,12 @@ def waves_transaction_polling_service_factory(waves_chain_query_service_converte
 @Factory(
     PublicConfiguration,
     deps=[
-        CUSTOM_CURRENCY_NAME, GATEWAY_WAVES_ADDRESS, GATEWAY_COIN_ADDRESS, WAVES_NODE, WAVES_ASSET_ID,
-        WAVES_TRANSACTION_WEB_LINK, WAVES_ADDRESS_WEB_LINK, WEB_PRIMARY_COLOR
+        BASE_CURRENCY_NAME, CUSTOM_CURRENCY_NAME, GATEWAY_WAVES_ADDRESS, GATEWAY_COIN_ADDRESS, WAVES_NODE,
+        WAVES_ASSET_ID, WAVES_TRANSACTION_WEB_LINK, WAVES_ADDRESS_WEB_LINK, WEB_PRIMARY_COLOR
     ],
     opt_deps=[COIN_TRANSACTION_WEB_LINK, COIN_ADDRESS_WEB_LINK])
-def public_configuration_factory(custom_currency_name: str,
+def public_configuration_factory(base_currency_name: str,
+                                 custom_currency_name: str,
                                  gateway_waves_address: str,
                                  gateway_coin_address: str,
                                  waves_node: str,
@@ -179,6 +185,7 @@ def public_configuration_factory(custom_currency_name: str,
                                  coin_address_web_link: Optional[str] = None):
     """Creates a constant global configuration instance that may be provided to the client."""
     return model.PublicConfiguration(
+        base_currency_name=base_currency_name,
         custom_currency_name=custom_currency_name,
         gateway_waves_address=gateway_waves_address,
         gateway_coin_address=gateway_coin_address,
@@ -247,6 +254,7 @@ class Gateway(object):
     """
 
     DEFAULT_FLASK_NAME = 'waves-gw'
+    DEFAULT_BASE_CURRENCY_NAME = 'Turtle Network'
     DEFAULT_CUSTOM_CURRENCY_NAME = 'Custom Currency'
     DEFAULT_POLLING_DELAY = 0
     DEFAULT_WAVES_POLLING_DELAY = 0
@@ -301,6 +309,7 @@ class Gateway(object):
                  asset_integer_converter_service: Optional[service.IntegerConverterService] = None,
                  waves_chain=DEFAULT_WAVES_CHAIN,
                  only_one_transaction_receiver: bool = False,
+                 base_currency_name: str = DEFAULT_BASE_CURRENCY_NAME,
                  custom_currency_name: str = DEFAULT_CUSTOM_CURRENCY_NAME,
                  logging_handlers: Optional[list] = None,
                  managed_loggers: List[str] = list(),
@@ -324,8 +333,7 @@ class Gateway(object):
                  coin_last_block_distance: int = DEFAULT_COIN_LAST_BLOCK_DISTANCE,
                  waves_last_block_distance: int = DEFAULT_WAVES_LAST_BLOCK_DISTANCE,
                  web_primary_color: str = DEFAULT_WEB_PRIMARY_COLOR,
-                 waves_chain_id: Optional[str] = None
-                 ) -> None:
+                 waves_chain_id: Optional[str] = None) -> None:
         """
         Creates a new Gateway instance.
 
@@ -366,6 +374,10 @@ class Gateway(object):
 
         :param custom_currency_name:
             Name that shall be used when something regarding the custom currency is displayed.
+            Major use is in the Web App.
+        
+        :param base_currency_name:
+            Name that shall be used when something regarding the base currency is displayed.
             Major use is in the Web App.
 
         :param logging_handlers:
@@ -434,6 +446,7 @@ class Gateway(object):
         self._injector.overwrite_if_exists(LOGGING_HANDLER_LIST, logging_handlers)
         self._injector.overwrite_if_exists(POLLING_DELAY_SECONDS, polling_delay_s)
         self._injector.overwrite_if_exists(PollingDelayConfig, polling_delay_config)
+        self._injector.overwrite(BASE_CURRENCY_NAME, base_currency_name)
         self._injector.overwrite(CUSTOM_CURRENCY_NAME, custom_currency_name)
         self._injector.overwrite(GATEWAY_OWNER_ADDRESS, gateway_owner_address)
         self._injector.overwrite(WALLET_STORAGE_COLLECTION_NAME, wallet_storage_collection_name)

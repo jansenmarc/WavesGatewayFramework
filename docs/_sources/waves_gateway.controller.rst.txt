@@ -1,35 +1,35 @@
-waves\_gateway\.controller package
-==================================
+waves\_gateway.controller package
+=================================
 
 Submodules
 ----------
 
-waves\_gateway\.controller\.flask\_rest\_controller module
-----------------------------------------------------------
+waves\_gateway.controller.flask\_rest\_controller module
+--------------------------------------------------------
 
 .. automodule:: waves_gateway.controller.flask_rest_controller
     :members:
     :undoc-members:
     :show-inheritance:
 
-waves\_gateway\.controller\.gateway\_controller module
-------------------------------------------------------
+waves\_gateway.controller.gateway\_controller module
+----------------------------------------------------
 
 .. automodule:: waves_gateway.controller.gateway_controller
     :members:
     :undoc-members:
     :show-inheritance:
 
-waves\_gateway\.controller\.gateway\_controller\_converter\_proxy\_impl module
-------------------------------------------------------------------------------
+waves\_gateway.controller.gateway\_controller\_converter\_proxy\_impl module
+----------------------------------------------------------------------------
 
 .. automodule:: waves_gateway.controller.gateway_controller_converter_proxy_impl
     :members:
     :undoc-members:
     :show-inheritance:
 
-waves\_gateway\.controller\.gateway\_controller\_impl module
-------------------------------------------------------------
+waves\_gateway.controller.gateway\_controller\_impl module
+----------------------------------------------------------
 
 .. automodule:: waves_gateway.controller.gateway_controller_impl
     :members:

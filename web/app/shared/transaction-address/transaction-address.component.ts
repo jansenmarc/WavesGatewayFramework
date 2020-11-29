@@ -77,7 +77,8 @@ export class TransactionAddressComponent
       this.currency === 'waves' &&
       this.address === this.publicConfiguration.gateway_waves_address
     ) {
-      this.replacedAddress = 'Gateway Waves Address';
+      this.replacedAddress = 'Gateway ${this.publicConfiguration
+        .base_currency_name} Address';
     } else {
       this.replacedAddress = this.address;
     }

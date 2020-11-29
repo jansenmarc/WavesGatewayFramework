@@ -1,4 +1,5 @@
 export interface PublicConfiguration {
+  base_currency_name: string;
   custom_currency_name: string;
   gateway_waves_address: string;
   gateway_coin_holder: string;

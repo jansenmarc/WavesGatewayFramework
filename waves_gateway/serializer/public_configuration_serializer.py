@@ -15,6 +15,7 @@ class PublicConfigurationSerializer(object):
     def as_dict(self, value: PublicConfiguration) -> dict:
         res = dict()
 
+        res[PublicConfiguration.BASE_CURRENCY_NAME_DICT_KEY] = value.base_currency_name
         res[PublicConfiguration.CUSTOM_CURRENCY_NAME_DICT_KEY] = value.custom_currency_name
         res[PublicConfiguration.GATEWAY_WAVES_ADDRESS_DICT_KEY] = value.gateway_waves_address
         res[PublicConfiguration.GATEWAY_COIN_HOLDER_DICT_KEY] = value.gateway_coin_holder

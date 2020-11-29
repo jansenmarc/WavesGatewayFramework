@@ -40,7 +40,7 @@
           <small>From</small>
           <span><app-transaction-address [address]="attempt.sender" [currency]="attempt.currency"></app-transaction-address></span>
         </h5>
-        <small class="d-none d-md-block"><b>{{attempt.currency === 'waves'? 'Waves': publicConfiguration?.custom_currency_name}}</b> Transaction Attempt</small>
+        <small class="d-none d-md-block"><b>{{attempt.currency === 'waves'? publicConfiguration?.base_currency_name: publicConfiguration?.custom_currency_name}}</b> Transaction Attempt</small>
       </div>
 
       <h6 *ngIf="i < attemptList.transactions.length">

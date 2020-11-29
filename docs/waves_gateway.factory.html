@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>waves_gateway.factory package &#8212; Waves-Gateway-Framework  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -51,11 +42,11 @@
 <dl class="class">
 <dt id="waves_gateway.factory.coin_address_factory.CoinAddressFactory">
 <em class="property">class </em><code class="descclassname">waves_gateway.factory.coin_address_factory.</code><code class="descname">CoinAddressFactory</code><a class="reference internal" href="_modules/waves_gateway/factory/coin_address_factory.html#CoinAddressFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.factory.coin_address_factory.CoinAddressFactory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Offers the functionality to create new addresses in the custom currency.</p>
 <dl class="method">
 <dt id="waves_gateway.factory.coin_address_factory.CoinAddressFactory.create_address">
-<code class="descname">create_address</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; typing.Union[waves_gateway.model.key_pair.KeyPair, str]<a class="reference internal" href="_modules/waves_gateway/factory/coin_address_factory.html#CoinAddressFactory.create_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.factory.coin_address_factory.CoinAddressFactory.create_address" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_address</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Union[waves_gateway.model.key_pair.KeyPair, str]<a class="reference internal" href="_modules/waves_gateway/factory/coin_address_factory.html#CoinAddressFactory.create_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#waves_gateway.factory.coin_address_factory.CoinAddressFactory.create_address" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new address.
 :return: The return type depends on the existence of an account. If there is an account, it may
 be sufficient to just return the public address. If not, the secret must be returned.</p>
@@ -76,41 +67,15 @@ be sufficient to just return the public address. If not, the secret must be retu
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">Waves-Gateway-Framework</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="waves_gateway.html">waves_gateway package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="waves_gateway.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="waves_gateway.common.html">waves_gateway.common package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="waves_gateway.controller.html">waves_gateway.controller package</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">waves_gateway.factory package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.factory.coin_address_factory">waves_gateway.factory.coin_address_factory module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-waves_gateway.factory">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="waves_gateway.model.html">waves_gateway.model package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="waves_gateway.serializer.html">waves_gateway.serializer package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="waves_gateway.service.html">waves_gateway.service package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="waves_gateway.storage.html">waves_gateway.storage package</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#module-waves_gateway.gateway">waves_gateway.gateway module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="waves_gateway.html#module-waves_gateway">Module contents</a></li>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">waves_gateway.factory package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.factory.coin_address_factory">waves_gateway.factory.coin_address_factory module</a></li>
+<li><a class="reference internal" href="#module-waves_gateway.factory">Module contents</a></li>
 </ul>
 </li>
 </ul>
-
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -122,14 +87,23 @@ be sufficient to just return the public address. If not, the secret must be retu
   </ul></li>
 </ul>
 </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/waves_gateway.factory.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -140,7 +114,7 @@ be sufficient to just return the public address. If not, the secret must be retu
       &copy;2018, Henning Gerrits.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

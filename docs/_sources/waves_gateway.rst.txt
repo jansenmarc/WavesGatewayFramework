@@ -17,8 +17,8 @@ Subpackages
 Submodules
 ----------
 
-waves\_gateway\.gateway module
-------------------------------
+waves\_gateway.gateway module
+-----------------------------
 
 .. automodule:: waves_gateway.gateway
     :members:

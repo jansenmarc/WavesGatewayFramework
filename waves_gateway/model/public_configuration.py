@@ -11,6 +11,7 @@ class PublicConfiguration:
     for example via ReST.
     """
 
+    BASE_CURRENCY_NAME_DICT_KEY = 'base_currency_name'
     CUSTOM_CURRENCY_NAME_DICT_KEY = 'custom_currency_name'
     GATEWAY_WAVES_ADDRESS_DICT_KEY = 'gateway_waves_address'
     GATEWAY_COIN_HOLDER_DICT_KEY = 'gateway_coin_holder'
@@ -23,6 +24,7 @@ class PublicConfiguration:
     WEB_PRIMARY_COLOR = 'web_primary_color'
 
     def __init__(self,
+                 base_currency_name: str,
                  custom_currency_name: str,
                  gateway_waves_address: str,
                  gateway_coin_address: str,
@@ -33,6 +35,7 @@ class PublicConfiguration:
                  coin_transaction_web_link: Optional[str] = None,
                  coin_address_web_link: Optional[str] = None,
                  web_primary_color: Optional[str] = None) -> None:
+        self._base_currency_name = base_currency_name
         self._custom_currency_name = custom_currency_name
         self._gateway_waves_address = gateway_waves_address
         self._gateway_coin_holder = gateway_coin_address
@@ -43,6 +46,10 @@ class PublicConfiguration:
         self._waves_address_web_link = waves_address_web_link
         self._coin_address_web_link = coin_address_web_link
         self._web_primary_color = web_primary_color
+
+    @property
+    def base_currency_name(self) -> str:
+        return self._base_currency_name
 
     @property
     def custom_currency_name(self) -> str:

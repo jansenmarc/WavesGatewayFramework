@@ -10,6 +10,7 @@ class TestGatewayValidation(TestCase):
         self._coin_address_validation_service = MagicMock()
         self._gateway_waves_address_secret = KeyPair("7829657843", "8723657")
         self._gateway_owner_address = "78362487423"
+        self._base_currency_name = "Turtle Network"
         self._custom_currency_name = "test_coin"
         self._gateway_coin_address_secret = KeyPair("68762375", "798234672")
 
@@ -18,6 +19,7 @@ class TestGatewayValidation(TestCase):
             coin_address_validation_service=self._coin_address_validation_service,
             gateway_waves_address_secret=self._gateway_waves_address_secret,
             gateway_owner_address=self._gateway_owner_address,
+            base_currency_name=self._base_currency_name,
             custom_currency_name=self._custom_currency_name,
             gateway_coin_address_secret=self._gateway_coin_address_secret)
 
