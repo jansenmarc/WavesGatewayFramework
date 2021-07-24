@@ -4,7 +4,7 @@
  *
  * Sphinx JavaScript utilities for the full-text search.
  *
- * :copyright: Copyright 2007-2017 by the Sphinx team, see AUTHORS.
+ * :copyright: Copyright 2007-2018 by the Sphinx team, see AUTHORS.
  * :license: BSD, see LICENSE for details.
  *
  */
@@ -191,7 +191,7 @@ var Stemmer = function() {
       w = firstch.toLowerCase() + w.substr(1);
     return w;
   }
-};
+}
 
 
 
@@ -540,6 +540,9 @@ var Search = {
           });
         } else if (DOCUMENTATION_OPTIONS.HAS_SOURCE) {
           var suffix = DOCUMENTATION_OPTIONS.SOURCELINK_SUFFIX;
+          if (suffix === undefined) {
+            suffix = '.txt';
+          }
           $.ajax({url: DOCUMENTATION_OPTIONS.URL_ROOT + '_sources/' + item[5] + (item[5].slice(-suffix.length) === suffix ? '' : suffix),
                   dataType: "text",
                   complete: function(jqxhr, textstatus) {
@@ -671,7 +674,7 @@ var Search = {
       $u.each(_o, function(o) {
         var _files = o.files;
         if (_files === undefined)
-          return;
+          return
 
         if (_files.length === undefined)
           _files = [_files];
@@ -681,7 +684,7 @@ var Search = {
         for (j = 0; j < _files.length; j++) {
           file = _files[j];
           if (!(file in scoreMap))
-            scoreMap[file] = {};
+            scoreMap[file] = {}
           scoreMap[file][word] = o.score;
         }
       });

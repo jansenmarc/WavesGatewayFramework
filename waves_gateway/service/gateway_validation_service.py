@@ -22,18 +22,20 @@ class GatewayValidationService(object):
 
     def __init__(self, waves_address_validation_service: AddressValidationService,
                  coin_address_validation_service: AddressValidationService, gateway_waves_address_secret: KeyPair,
-                 gateway_owner_address: str, custom_currency_name: str, gateway_coin_address_secret: KeyPair) -> None:
+                 gateway_owner_address: str, base_currency_name: str, custom_currency_name: str,
+                 gateway_coin_address_secret: KeyPair) -> None:
         self._waves_address_validation_service = waves_address_validation_service
         self._coin_address_validation_service = coin_address_validation_service
         self._gateway_waves_address_secret = gateway_waves_address_secret
         self._gateway_owner_address = gateway_owner_address
+        self._base_currency_name = base_currency_name
         self._custom_currency_name = custom_currency_name
         self._gateway_coin_address_secret = gateway_coin_address_secret
 
     def validate_all_addresses(self):
         if not self._waves_address_validation_service.validate_address(self._gateway_waves_address_secret.public):
             raise InvalidConfigError("The public part of the given waves address "
-                                     "KeyPair is not a valid waves address.")
+                                     "KeyPair is not a valid " + self._base_currency_name + " address.")
 
         if not self._coin_address_validation_service.validate_address(self._gateway_owner_address):
             raise InvalidConfigError(

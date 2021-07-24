@@ -41,7 +41,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-4 cut-text label">
-                        Waves Node
+                        {{configuration?.base_currency_name}} Node
                     </div>
                     <div class="col-lg-8 cut-text">
                         <a [href]="configuration?.waves_node">{{configuration?.waves_node}}</a>
@@ -51,7 +51,7 @@
             <div class="col-lg-8 col-sm-12 d-none d-md-block">
                 <div class="row">
                     <div class="col-lg-4 cut-text label">
-                        Gateway Waves Address
+                        Gateway {{configuration?.base_currency_name}} Address
                     </div>
                     <div class="col-lg-8 cut-text">
                         {{configuration?.gateway_waves_address}}
@@ -59,7 +59,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-4 cut-text label">
-                        Waves Asset ID
+                        {{configuration?.base_currency_name}} Asset ID
                     </div>
                     <div class="col-lg-8 cut-text">
                         {{configuration?.waves_asset_id}}
@@ -77,7 +77,7 @@
             <div class="d-block d-md-none col-sm-12">
                 <div class="row">
                     <div class="col-lg-4 cut-text label">
-                        Gateway Waves Address
+                        Gateway {{configuration?.base_currency_name}} Address
                     </div>
                     <div class="col-lg-8 cut-text">
                         {{configuration?.gateway_waves_address}}
