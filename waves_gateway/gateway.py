@@ -12,7 +12,8 @@ import pywaves  # type: ignore
 from flask import Flask
 
 from waves_gateway.service import COIN_TRANSACTION_POLLING_SERVICE, \
-    WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, IntegerConverterService
+    WAVES_TRANSACTION_POLLING_SERVICE, WavesTransactionConsumerImpl, CoinTransactionConsumerImpl, IntegerConverterService,\
+    ChainQueryServiceConverterProxyImpl
 from waves_gateway.common import Factory, LOGGING_HANDLER_LIST, MANAGED_LOGGER_LIST, POLLING_DELAY_SECONDS, \
     BASE_CURRENCY_NAME, \
     CUSTOM_CURRENCY_NAME, GATEWAY_OWNER_ADDRESS, WALLET_STORAGE_COLLECTION_NAME, MAP_STORAGE_COLLECTION_NAME, \
@@ -124,10 +125,13 @@ def gateway_pywaves_address(gateway_waves_address_secret: model.KeyPair,
         CoinTransactionConsumerImpl, model.PollingDelayConfig, CoinPollingStateStorageProxyImpl,
         COIN_MAX_HANDLE_TRANSACTION_TRIES, COIN_LAST_BLOCK_DISTANCE
     ])
-def coin_transaction_polling_service_factory(coin_chain_query_service_converter_proxy, logger,
-                                             coin_block_height_storage_proxy, coin_transaction_consumer,
-                                             polling_delay_config, polling_state_storage: PollingStateStorageProxy,
-                                             max_handle_transaction_tries: int, last_block_distance):
+def coin_transaction_polling_service_factory(coin_chain_query_service_converter_proxy: ChainQueryServiceConverterProxyImpl,
+                                             logger: logging.Logger,
+                                             coin_block_height_storage_proxy: CoinBlockHeightStorageProxyImpl,
+                                             coin_transaction_consumer: CoinTransactionConsumerImpl,
+                                             polling_delay_config: model.PollingDelayConfig,
+                                             polling_state_storage: CoinPollingStateStorageProxyImpl,
+                                             max_handle_transaction_tries: int, last_block_distance: int):
     """Creates a TransactionPollingService instance with the necessary dependencies for the custom cryptocurrency."""
     return service.TransactionPollingService(
         chain_query_service=coin_chain_query_service_converter_proxy,
@@ -148,9 +152,12 @@ def coin_transaction_polling_service_factory(coin_chain_query_service_converter_
         WavesTransactionConsumerImpl, model.PollingDelayConfig, WavesPollingStateStorageProxyImpl,
         WAVES_MAX_HANDLE_TRANSACTION_TRIES, WAVES_LAST_BLOCK_DISTANCE
     ])
-def waves_transaction_polling_service_factory(waves_chain_query_service_converter_proxy, logger,
-                                              waves_block_height_storage_proxy, waves_transaction_consumer,
-                                              polling_delay_config, polling_state_storage: PollingStateStorageProxy,
+def waves_transaction_polling_service_factory(waves_chain_query_service_converter_proxy: ChainQueryServiceConverterProxyImpl,
+                                              logger: logging.Logger,
+                                              waves_block_height_storage_proxy: WavesBlockHeightStorageProxyImpl,
+                                              waves_transaction_consumer: WavesTransactionConsumerImpl,
+                                              polling_delay_config: model.PollingDelayConfig,
+                                              polling_state_storage: WavesPollingStateStorageProxyImpl,
                                               max_handle_transaction_tries: int, last_block_distance: int):
     """Creates a TransactionPollingService instance with the necessary dependencies for Waves."""
     return service.TransactionPollingService(

@@ -137,6 +137,14 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
 
             attempts = list()
 
+            # This Way attempt_list worker gets the sender right (Gateway Waves Wallet Address that owns the Waves Asset)
+            attempts.append(
+                TransactionAttempt(
+                    sender=self._gateway_pywaves_address.address,
+                    fee=waves_fee,
+                    currency="waves",
+                    receivers=[TransactionAttemptReceiver(address=receiver_waves_address, amount=amount_after_fees)]))
+
             if self._only_one_transaction_receiver:
                 attempts.append(
                     TransactionAttempt(
@@ -165,12 +173,7 @@ class CoinTransactionConsumerImpl(TransactionConsumer):
                             TransactionAttemptReceiver(address=self._gateway_owner_address, amount=gateway_fee)
                         ]))
 
-            attempts.append(
-                TransactionAttempt(
-                    sender=self._gateway_pywaves_address.address,
-                    fee=waves_fee,
-                    currency="waves",
-                    receivers=[TransactionAttemptReceiver(address=receiver_waves_address, amount=amount_after_fees)]))
+
 
             trigger = AttemptListTrigger(tx, index, "coin", senders=senders)
             attempt_list = TransactionAttemptList(
